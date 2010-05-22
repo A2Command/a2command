@@ -48,22 +48,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Keyboad Constants */
 #define KEY_AT				'@'	// @
-#if defined(__C128__) || defined(__C64__)
-#define KEY_SH_SPACE		0xA0
-#define KEY_SH_RETURN		0x8D
-#define KEY_F1				0x85
-#define KEY_F3				0x86
-#define KEY_F5				0x87
-#define KEY_F7				0x88
-#define KEY_F2				0x89
-#define KEY_F4				0x8A
-#define KEY_F6				0x8B
-#define KEY_F8				0x8C
-#define KEY_SH_PLUS			0xDB
-#define KEY_SH_MINUS		0xDD
-#define KEY_ALT_D			0xAC
-#define KEY_ALT_E			0xB1
-#elif defined(__APPLE2ENH__) 
+
 #define KEY_F1				CH_F1
 #define KEY_F3				CH_F3
 #define KEY_F5				CH_F5
@@ -77,21 +62,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define KEY_TAB				0x09
 #define KEY_ALT_D			0xE4
 #define KEY_ALT_E			0xE5
-#elif defined(__APPLE2__)
-#define KEY_F1				'1'
-#define KEY_F3				'3'
-#define KEY_F5				'5'
-#define KEY_F7				'7'
-#define KEY_F2				'2'
-#define KEY_F4				'4'
-#define KEY_F6				'6'
-#define KEY_F8				'7'
-#define KEY_SH_PLUS			'8'
-#define KEY_SH_MINUS		'9'
-#define KEY_TAB				0x09
-#define KEY_ALT_D			0xE4
-#define KEY_ALT_E			0xE5
-#endif
 
 #define KEY_CTRL_A			0x01
 #define KEY_CTRL_B			0x02

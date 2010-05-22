@@ -89,10 +89,10 @@
     <NMakeIncludeSearchPath>$(CC65_INC);$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='A2|Win32'">
-    <NMakeBuildCommandLine>make T:=apple2enh</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>make clean A2Disk</NMakeBuildCommandLine>
     <NMakeOutput />
-    <NMakeCleanCommandLine>make clean T:=apple2enh</NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>make T:=apple2enh</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>make clean </NMakeCleanCommandLine>
+    <NMakeReBuildCommandLine>make A2Disk</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>__APPLE2ENH__</NMakePreprocessorDefinitions>
     <IncludePath>$(CC65_INC);$(CA65_INC);</IncludePath>
     <NMakeIncludeSearchPath>$(CC65_INC);$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>

@@ -35,9 +35,6 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
-#if defined(__C128__) || defined(__C64__)
-#include <cbm.h>
-#endif
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,101 +44,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "globals.h"
 #include "menus.h"
 #include "screen.h"
-
-//unsigned isInitialized = FALSE;
-
-//char* OPTION_MENU_LABELS[1];
-//unsigned char OPTION_MENU_KEYS[1];
-//
-//void  initOptionMenu(void)
-//{
-//	if(!isInitialized)
-//	{
-//		OPTION_MENU_LABELS[0] = OPTION_MENU_OPTIONS;
-//		//OPTION_MENU_LABELS[1] = OPTION_MENU_SAVE;
-//
-//		OPTION_MENU_KEYS[0] = OPTION_MENU_OPTIONS_KEY;
-//		//OPTION_MENU_KEYS[1] = OPTION_MENU_SAVE_KEY;
-//
-//		isInitialized = TRUE;
-//	}
-//}
-//
-//void  handleOptionMenu(void)
-//{
-//	unsigned char key;
-//	unsigned handleKeys = TRUE;
-//
-//	while(handleKeys)
-//	{
-//		key = cgetc();
-//		handleKeys = FALSE;
-//		switch((int)key)
-//		{
-//#ifdef __C128__
-//		case CH_ESC:
-//#endif
-//		case CH_STOP:
-//			retrieveScreen();
-//			writeStatusBarf("Escaping menu...");
-//			return;
-//			break;
-//
-//		case CH_CURS_UP:
-//			if(currentMenuLine == 0) currentMenuLine = OPTION_MENU_COUNT - 1;
-//			else currentMenuLine--;
-//			retrieveScreen();
-//			drawOptionsMenu(currentMenuX);
-//			handleKeys = TRUE;
-//			break;
-//
-//		case CH_CURS_DOWN:
-//			if(currentMenuLine == OPTION_MENU_COUNT - 1) currentMenuLine = 0;
-//			else currentMenuLine++;
-//			retrieveScreen();
-//			drawOptionsMenu(currentMenuX);
-//			handleKeys = TRUE;
-//			break;
-//
-//		case CH_CURS_LEFT:
-//			retrieveScreen();
-//			writeMenu(file);
-//			return;
-//			break;
-//
-//		case CH_CURS_RIGHT:
-//			retrieveScreen();
-//			writeMenu(command);
-//			return;
-//			break;
-//
-//		case CH_ENTER:
-//			key = OPTION_MENU_KEYS[currentMenuLine];
-//
-//		default:
-//			if(key == OPTION_MENU_OPTIONS_KEY)
-//			{
-//				writeOptionsPanel();
-//			}
-//			//else if(key == OPTION_MENU_SAVE_KEY)
-//			//{
-//			//	saveOptions();
-//			//}
-//			else
-//			{
-//				handleKeys = TRUE;
-//			}
-//			break;
-//		}
-//	}
-//}
-
-//
-//void  saveOptions(void)
-//{
-//	retrieveScreen();
-//	notImplemented();
-//}
 
 void  writeOptionsPanel(void)
 {

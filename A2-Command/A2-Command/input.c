@@ -58,12 +58,6 @@ void  readKeyboard(void)
 	case KEY_F4:
 		rereadSelectedPanel();
 		break;
-#if defined(__C128__) || defined(__C64__)
-	case KEY_SH_RETURN:
-		executeSelectedFile();
-		break;
-#endif
-	//case KEY_SH_SPACE: case KEY_SH_RETURN:
 	case KEY_F3:
 	case HK_SELECT:
 		selectCurrentFile();
@@ -75,7 +69,6 @@ void  readKeyboard(void)
 		moveSelectorDown(selectedPanel);
 		break;
 
-#if defined(__CBM__) || defined(__APPLE2ENH__)
 	case CH_CURS_LEFT:
 		if(selectedPanel == &rightPanelDrive
 			&& leftPanelDrive.drive != NULL
@@ -96,7 +89,7 @@ void  readKeyboard(void)
 			writeSelectorPosition(&rightPanelDrive, '>');
 		}
 		break;
-#endif
+
 	case KEY_SH_PLUS:
 		enterDirectory(selectedPanel);
 		break;
@@ -139,23 +132,12 @@ void  readKeyboard(void)
 	case HK_DESELECT_ALL:
 		selectAllFiles(selectedPanel, FALSE);
 		break;
-#ifdef __C128__
-	case HK_HELP_128:
-#endif
 	case KEY_F1:
 		writeHelpPanel();
 		break;
-#if defined(__C128__) || defined(__C64__)
-	case HK_QUIT:
-#endif
 	case KEY_F2:
 		quit();
 		break;
-#ifdef __C128__
-	case HK_GO64:
-		go64();
-		break;
-#endif
 	case HK_COPY:
 	case KEY_F5:
 		copyFiles();
@@ -171,9 +153,6 @@ void  readKeyboard(void)
 	case KEY_AT:
 		inputCommand();
 		break;
-#if defined(__C128__) || defined(__C64__)
-	case HK_MAKE_DIRECTORY:
-#endif
 	case KEY_F7:
 		makeDirectory();
 		break;
@@ -189,12 +168,6 @@ void  readKeyboard(void)
 	case HK_PAGE_DOWN:
 		movePageDown(selectedPanel);
 		break;
-#if defined(__C128__) || defined(__C64__)
-	case KEY_SH_SPACE:
-		writeD64();
-	case HK_CREATE_D64:
-		createD64();
-#endif
 	default:
 		//writeStatusBarf("%c", key);
 		break;

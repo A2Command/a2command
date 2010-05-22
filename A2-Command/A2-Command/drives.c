@@ -34,10 +34,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
-
-#if defined(__C128__) || defined(__C64__)
-#include <cbm.h>
-#endif
+#include <apple2enh.h>
 #include <conio.h>
 #include <errno.h>
 #include <peekpoke.h>
@@ -114,50 +111,7 @@ void  initializeDrives(void)
 int  getDriveStatus(
 	struct drive_status *drive)
 {
-#if defined(__C128__) || defined(__C64__)
-	int result;
-	int size;
-	unsigned char dr;
-	dr = drive->drive;
-
-	if(dr < 8 || dr > 15)
-	{
-		return -1;
-	}
-
-	result = cbm_open(15, dr, 15, "");
-
-	if(_oserror != 0)
-	{
-		cbm_close(15);
-
-		return -1;
-	}
-
-	if(result == 0 && _oserror == 0)
-	{
-		size = cbm_read(15, drive->message, 38);
-		if(size >=0) drive->message[size] = '\0';
-		else drive->message[0] = '\0';
-		
-		if(strlen(drive->message) > 0)
-		{
-			cbm_write(15, "ui", 2); 
-
-			size = cbm_read(15, drive->message, 38);
-			if(size >=0) drive->message[size] = '\0';
-			else drive->message[0] = '\0';
-		}
-
-		cbm_close(15);
-
-		return size;
-	}
-
-	return result;
-#else
 	return 0;
-#endif
 }
 
 void  listDrives(enum menus menu)
@@ -177,7 +131,7 @@ void  listDrives(enum menus menu)
 		x, y, h, w,
 		"Drives", NULL, NULL);
 
-	textcolor(color_text_other);
+	//textcolor(color_text_other);
 
 	current = 0;
 
@@ -212,10 +166,10 @@ void  listDrives(enum menus menu)
 		revers(FALSE);
 	}
 
-	textcolor(color_text_highlight);
+	//textcolor(color_text_highlight);
 	cputsxy(x + 1, y + 12, 
 		"Use arrow keys & enter to select drive");
-	textcolor(color_selector);
+	//textcolor(color_selector);
 
 	gotoxy(x + 1, current + 2 + y); cputc('>');
 
@@ -226,9 +180,6 @@ void  listDrives(enum menus menu)
 		switch((int)key)
 		{
 		case CH_ESC: 
-#if defined(__C128__) || defined(__C64__)
-		case CH_STOP:
-#endif
 			selected = TRUE;
 			current = original;
 			break;
@@ -240,7 +191,6 @@ void  listDrives(enum menus menu)
 			}
 			break;
 
-#if defined(__C128__) || defined(__C64__)
 		case CH_CURS_UP:
 			if(current > 0)
 			{
@@ -258,7 +208,6 @@ void  listDrives(enum menus menu)
 				gotoxy(x + 1, current + 2 + y); cputc('>');
 			}
 			break;
-#endif
 		}
 	}
 
@@ -417,7 +366,7 @@ void  displayDirectory(
 		shortenSize(size, currentNode->size);
 		fileType = getFileType(currentNode->type);
 
-		textcolor(color_text_files);
+		//textcolor(color_text_files);
 		ii =  (currentNode->index - 1) / 8;
 		mod =  (currentNode->index - 1) % 8;
 		bit = 1 << mod;
@@ -449,7 +398,7 @@ void  writeSelectorPosition(struct panel_drive *panel,
 	y = (panel->currentIndex - panel->displayStartAt) + 2;
 	x = (panel == &leftPanelDrive ? 1 : size_x / 2 + 1);
 	gotoxy(x, y);
-	textcolor(color_selector);
+	//textcolor(color_selector);
 	revers(FALSE);
 	cputc(character);
 }
@@ -736,25 +685,7 @@ unsigned char  sendCommand(
 	struct panel_drive *panel,
 	unsigned char *command)
 {
-#if defined(__C128__) || defined(__C64__)
-	char result;
-	unsigned char drive;
-
-	drive = panel->drive->drive;
-
-	result = cbm_open(drive, drive, 15, NULL);
-
-	result = cbm_write(drive, command, strlen(command));
-
-	cbm_read(drive, buffer, 39);
-	writeStatusBarf(buffer);
-
-	cbm_close(drive);
-	
-	return result;
-#else
 	return 0;
-#endif
 }
 
 void  selectAllFiles(struct panel_drive *panel, 

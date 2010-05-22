@@ -44,13 +44,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "screen.h"
 #include "PlatformSpecific.h"
 
-#if defined(__C128__)
-#include <c128.h>
-#endif
-
 unsigned char size_x;
 unsigned char size_y;
-//unsigned char blank_line[81];
 unsigned arePanelsOn = TRUE;
 unsigned char buffer[41];
 
@@ -61,11 +56,4 @@ unsigned char startupDevice = 8;
 void initialize(void)
 {
 	screensize(&size_x, &size_y);
-#if defined(__C128__)
-	//getScreenSize(&size_x, &size_y);
-	if(size_x > 40) fast();
-#endif
-
-	//strncpy(blank_line, SPACES, size_x);
-	//blank_line[size_x] = '\0';
 }

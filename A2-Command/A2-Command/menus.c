@@ -100,7 +100,7 @@ unsigned char currentMenuLine;
 //	initFileMenu();
 //	
 //	//revers(TRUE);
-//	oldColor = textcolor(color_text_menus);
+//	oldColor = //textcolor(color_text_menus);
 //
 //	drawMenu(x,
 //		FILE_MENU_WIDTH, 
@@ -109,7 +109,7 @@ unsigned char currentMenuLine;
 //		FILE_MENU_KEYS);
 //
 //	//revers(FALSE);
-//	textcolor(oldColor);
+//	//textcolor(oldColor);
 //}
 //
 //void  drawDriveMenu(unsigned char x)
@@ -121,7 +121,7 @@ unsigned char currentMenuLine;
 //	initDriveMenu();
 //	
 //	//revers(TRUE);
-//	oldColor = textcolor(color_text_menus);
+//	oldColor = //textcolor(color_text_menus);
 //
 //	drawMenu(x,
 //		DRIVE_MENU_WIDTH, 
@@ -130,7 +130,7 @@ unsigned char currentMenuLine;
 //		DRIVE_MENU_KEYS);
 //
 //	//revers(FALSE);
-//	textcolor(oldColor);
+//	//textcolor(oldColor);
 //}
 //
 //
@@ -143,7 +143,7 @@ unsigned char currentMenuLine;
 //	initCommandMenu();
 //	
 //	//revers(TRUE);
-//	oldColor = textcolor(color_text_menus);
+//	oldColor = //textcolor(color_text_menus);
 //
 //	drawMenu(x,
 //		COMMAND_MENU_WIDTH, 
@@ -152,7 +152,7 @@ unsigned char currentMenuLine;
 //		COMMAND_MENU_KEYS);
 //
 //	//revers(FALSE);
-//	textcolor(oldColor);
+//	//textcolor(oldColor);
 //}
 //
 //void  drawOptionsMenu(unsigned char x)
@@ -164,7 +164,7 @@ unsigned char currentMenuLine;
 //	initOptionMenu();
 //	
 //	//revers(TRUE);
-//	oldColor = textcolor(color_text_menus);
+//	oldColor = //textcolor(color_text_menus);
 //
 //	drawMenu(x,
 //		OPTION_MENU_WIDTH, 
@@ -173,7 +173,7 @@ unsigned char currentMenuLine;
 //		OPTION_MENU_KEYS);
 //
 //	//revers(FALSE);
-//	textcolor(oldColor);
+//	//textcolor(oldColor);
 //}
 //
 //void  drawMenu(
@@ -224,7 +224,7 @@ unsigned char currentMenuLine;
 //
 //		if(test)
 //		{
-//			textcolor(color_text_highlight);
+//			//textcolor(color_text_highlight);
 //		}
 //
 //		gotoxy(x + j, y);
@@ -232,7 +232,7 @@ unsigned char currentMenuLine;
 //
 //		if(test)
 //		{
-//			textcolor(color_text_menus);
+//			//textcolor(color_text_menus);
 //		}
 //	}
 //}
@@ -242,54 +242,22 @@ unsigned char currentMenuLine;
 void writeMenuBar(void)
 {
 	unsigned char bottom = 0;
-	//textcolor(color_text_menus);
-	//revers(TRUE);
-
-	//cclearxy(0, 0, size_x);
-
-	//cputsxy(LEFT_MENU_X * size_x / 100, 0, LEFT_MENU);
-
-	//cputsxy(FILE_MENU_X  *size_x / 100, 0, FILE_MENU);
-
-	//cputsxy(COMMAND_MENU_X * size_x / 100, 0, COMMAND_MENU);
-
-	//cputsxy(OPTIONS_MENU_X * size_x / 100, 0, OPTIONS_MENU);
-
-	//cputsxy(RIGHT_MENU_X  *size_x / 100, 0, RIGHT_MENU);
-	//	
-	//revers(FALSE);
-
+	
 	bottom = size_y - 1;
+	
 	cclearxy(0, bottom, size_x);
-#ifdef __C64__	
-	cputsxy(0, bottom, " HLP  QUIT  SEL  REF  CPY  REN  MDR  DEL");
-
-	revers(TRUE);
-	gotoxy(0, bottom); cputc('1');
-	gotoxy(5, bottom); cputc('2');
-	gotoxy(11, bottom); cputc('3');
-	gotoxy(16, bottom); cputc('4');
-	gotoxy(21, bottom); cputc('5');
-	gotoxy(26, bottom); cputc('6');
-	gotoxy(31, bottom); cputc('7');
-	gotoxy(36, bottom); cputc('8');
-
-	revers(FALSE);
-#endif
-#ifdef __C128__
 	cputsxy(0, bottom, "  HELP     QUIT    SELECT   REFRESH   COPY    RENAME    MAKE DIRECTORY    DELETE");
 
 	revers(TRUE);
-	gotoxy(0, bottom); cputc('F'); cputc('1');
-	gotoxy(9, bottom); cputc('F'); cputc('2');
-	gotoxy(17, bottom); cputc('F'); cputc('3');
-	gotoxy(26, bottom); cputc('F'); cputc('4');
-	gotoxy(36, bottom); cputc('F'); cputc('5');
-	gotoxy(44, bottom); cputc('F'); cputc('6');
-	gotoxy(54, bottom); cputc('F'); cputc('7');
-	gotoxy(72, bottom); cputc('F'); cputc('8');
+	gotoxy(0, bottom); cputc('1');
+	gotoxy(10, bottom); cputc('2');
+	gotoxy(18, bottom); cputc('3');
+	gotoxy(27, bottom); cputc('4');
+	gotoxy(37, bottom); cputc('5');
+	gotoxy(45, bottom); cputc('6');
+	gotoxy(55, bottom); cputc('7');
+	gotoxy(73, bottom); cputc('8');
 
 	revers(FALSE);
-#endif
 }
 

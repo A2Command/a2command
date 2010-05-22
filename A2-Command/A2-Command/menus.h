@@ -47,78 +47,6 @@ enum menus
 };
 
 
-//// Option Menu Externals
-//extern char OPTION_MENU_OPTIONS[];
-//extern const unsigned char OPTION_MENU_OPTIONS_KEY;
-//
-//extern const unsigned char OPTION_MENU_COUNT;
-//extern const unsigned char OPTION_MENU_WIDTH;
-//extern char* OPTION_MENU_LABELS[1];
-//extern unsigned char OPTION_MENU_KEYS[1];
-//
-//// File Menu Externals
-//extern char FILE_MENU_ABOUT[];
-//extern const unsigned char FILE_MENU_ABOUT_KEY;
-//extern char FILE_MENU_HELP[];
-//extern const unsigned char FILE_MENU_HELP_KEY;
-//extern char FILE_MENU_COPY[];
-//extern const unsigned char FILE_MENU_COPY_KEY;
-//extern char FILE_MENU_RENAME[];
-//extern const unsigned char FILE_MENU_RENAME_KEY;
-//extern char FILE_MENU_MAKE_DIR[];
-//extern const unsigned char FILE_MENU_MAKE_DIR_KEY;
-//extern char FILE_MENU_DELETE[];
-//extern const unsigned char FILE_MENU_DELETE_KEY;
-//extern char FILE_MENU_SEND_COMMAND[];
-//extern const unsigned char FILE_MENU_SEND_COMMAND_KEY;
-//extern char FILE_MENU_QUIT[];
-//extern const unsigned char FILE_MENU_QUIT_KEY;
-//#ifdef __C128__
-//extern char FILE_MENU_GO64[];
-//extern const unsigned char FILE_MENU_GO64_KEY;
-//#endif
-//extern const unsigned char FILE_MENU_COUNT;
-//extern const unsigned char FILE_MENU_WIDTH;
-//#ifdef __C128__
-//extern char* FILE_MENU_LABELS[9];
-//extern unsigned char FILE_MENU_KEYS[9];
-//#else
-//extern char* FILE_MENU_LABELS[8];
-//extern unsigned char FILE_MENU_KEYS[8];
-//#endif
-//
-//// Drive Menu Externals
-//extern char DRIVE_MENU_REREAD[];
-//extern const unsigned char DRIVE_MENU_REREAD_KEY;
-//extern char DRIVE_MENU_DRIVE[];
-//extern const unsigned char DRIVE_MENU_DRIVE_KEY;
-//extern const unsigned char DRIVE_MENU_COUNT;
-//extern const unsigned char DRIVE_MENU_WIDTH;
-//extern char* DRIVE_MENU_LABELS[2];
-//extern unsigned char DRIVE_MENU_KEYS[2];
-//
-//// Command Menu Externals
-//extern char COMMAND_MENU_SWAP_PANELS[];
-//extern const unsigned char COMMAND_MENU_SWAP_PANELS_KEY;
-//extern char COMMAND_MENU_PANELS_ON_OFF[];
-//extern const unsigned char COMMAND_MENU_PANELS_ON_OFF_KEY;
-//extern const unsigned char COMMAND_MENU_COUNT;
-//extern const unsigned char COMMAND_MENU_WIDTH;
-//extern char* COMMAND_MENU_LABELS[2];
-//extern unsigned char COMMAND_MENU_KEYS[2];
-//
-//// Initialize menus
-//void  initOptionMenu(void);
-//void  initFileMenu(void);
-//void  initDriveMenu(void);
-//void  initCommandMenu(void);
-//
-//// Handle menus
-//void  handleOptionMenu(void);
-//void  handleFileMenu(void);
-//void  handleCommandMenu(void);
-//void  handleDriveMenu(enum menus);
-
 // Menu actions
 void  inputCommand(void);
 void  executeSelectedFile(void);
@@ -141,9 +69,6 @@ void  deleteFiles(void);
 void  writeD64(void);
 void  createD64(void);
 void  quit(void);
-#ifdef __C128__
-void  go64(void);
-#endif
 
 // Menu drawing
 void  drawFileMenu(unsigned char);

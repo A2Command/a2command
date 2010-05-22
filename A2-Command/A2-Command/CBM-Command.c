@@ -40,6 +40,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <conio.h>
 #include <peekpoke.h>
+#include <apple2enh.h>
 
 #include "Configuration.h"
 #include "constants.h"
@@ -51,13 +52,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "input.h";
 #include "PlatformSpecific.h";
 
-#if defined(__C128__)
-#include <c128.h>
-#endif
-
-#if defined(__APPLE2ENH__)
-#include <apple2enh.h>
-#endif
 
 /* CBM-Command Main Function
  * --------------------------
@@ -68,18 +62,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 int main(void)
 {
-#if defined(__C128__)
-	// Set screen to 80 columns.
-	// 40 columns is not supported
-	// on the C= 128 due memory 
-	// constraints.
 	videomode(VIDEOMODE_80COL);
-
-	// Set system to 2mhz
-	fast();
-#elif defined(__APPLE2ENH__)
-	videomode(VIDEOMODE_80COL);
-#endif
 
 	// Prepares the application
 	initialize();

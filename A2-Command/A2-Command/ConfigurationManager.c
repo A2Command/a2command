@@ -39,6 +39,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <peekpoke.h>
+#include <apple2enh.h>
 
 #include "ConfigurationManager.h"
 #include "Configuration.h"
@@ -69,10 +70,7 @@ unsigned char *colors[] =
 
 unsigned int main(void)
 {
-#if defined(__C128__)
 	videomode(VIDEOMODE_80COL);
-	fast();
-#endif
 
 	initialize();
 	load();
@@ -187,21 +185,17 @@ void  displayColor(
 	unsigned char color)
 {
 	cclearxy(x, y, 12);
-	textcolor(color);
+	//textcolor(color);
 	revers(TRUE);
 	cputsxy(x, y, " ");
 	revers(FALSE);
-	textcolor(color_text_menus);
+	//textcolor(color_text_menus);
 	cputsxy(x+1, y, colors[color]);
 }
 
 void  incrementColor(unsigned char *color)
 {
-#if defined(__C128__) || defined(__C64__)
-	if((unsigned)(*color) == COLOR_GRAY3) (*color) = (unsigned char)COLOR_BLACK;
-#else
-	if((unsigned)(*color) == 7) (*color) = 0;
-#endif
+	if((unsigned)(*color) == COLOR_WHITE) (*color) = COLOR_BLACK;
 	else { ++(*color); }
 	
 	return;
@@ -212,7 +206,7 @@ void  help(void)
 	unsigned char *help_message[] =
 	{
 		{ "Please visit:" },
-		{ "http://cbmcommand.codeplex.com/" },
+		{ "http://a2command.codeplex.com/" },
 		{ "        /documentation" }
 	};
 
@@ -251,7 +245,7 @@ void  writeMenu(void)
 		"CBM-Command Configuration Manager",
 		NULL, NULL);
 
-	textcolor(color_text_menus);
+	//textcolor(color_text_menus);
 	cputsxy(1, 3, "Drives");
 	cputsxy(2, 4, "L - Default Left Drive :"); gotoxy(27,4); cprintf("%d", defaultLeftDrive);
 	cputsxy(2, 5, "R - Default Right Drive: "); gotoxy(27,5); cprintf("%d", defaultRightDrive);
@@ -274,17 +268,6 @@ void  writeFunctionKeys(void)
 	unsigned char bottom = 0;
 	bottom = size_y - 1;
 	cclearxy(0, bottom, size_x);
-#ifdef __C64__	
-	cputsxy(0, bottom," HELP  QUIT  SAVE");
-
-	revers(TRUE);
-	gotoxy(0, bottom); cputc('1');
-	gotoxy(6, bottom); cputc('2');
-	gotoxy(12, bottom); cputc('3');
-
-	revers(FALSE);
-#endif
-#ifdef __C128__
 	cputsxy(0, bottom, "  HELP     QUIT    SAVE");
 
 	revers(TRUE);
@@ -293,55 +276,8 @@ void  writeFunctionKeys(void)
 	gotoxy(17, bottom); cputc('F'); cputc('3');
 
 	revers(FALSE);
-#endif
 }
 
 void  save(void)
 {
-#if defined(__C128__) || defined(__C64__)
-	unsigned char r, d;
-	unsigned char *buffer;
-	buffer = calloc(1, sizeof(unsigned char));
-	d = PEEK(0x00BA);
-	cbm_open(15,d,15,"");
-#ifdef __C64__
-	r = cbm_open(1,d,2,"@0:cbmcmd-cfg.c64,s,w");
-#endif
-#ifdef __C128__
-	r = cbm_open(1,d,2,"@0:cbmcmd-cfg.c128,s,w");
-#endif
-
-	if(r == 0)
-	{
-		cbm_write(1, &defaultLeftDrive, 1);
-		cbm_write(1, &defaultRightDrive, 1);
-
-		cbm_write(1, &color_background, 1);
-		cbm_write(1, &color_border, 1);
-		cbm_write(1, &color_selector, 1);
-		cbm_write(1, &color_text_borders, 1);
-		cbm_write(1, &color_text_menus, 1);
-		cbm_write(1, &color_text_files, 1);
-		cbm_write(1, &color_text_status, 1);
-		cbm_write(1, &color_text_other, 1);
-		cbm_write(1, &color_text_highlight, 1);
-
-		writeStatusBar("Wrote configuration.");
-	}
-	else
-	{
-		free(buffer);
-		buffer = calloc(41, sizeof(unsigned char));
-		writeStatusBarf("Error %d writing cfg", r);
-		waitForEnterEsc();
-		r = cbm_read(15,buffer,39);
-		buffer[r] = '\0';
-		writeStatusBar(buffer);
-		waitForEnterEsc();
-	}
-
-	cbm_close(1);
-	cbm_close(15);
-	free(buffer);
-#endif
 }

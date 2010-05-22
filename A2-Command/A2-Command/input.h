@@ -49,37 +49,15 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HK_QUIT				KEY_CTRL_U	// CTRL-U
 #define HK_COPY				KEY_CTRL_C	// CTRL-C
 #define HK_RENAME			KEY_CTRL_R	// CTRL-R
-#if defined(__C128__) || defined(__C64__)
-#define HK_DELETE			0x1E		// CTRL-^
-#else
 #define HK_DELETE			KEY_CTRL_L	// CTRL-L
-#endif
 #define HK_MAKE_DIRECTORY	KEY_CTRL_K	// CTRL-K
-#if defined(__C128__) || defined(__C64__)
-#define HK_TO_TOP			0x5E	// ^
-#define HK_TO_BOTTOM		0xDE	// SHIFT-^
-#else
 #define HK_TO_TOP			'{'		// ^
 #define HK_TO_BOTTOM		'}'		// SHIFT-^
-#endif
-#if defined(__C128__) || defined(__C64__)
-#define HK_PAGE_UP			43
-#define HK_PAGE_DOWN		45
-#else
 #define HK_PAGE_UP			'['
 #define HK_PAGE_DOWN		']'
-#endif
-
 #define HK_SELECT			32
 
-#if defined(__C128__) || defined(__C64__)
-#define HK_CREATE_D64		0x18	// CTRL-X
-#endif
 
-#ifdef __C128__
-#define HK_HELP_128			0x84	// HELP
-#define HK_GO64				0x07	// CTRL-G
-#endif
 
 void  readKeyboard(void);
 

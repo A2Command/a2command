@@ -71,4 +71,5 @@ clean:
 		$(RM) $(ASMFILES:.s=.o)
 		$(RM) $(T)/$(PROGRAM)
 		$(RM) $(T)/$(CONFIG_PROGRAM)
+		$(RM) $(DISK)
 
