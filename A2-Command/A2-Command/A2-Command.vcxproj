@@ -180,7 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblerMethods.c" />
-    <ClCompile Include="CBM-Command.c" />
+    <ClCompile Include="A2-Command.c" />
     <ClCompile Include="CommandMenu.c" />
     <ClCompile Include="Configuration.c" />
     <ClCompile Include="ConfigurationManager.c" />

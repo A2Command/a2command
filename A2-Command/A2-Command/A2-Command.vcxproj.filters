@@ -35,9 +35,6 @@
     <ClCompile Include="AssemblerMethods.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CBM-Command.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="menus.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,6 +69,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Configuration.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="A2-Command.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
