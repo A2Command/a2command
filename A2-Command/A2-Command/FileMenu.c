@@ -41,6 +41,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <errno.h>
 #include <peekpoke.h>
+#include <unistd.h>
 
 #include "Configuration.h"
 #include "constants.h"
@@ -297,10 +298,14 @@ void  makeDirectory(void)
 
 			if(dialogResult == OK_RESULT)
 			{
-				sprintf(command, "md:%s",
-					filename);
+				strcpy(command, selectedPanel->header.name);
+				strcat(command, filename);
+				if(command[strlen(command)-1] != '/')
+				{
+					strcat(command, "/");
+				}
 
-				sendCommand(selectedPanel, command);
+				mkdir(command);
 
 				getDirectory(selectedPanel, 
 					selectedPanel->slidingWindowStartAt);

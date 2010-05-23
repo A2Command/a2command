@@ -162,8 +162,8 @@ void  enterDirectory(
 void  leaveDirectory(
 	struct panel_drive *panel);
 
-unsigned  isDiskImage(
-	struct panel_drive *panel);
+//unsigned  isDiskImage(
+//	struct panel_drive *panel);
 
 unsigned  isDirectory(
 	struct panel_drive *panel);

@@ -321,7 +321,7 @@ void  displayDirectory(
 		}
 
 		shortenSize(size, currentNode->size);
-		fileType = getFileType(currentNode->type);
+		fileType = currentNode->type;
 
 		//textcolor(color_text_files);
 		ii =  (currentNode->index - 1) / 8;
@@ -338,9 +338,9 @@ void  displayDirectory(
 		}		
 
 		y = i - start + 2;
-		cputcxy(x + 2, y, fileType);
-		cputsxy(x + 4, y, size);
-		cputsxy(x + 8, y, shortenString(currentNode->name));
+		gotoxy(x + 2, y); cprintf("%2X", fileType);
+		cputsxy(x + 5, y, size);
+		cputsxy(x + 9, y, shortenString(currentNode->name));
 		
 		revers(FALSE);
 		
@@ -531,11 +531,17 @@ void  enterDirectory(struct panel_drive *panel)
 
 	node = getSelectedNode(panel);
 
-	if(isDiskImage(panel) || isDirectory(panel))
+	if(isDirectory(panel))
 	{
-		strcpy(command, "cd:");
-		strcat(command, node->name);
-		sendCommand(panel, command);
+		strcpy(command, selectedPanel->header.name);
+		strcat(selectedPanel->header.name, node->name);
+		if(selectedPanel->header.name[strlen(selectedPanel->header.name)-1] != '/')
+		{
+			strcat(selectedPanel->header.name, "/");
+		}
+
+		getDirectory(selectedPanel, 0);
+
 		panel->currentIndex = 0;
 		panel->displayStartAt = 0;
 		rereadSelectedPanel();
@@ -556,35 +562,35 @@ void  leaveDirectory(struct panel_drive *panel)
 	rereadSelectedPanel();
 }
 
-unsigned  isDiskImage(struct panel_drive *panel)
-{
-	unsigned result = FALSE;
-	unsigned char name[17];
-	struct dir_node *currentDirNode = NULL;
-
-	currentDirNode = getSelectedNode(panel);
-
-	strcpy(name, currentDirNode->name);
-	strlower(name);
-
-	if(currentDirNode != NULL)
-	{
-		if(strstr(name, ".d64") > 0
-			|| strstr(name, ".d81") > 0
-			|| strstr(name, ".d71") > 0
-			|| strstr(name, ".dnp") > 0
-		)
-		{
-			result = TRUE;
-		}
-		else
-		{
-			result = FALSE;
-		}
-	}
-
-	return result;
-}
+//unsigned  isDiskImage(struct panel_drive *panel)
+//{
+//	unsigned result = FALSE;
+//	unsigned char name[17];
+//	struct dir_node *currentDirNode = NULL;
+//
+//	currentDirNode = getSelectedNode(panel);
+//
+//	strcpy(name, currentDirNode->name);
+//	strlower(name);
+//
+//	if(currentDirNode != NULL)
+//	{
+//		if(strstr(name, ".d64") > 0
+//			|| strstr(name, ".d81") > 0
+//			|| strstr(name, ".d71") > 0
+//			|| strstr(name, ".dnp") > 0
+//		)
+//		{
+//			result = TRUE;
+//		}
+//		else
+//		{
+//			result = FALSE;
+//		}
+//	}
+//
+//	return result;
+//}
 
 unsigned  isDirectory(struct panel_drive *panel)
 {
@@ -595,7 +601,7 @@ unsigned  isDirectory(struct panel_drive *panel)
 
 	if(currentDirNode != NULL)
 	{
-		if(currentDirNode->type == 6)
+		if(currentDirNode->type == 0x0F)
 		{
 			result = TRUE;
 		}
