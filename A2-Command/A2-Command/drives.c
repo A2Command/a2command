@@ -37,6 +37,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <apple2enh.h>
 #include <conio.h>
 #include <errno.h>
+#include <dirent.h>
 #include <peekpoke.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -116,121 +117,53 @@ int  getDriveStatus(
 
 void  listDrives(enum menus menu)
 {
-	unsigned selected = FALSE;
-	const unsigned char h = 14, w = 39;
-	unsigned char original=0;
-
-	unsigned char x, y, i;
-	unsigned char status, current, key;
-
-	x = getCenterX(w);
-	y = getCenterY(h);
-
-	writePanel(TRUE, FALSE,
-		color_text_borders, 
-		x, y, h, w,
-		"Drives", NULL, NULL);
-
-	//textcolor(color_text_other);
-
-	current = 0;
-
-	for(i=0; i<9; ++i)
+	unsigned char *message[] =
 	{
-		if( 
-			(currentLeft > 0 && drives[i].drive == currentLeft && menu == left) ||
-			(currentRight > 0 && drives[i].drive == currentRight && menu == right)
-		)
-		{
-			revers(TRUE);
-			original = current = i;
-		}
-
-		gotoxy(x + 2, i + 2 + y);
-		cprintf("%d", i + 8);
-
-		status = checkDrive(2, "UI", i + 8);
-
-		gotoxy(x + 5, i + 2 + y);
-
-		if(status !=5)
-		{
-			getDriveStatus(&(drives[i]));
-			cputs(drives[i].message);
-		}
-		else
-		{
-			cputs("No device present.");
-		}
-
-		revers(FALSE);
-	}
-
-	//textcolor(color_text_highlight);
-	cputsxy(x + 1, y + 12, 
-		"Use arrow keys & enter to select drive");
-	//textcolor(color_selector);
-
-	gotoxy(x + 1, current + 2 + y); cputc('>');
-
-	while(!selected)
-	{
-		key = cgetc();
-
-		switch((int)key)
-		{
-		case CH_ESC: 
-			selected = TRUE;
-			current = original;
-			break;
-
-		case CH_ENTER:
-			if(strlen(drives[current].message) != 0)
-			{
-				selected = TRUE;
-			}
-			break;
-
-		case CH_CURS_UP:
-			if(current > 0)
-			{
-				gotoxy(x + 1, current + 2 + y); cputc(' ');
-				--current;
-				gotoxy(x + 1, current + 2 + y); cputc('>');
-			}
-			break;
-
-		case CH_CURS_DOWN:
-			if(current < 11)
-			{
-				gotoxy(x + 1, current + 2 + y); cputc(' ');
-				++current;
-				gotoxy(x + 1, current + 2 + y); cputc('>');
-			}
-			break;
-		}
-	}
+		{ "Please select a directory." }
+	};
+	unsigned char dirName[81];
+	struct panel_drive *drive;
 
 	if(menu == left)
 	{
-		leftPanelDrive.drive = &(drives[current]);
+		leftPanelDrive.drive = &(drives[0]);
 		currentLeft = leftPanelDrive.drive->drive;
+		drive = &leftPanelDrive;
 	}
 	else
 	{
-		rightPanelDrive.drive = &(drives[current]);
+		rightPanelDrive.drive = &(drives[0]);
 		currentRight = rightPanelDrive.drive->drive;
+		drive = &rightPanelDrive;
 	}
+
+	saveScreen();
+	if(drawInputDialog(1, 76, message, "Open Directory", dirName) == OK_RESULT
+		&& strlen(dirName) > 0)
+	{
+			strncpy(drive->header.name, dirName, 16);
+			drive->header.size = 0;
+			drive->header.type = 10;
+			drive->header.index = 0;
+	}
+	retrieveScreen();
+
 }
 
 int  getDirectory(
 	struct panel_drive *drive,
 	int slidingWindowStartAt)
 {
-#if defined(__C128__) || defined(__C64__)	
 	unsigned int counter=0, read=0;
 	unsigned char result, dr, i;
-	struct cbm_dirent currentDE;
+//	struct cbm_dirent currentDE;
+	struct dirent *currentDE;
+	DIR *dir = NULL;
+	unsigned char *message[] =
+	{
+		{ "Please select a directory." }
+	};
+	unsigned char dirName[81];
 	
 
 	drive->length = 0;
@@ -244,59 +177,83 @@ int  getDirectory(
 		drive->slidingWindow[i].type = 0;
 	}
 
-	result = cbm_opendir(dr, dr);
-	if(result == 0)
+	saveScreen();
+	if(strlen(drive->header.name) == 0 &&
+		drawInputDialog(1, 76, message, "Open Directory", dirName) == OK_RESULT
+		&& strlen(dirName) > 0)
 	{
-		writeStatusBar("Reading directory...");
-		counter = 0;
-		while(!cbm_readdir(dr, &currentDE))
+			strncpy(drive->header.name, dirName, 16);
+			drive->header.size = 0;
+			drive->header.type = 10;
+			drive->header.index = 0;
+	}
+	retrieveScreen();
+	
+	if(strlen(drive->header.name) == 0)
+	{
+		writeStatusBar("Aborting directory operation.");
+		return 0;
+	}
+	else
+	{
+		dir = opendir(drive->header.name);
+		//result = cbm_opendir(dr, dr);
+		if(dir != NULL)
 		{
-			if(currentDE.type == 10 && counter==0)
+
+			writeStatusBar("Reading directory...");
+			counter = 0;
+			currentDE = readdir(dir);
+			while(currentDE != NULL)
 			{
-				strcpy(drive->header.name, currentDE.name);
-				drive->header.size = currentDE.size;
-				drive->header.type = currentDE.type;
-				drive->header.index = 0;
-			}
-			else if(counter >= slidingWindowStartAt &&
-				read < SLIDING_WINDOW_SIZE)
-			{
-				++read;
-				i = counter - 1;
-				if(i - slidingWindowStartAt >= 0 && 
-					i - slidingWindowStartAt < SLIDING_WINDOW_SIZE)
+/*				if(currentDE.type == 10 && counter==0)
 				{
-					strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, currentDE.name);
-					drive->slidingWindow[i - slidingWindowStartAt].size = currentDE.size;
-					drive->slidingWindow[i - slidingWindowStartAt].type = currentDE.type;
-					drive->slidingWindow[i - slidingWindowStartAt].index = counter;
+					strcpy(drive->header.name, currentDE.name);
+					drive->header.size = currentDE.size;
+					drive->header.type = currentDE.type;
+					drive->header.index = 0;
 				}
+				else*/ 
+				if(counter >= slidingWindowStartAt &&
+					read < SLIDING_WINDOW_SIZE)
+				{
+					++read;
+					i = counter - 1;
+					if(i - slidingWindowStartAt >= 0 && 
+						i - slidingWindowStartAt < SLIDING_WINDOW_SIZE)
+					{
+						strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, currentDE->d_name);
+						drive->slidingWindow[i - slidingWindowStartAt].size = currentDE->d_blocks;
+						drive->slidingWindow[i - slidingWindowStartAt].type = currentDE->d_type;
+						drive->slidingWindow[i - slidingWindowStartAt].index = counter;
+					}
+				}
+				++counter;
+				currentDE = readdir(dir);
 			}
-			++counter;
+			//cbm_closedir(dr);
+
+			drive->length = counter;
+			if(drive->currentIndex >= drive->length)
+			{
+				drive->currentIndex = drive->length - 1;
+			}
+
+			//cbm_open(2,drive->drive->drive,0,"$:'y/%&");
+			//cbm_read(2,buffer,34); // skip unwanted data
+			//cbm_read(2,buffer,2);
+			//drive->header.size = buffer[1]*256 + buffer[0];
+
+			//cbm_close(2);
+			closedir(dir);
+			writeStatusBarf("Finished reading %u files.", counter - 1);
 		}
-		cbm_closedir(dr);
-
-		drive->length = counter;
-		if(drive->currentIndex >= drive->length)
-		{
-			drive->currentIndex = drive->length - 1;
-		}
-
-		cbm_open(2,drive->drive->drive,0,"$:'y/%&");
-		cbm_read(2,buffer,34); // skip unwanted data
-		cbm_read(2,buffer,2);
-		drive->header.size = buffer[1]*256 + buffer[0];
-
-		cbm_close(2);
-
-		writeStatusBarf("Finished reading %u files.", counter - 1);
 	}
 
-
 	return counter;
-#else
-	return 0;
-#endif
+//#else
+//	return 0;
+//#endif
 }
 
 void  resetSelectedFiles(struct panel_drive *panel)

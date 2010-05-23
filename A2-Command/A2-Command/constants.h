@@ -60,8 +60,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define KEY_SH_PLUS			CH_F9
 #define KEY_SH_MINUS		CH_F10
 #define KEY_TAB				0x09
-#define KEY_ALT_D			0xE4
-#define KEY_ALT_E			0xE5
+#define KEY_ALT_D			0xC4
+#define KEY_ALT_E			0xC5
 
 #define KEY_CTRL_A			0x01
 #define KEY_CTRL_B			0x02
