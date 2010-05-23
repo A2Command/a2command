@@ -50,6 +50,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "PlatformSpecific.h"
 #include "input.h"
 
+unsigned char SCREEN_BUFFER[2][24][40];
+
 // Prepares the screen 
 void setupScreen(void)
 {
@@ -64,10 +66,36 @@ void setupScreen(void)
 
 void  saveScreen(void)
 {
+	unsigned char i;
+
+	for(i=0; i<24; ++i)
+	{
+		gotoy(i);
+		if(size_x == 80)
+		{
+			*(char *)0xC055 = 0;
+			memcpy(SCREEN_BUFFER[1][i], *(char **)0x28, 40);
+			*(char *)0xC054 = 0;
+		}
+		memcpy(SCREEN_BUFFER[0][i], *(char **)0x28, 40);
+	}
 }
 
 void  retrieveScreen(void)
 {
+	unsigned char i;
+
+	for(i=0; i<24; ++i)
+	{
+		gotoy(i);
+		if(size_x == 80)
+		{
+			*(char *)0xC055 = 0;
+			memcpy(*(char **)0x28, SCREEN_BUFFER[1][i], 40);
+			*(char *)0xC054 = 0;
+		}
+		memcpy(*(char **)0x28, SCREEN_BUFFER[0][i], 40);
+	}
 }
 
 void  writeStatusBar(
