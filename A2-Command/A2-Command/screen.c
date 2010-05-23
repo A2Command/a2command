@@ -126,28 +126,19 @@ void drawBox(
 	unsigned char color,
 	unsigned reverse)
 {
-	unsigned int i = 0;
+	unsigned char i;
 	
 	//textcolor(color);
 	revers(reverse);
 
-	// draw top line
-	cputcxy(x, y, CH_ULCORNER);
-	chlinexy(x + 1, y, w - 1);
-	cputcxy(x+w, y, CH_URCORNER);
+	// draw frame
+	textframexy(x, y, w + 1, h + 1, TEXTFRAME_TALL);
 
-	// draw body
+        // draw body
 	for(i=y+1; i<y+h; ++i)
 	{
-		cputcxy(x, i, '|');
 		cclearxy(x + 1, i, w - 1);
-		cputcxy(x+w, i, '|');
 	}
-
-	// draw bottom line
-	cputcxy(x, y+h, CH_LLCORNER);
-	chlinexy(x + 1, y+h, w - 1);
-	cputcxy(x+w, y+h, CH_LRCORNER);
 }
 
 unsigned char  getCenterX(unsigned char w)
