@@ -173,6 +173,8 @@
     </BuildLog>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="AppleCommander-1.3.5.jar" />
+    <None Include="PRODOS203.DSK" />
     <None Include="res\common\CommandMenu.s" />
     <None Include="res\common\DriveMenu.s" />
     <None Include="res\common\Common.s" />

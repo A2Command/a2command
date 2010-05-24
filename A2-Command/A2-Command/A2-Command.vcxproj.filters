@@ -27,6 +27,8 @@
     <None Include="res\common\driveRoutines.s">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="PRODOS203.DSK" />
+    <None Include="AppleCommander-1.3.5.jar" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile">
