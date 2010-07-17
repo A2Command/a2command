@@ -71,13 +71,13 @@ void  saveScreen(void)
 	for(i=0; i<24; ++i)
 	{
 		gotoy(i);
+		memcpy(SCREEN_BUFFER[0][i], *(char **)0x28, 40);
 		if(size_x == 80)
 		{
 			*(char *)0xC055 = 0;
 			memcpy(SCREEN_BUFFER[1][i], *(char **)0x28, 40);
 			*(char *)0xC054 = 0;
 		}
-		memcpy(SCREEN_BUFFER[0][i], *(char **)0x28, 40);
 	}
 }
 
@@ -88,13 +88,13 @@ void  retrieveScreen(void)
 	for(i=0; i<24; ++i)
 	{
 		gotoy(i);
+		memcpy(*(char **)0x28, SCREEN_BUFFER[0][i], 40);
 		if(size_x == 80)
 		{
 			*(char *)0xC055 = 0;
 			memcpy(*(char **)0x28, SCREEN_BUFFER[1][i], 40);
 			*(char *)0xC054 = 0;
 		}
-		memcpy(*(char **)0x28, SCREEN_BUFFER[0][i], 40);
 	}
 }
 
@@ -188,7 +188,7 @@ void writePanel(
 	if(title != NULL)
 	{
 		sprintf(buffer, "[%s]", title);
-		cputsxy(x+1, y,buffer);
+		cputsxy(x+2, y,buffer);
 	}
 
 	revers(FALSE);

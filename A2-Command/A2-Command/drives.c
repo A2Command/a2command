@@ -292,8 +292,8 @@ void  displayDirectory(
 	writePanel(TRUE, FALSE, color_text_borders, x, 1, 21, w, 
 		drive->header.name, NULL, NULL);
 
-	gotoxy(x+1, 22); cprintf("[%2d]", drive->drive->drive);
-	gotoxy(x + w - 7, 22); cprintf("[%5u]", drive->header.size);
+	gotoxy(x+2, 22); cprintf("[%2d]", drive->drive->drive);
+	gotoxy(x + w - 8, 22); cprintf("[%5u]", drive->header.size);
 
 	start = drive->displayStartAt;
 
