@@ -68,29 +68,20 @@ unsigned char fileBuffer[COPY_BUFFER_SIZE];
 struct panel_drive *targetPanel = NULL, *tempPanel = NULL;
 void  copyFiles(void)
 {
-#if defined(__C128__) || defined(__C64__)
+	FILE *sourceFile = NULL, *targetFile = NULL;
+	static unsigned char sourcePath[256], targetPath[256];
 	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0, r = 0;
 	unsigned int index = 0, bytes = 0;
 	unsigned RELOAD = false;
-	unsigned char targetFilename[21], type[2], status[40];
+	static unsigned char targetFilename[21], type[2], status[40];
 	struct dir_node *currentNode;
 
-	if(selectedPanel == &leftPanelDrive)
-	{
-		targetPanel = &rightPanelDrive;
-	}
-	else
-	{
-		targetPanel = &leftPanelDrive;
-	}
+	targetPanel = selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive;
 
-	sd = selectedPanel->drive->drive;
-	td = targetPanel->drive->drive;
-
-	if(sd == td)
+	if(strcmp(selectedPanel->path, targetPanel->path) == 0)
 	{
 		saveScreen();
-		writeStatusBar("Cannot copy to the same drive.");
+		writeStatusBar("Cannot copy to the same path.");
 		waitForEnterEsc();
 		retrieveScreen();
 		return;
@@ -105,114 +96,92 @@ void  copyFiles(void)
 			if(r != 0)
 			{
 				currentNode = getSpecificNode(selectedPanel, i*8+j);
-				if(currentNode->type < 4)
+				if(currentNode == NULL)
 				{
-					if(currentNode == NULL)
+					getDirectory(selectedPanel, i*8+j);
+					currentNode = getSpecificNode(selectedPanel, i*8+j);
 					{
-						getDirectory(selectedPanel, i*8+j);
-						currentNode = getSpecificNode(selectedPanel, i*8+j);
+						if(currentNode == NULL)
 						{
-							if(currentNode == NULL)
-							{
-								writeStatusBarf("Cannot get file %u", i*8+j); 
-								waitForEnterEsc();
-								return;
-							}
+							writeStatusBarf("Cannot get file %u", i*8+j); 
+							waitForEnterEsc();
+							return;
 						}
 					}
+				}
 
-					cbm_open(15, sd, 15, "");
-					r = cbm_open(1, sd, 2, currentNode->name);					
-					if(r == 0)
+				writeStatusBarf("Selected %s", currentNode->name);
+
+				sprintf(sourcePath, "%s/%s", selectedPanel->path, currentNode->name);
+				sourceFile = NULL;
+				sourceFile = fopen(sourcePath, "rb");
+				if(ferror(sourceFile) == 0)
+				{
+					sprintf(targetPath, "%s/%s", targetPanel->path, currentNode->name);
+					targetFile = NULL;
+					targetFile = fopen(targetPath, "wb");
+					if(ferror(targetFile) == 0)
 					{
-						sprintf(type, "%c", getFileType(currentNode->type));
-						strlower(type);
-						sprintf(targetFilename,"@0:%s,%s,w",currentNode->name,type);
-						cbm_open(14,td,15,"");
-						r = cbm_open(2, td, 3, targetFilename);
-						if(r == 0)
+						for(index=0; index < currentNode->size; index+=(COPY_BUFFER_SIZE/254))
 						{
-							for(index=0; index < currentNode->size; index+=(COPY_BUFFER_SIZE/254))
+							bytes = fread(fileBuffer, COPY_BUFFER_SIZE, 1, sourceFile);
+							if(bytes == EOF)
 							{
-								bytes = cbm_read(1, fileBuffer, COPY_BUFFER_SIZE);
-								if(bytes == -1)
-								{
-									writeStatusBarf("Problem (%d) reading %s", 
-										_oserror, 
-										currentNode->name); 
-									waitForEnterEsc();
-									cbm_read(15, status, 40);
-									writeStatusBar(status); waitForEnterEsc();
-									break;
-								}
-								else if(bytes == EOF)
-								{
-									break;
-								}
-
-								if(kbhit())
-								{
-									r = cgetc();
-									if(r == CH_ESC || r == CH_STOP)
-									{
-										cbm_close(2); 
-										cbm_close(1);
-										cbm_close(15);
-										cbm_close(14);
-
-										reloadPanels();
-
-										writeStatusBar("Aborted copy.");
-										return;
-									}
-
-								}
-
-								r = cbm_write(2, fileBuffer, bytes);
-								if(r == -1)
-								{
-									writeStatusBarf("Problem (%d) writing %s", 
-										_oserror, 
-										currentNode->name); 
-									waitForEnterEsc();
-									cbm_read(14, status, 40);
-									writeStatusBar(status); waitForEnterEsc();
-									break;
-								}
-								writeStatusBarf("%s - %d of %d.", currentNode->name, index, currentNode->size);
+								break;
 							}
-							RELOAD = true;
+
+							if(kbhit())
+							{
+								r = cgetc();
+								if(r == CH_ESC)
+								{
+									fclose(sourceFile);
+									fclose(targetFile);
+
+									reloadPanels();
+
+									writeStatusBar("Aborted copy.");
+									return;
+								}
+
+							}
+
+							r = fwrite(fileBuffer, bytes, 1, targetFile);
+							if(r == -1)
+							{
+								writeStatusBarf("Problem (%d) writing %s", 
+									_oserror, 
+									currentNode->name); 
+								waitForEnterEsc();
+								break;
+							}
+							writeStatusBarf("%s - %d of %d.", currentNode->name, index, currentNode->size);
 						}
-						else
-						{
-							writeStatusBarf("Cannot open %s for write (%d)", 
-								currentNode->name, r); 
-							waitForEnterEsc();
-							cbm_read(14, status, 40);
-							writeStatusBar(status); waitForEnterEsc();
-						}
+						RELOAD = true;
 					}
 					else
 					{
-						writeStatusBarf("Cannot open %s for read (%d)", 
+						writeStatusBarf("Cannot open %s for write (%d)", 
 							currentNode->name, r); 
 						waitForEnterEsc();
-						cbm_read(15, status, 40);
-						writeStatusBar(status); waitForEnterEsc();
 					}
-					cbm_close(2); 
-					cbm_close(1);
-					cbm_close(15);
-					cbm_close(14);
 				}
+				else
+				{
+					writeStatusBarf("Cannot open %s for read (%d)", 
+						currentNode->name, r); 
+					waitForEnterEsc();
+				}
+				fclose(sourceFile);
+				fclose(targetFile);
 			}
 		}
 	}
+
 	if(RELOAD == true)
 	{
 		reloadPanels();
 	}
-#endif
 }
 
 void  reloadPanels(void)
@@ -227,11 +196,11 @@ void  reloadPanels(void)
 	writeCurrentFilename(selectedPanel);
 }
 
+unsigned char oldName[256], newName[256];
 void  renameFile(void)
 {
 	enum results dialogResult;
 	struct dir_node *selectedNode = NULL;
-	unsigned char command[40];
 	unsigned char filename[17];
 	unsigned char* dialogMessage[] =
 	{
@@ -260,10 +229,10 @@ void  renameFile(void)
 			{
 				writeStatusBarf("Renaming to %s", filename);
 
-				sprintf(command, "r0:%s=%s",
-					filename, selectedNode->name);
+				sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
+				sprintf(newName, "%s/%s", selectedPanel->path, filename);
 
-				sendCommand(selectedPanel, command);
+				rename(oldName, newName);
 
 				rereadSelectedPanel();
 
@@ -317,47 +286,73 @@ void  makeDirectory(void)
 
 void  deleteFiles(void)
 {
-	unsigned dialogResult;
-	struct dir_node *selectedNode = NULL;
-	unsigned char command[40];
-	unsigned char* dialogMessage[] =
+	const struct dir_node *selectedNode;
+	unsigned i, k;
+	unsigned char j;
+	bool dialogResult, isBatch = false;
+	static unsigned char* dialogMessage[] =
 	{
 		{ "Are you sure?" }
 	};
 
-	if(selectedPanel != NULL)
 	{
-		selectedNode = getSelectedNode(selectedPanel);
-		if(selectedNode != NULL)
+		for(i=0; i<(selectedPanel->length + (7 - 1)) / 8u; ++i)
 		{
-			saveScreen();
-
-			writeStatusBarf("File to delete: %s", selectedNode->name);
-
-			dialogResult = writeYesNo(
-				"Delete File",
-				dialogMessage,
-				1);
-
-			retrieveScreen();
-
-			if(dialogResult == true)
+			for(j=0; j<8; ++j)
 			{
-				writeStatusBarf("Deleting %s", selectedNode->name);
-
-				if(selectedNode->type != 6)
+				if ((selectedPanel->selectedEntries[i] & (1 << j)) != 0x00
+					&& (k = i*8+j) < selectedPanel->length - 1)
 				{
-					sprintf(command, "s0:%s", selectedNode->name);
-				}
-				else
-				{
-					sprintf(command, "rd:%s", selectedNode->name);
-				}
+					isBatch = true;
 
-				sendCommand(selectedPanel, command);
+					selectedNode = getSpecificNode(selectedPanel, k);
+					if(selectedNode == NULL)
+					{
+						getDirectory(selectedPanel, k);
+						selectedNode = getSpecificNode(selectedPanel, k);
+					}
 
-				rereadSelectedPanel();
+					sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
+					if (remove(oldName) < 0 ||
+						// Let us change our minds, and stop a batch delete.
+						kbhit() && cgetc() == CH_ESC)
+					{
+						rereadSelectedPanel();
+						return;
+					}
+				}
 			}
+		}
+
+		if(!isBatch)
+		{
+			// No names are highlighted; delete the current file.
+			selectedNode = getSelectedNode(selectedPanel);
+			if(selectedNode != NULL)
+			{
+				writeStatusBarf(
+					"File to delete: %s",
+					selectedNode->name);
+
+				dialogResult = writeYesNo(
+					"Delete",
+					dialogMessage,
+					1);
+
+				retrieveScreen();
+				writeCurrentFilename(selectedPanel);
+
+				if(dialogResult)
+				{
+					sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
+					remove(oldName);
+					rereadSelectedPanel();
+				}
+			}
+		}
+		else
+		{
+			rereadSelectedPanel();
 		}
 	}
 }
