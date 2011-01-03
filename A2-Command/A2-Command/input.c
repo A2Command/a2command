@@ -35,6 +35,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
@@ -127,10 +128,10 @@ void  readKeyboard(void)
 		togglePanels();
 		break;
 	case HK_SELECT_ALL:
-		selectAllFiles(selectedPanel, TRUE);
+		selectAllFiles(selectedPanel, true);
 		break;
 	case HK_DESELECT_ALL:
-		selectAllFiles(selectedPanel, FALSE);
+		selectAllFiles(selectedPanel, false);
 		break;
 	case KEY_F1:
 		writeHelpPanel();

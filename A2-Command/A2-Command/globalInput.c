@@ -34,6 +34,8 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
+#include <stdarg.h>
+#include <stdbool.h>
 #include <conio.h>
 
 #include "Configuration.h"
@@ -45,10 +47,10 @@ unsigned char  waitForEnterEsc(void)
 {
 	unsigned char key = 0;
 
-	revers(TRUE); 
+	revers(true); 
 	//textcolor(color_text_other); 
 	cputsxy(size_x - 5, 0, "(RET)"); 
-	revers(FALSE);
+	revers(false);
 
 	while(key != CH_ESC
 		&& key != CH_ENTER)
@@ -57,4 +59,15 @@ unsigned char  waitForEnterEsc(void)
 	}
 	
 	return key;
+}
+
+unsigned char waitForEnterEscf(const char* format, ...)
+{
+	va_list ap;
+
+	va_start(ap,  format);
+	vwriteStatusBarf(format, ap);
+	va_end(ap);
+
+	return waitForEnterEsc();
 }

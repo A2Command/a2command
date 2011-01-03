@@ -35,13 +35,15 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
-#include "Configuration-Apple2Enh.h"
+#include <stdbool.h>
 #include <conio.h>
 #include <peekpoke.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 
+#include "Configuration-Apple2Enh.h"
 #include "screen.h"
 #include "Configuration.h"
 #include "constants.h"
@@ -98,8 +100,7 @@ void  retrieveScreen(void)
 	}
 }
 
-void  writeStatusBar(
-	unsigned char message[])
+void writeStatusBar(const char message[])
 {
 	unsigned char oldX, oldY;
 
@@ -107,13 +108,13 @@ void  writeStatusBar(
 	oldY = wherey();
 
 	//textcolor(color_text_status);
-	revers(TRUE);
+	revers(true);
 
 	cclearxy(0, 0, size_x);
 
 	cputsxy(0, 0, message);
 	
-	revers(FALSE);
+	revers(false);
 
 	gotoxy(oldY, oldY);
 }
@@ -187,11 +188,16 @@ void writePanel(
 
 	if(title != NULL)
 	{
+		if(strlen(title) > w-4)
+		{
+			title[w-4]='\0';
+		}
+
 		sprintf(buffer, "[%s]", title);
 		cputsxy(x+2, y,buffer);
 	}
 
-	revers(FALSE);
+	revers(false);
 
 	okLeft = x + w - 2;
 	if(ok != NULL)
@@ -220,11 +226,11 @@ void  notImplemented(void)
 	//x = getCenterX(w);
 	//y = getCenterY(h);
 
-	//writePanel(TRUE, TRUE, color_border, x, y, h, w,
+	//writePanel(true, true, color_border, x, y, h, w,
 	//	"Sorry...", "OK", NULL);
 
 	////textcolor(color_text_other);
-	//revers(TRUE);
+	//revers(true);
 	//cputsxy(x+2, y+2, "Not yet implemented.");
 
 	//waitForEnterEsc();
@@ -273,7 +279,7 @@ enum results  drawDialog(
 	}
 
 	writePanel(
-		TRUE, FALSE, color_text_borders,
+		true, false, color_text_borders,
 		x, y, h, w,
 		title,
 		(button & NO || button & CANCEL ? cancelButton : NULL),
@@ -285,7 +291,7 @@ enum results  drawDialog(
 		cputsxy(x+2, i+2+y,message[i]);
 	}	
 
-	while(TRUE)
+	while(true)
 	{
 		key = cgetc();
 
@@ -340,7 +346,7 @@ enum results  drawInputDialog(
 	y = getCenterY(h);
 
 	writePanel(
-		TRUE, FALSE, color_text_borders,
+		true, false, color_text_borders,
 		x, y, h, w,
 		title,
 		"Cancel",
@@ -354,7 +360,7 @@ enum results  drawInputDialog(
 	++i;
 	
 	gotoxy(x+2, i+2+y);
-	revers(TRUE);
+	revers(true);
 	//textcolor(color_text_other);
 	
 	cclearxy(x+2, i+2+y, length + 1);
@@ -402,7 +408,7 @@ enum results  drawInputDialog(
 	default: result = CANCEL_RESULT; break;
 	}
 
-	revers(FALSE);
+	revers(false);
 	free(input);
 	return result;
 }
@@ -418,13 +424,20 @@ unsigned  writeYesNo(
 	return result == YES_RESULT;
 }
 
-
-void writeStatusBarf(unsigned char format[], ...)
+void vwriteStatusBarf(const char format[], va_list ap)
 {
-	unsigned char buffer[80];
-	va_list ap;
-	va_start(ap,  format);
+	char buffer[81];
+
 	vsprintf(buffer, format, ap);
-	va_end(ap);
 	writeStatusBar(buffer);
 }
+
+void writeStatusBarf(const char format[], ...)
+{
+	va_list ap;
+
+	va_start(ap,  format);
+	vwriteStatusBarf(format, ap);
+	va_end(ap);
+}
+

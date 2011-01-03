@@ -15,18 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\common\Common.s">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\common\DriveMenu.s">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\common\CommandMenu.s">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="res\common\driveRoutines.s">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="PRODOS203.DSK" />
     <None Include="AppleCommander-1.3.5.jar" />
   </ItemGroup>
@@ -76,6 +64,9 @@
     <ClCompile Include="A2-Command.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="A2-disks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h">
@@ -112,6 +103,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Configuration-Apple2Enh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="A2-disks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

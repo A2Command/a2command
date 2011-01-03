@@ -34,46 +34,72 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
-
+#include <apple2enh.h>
 #include <conio.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include "constants.h"
-#include "drives.h"
+#include "A2-disks.h"
+#include "screen.h"
 #include "globals.h"
 #include "input.h"
-#include "menus.h"
-#include "screen.h"
+#include "globalInput.h"
 
-
-void  togglePanels(void)
+void selectDrive(struct panel_drive *panel)
 {
-	if(arePanelsOn)
-	{
-		setupScreen();
-		writeMenuBar();
-		arePanelsOn = false;
-	}
-	else
-	{
-		retrieveScreen();
-		displayPanels();
-		arePanelsOn = true;
-	}
-}
+	unsigned char i, key, current;
+	unsigned char buffer[68];
 
-void  displayPanels(void)
-{
-	if(leftPanelDrive.drive != NULL)
-	{
-		rereadDrivePanel(left);
-	}
-	if(rightPanelDrive.drive != NULL)
-	{
-		rereadDrivePanel(right);
-	}
-}
+	_driveCount = drivecount();
+	_drives = drivelist();
 
+	saveScreen();
+	drawBox(5, 5, size_x - 10, size_y - 10, COLOR_WHITE, 0);
+
+	cputsxy(7, 7, "Select directory for panel.");
+
+	for(i=0; i<_driveCount; ++i)
+	{
+		rootdir(_drives[i], buffer);
+		cputsxy(8, 9 + i, buffer); 
+	}
+
+	cputcxy(7, 9, '>');
+
+	key = 0;
+	current = 0;
+	while(key != CH_ENTER && key != CH_ESC)
+	{
+		key = cgetc();
+
+		switch(key)
+		{
+		case CH_CURS_DOWN:
+			if(current < _driveCount - 1)
+			{
+				cputcxy(7, 9 + current, ' ');
+				cputcxy(7, 9 + (++current), '>');
+			}
+			break;
+
+		case CH_CURS_UP:
+			if(current > 0)
+			{
+				cputcxy(7, 9 + current, ' ');
+				cputcxy(7, 9 + (--current), '>');
+			}
+			break;
+		}
+	}
+
+	if(key == CH_ENTER)
+	{
+		rootdir(_drives[current], panel->path);
+
+		panel->drive->drive = current;		
+
+		selectedPanel = panel;
+		rereadSelectedPanel();
+	}
+
+	waitForEnterEsc();
+	retrieveScreen();
+}

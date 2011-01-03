@@ -47,11 +47,10 @@ enum buttons { OK = 1, CANCEL = 2, YES = 4, NO = 8 };
 //typedef void *ButtonCallback(enum buttonTypes buttonType);
 
 void setupScreen(void);
-void  writeStatusBar(unsigned char[]);
 
-void writeStatusBarf(
-	unsigned char[], ...);
-	
+void writeStatusBar(const char[]);
+void vwriteStatusBarf(const char[], va_list);
+void writeStatusBarf(const char[], ...);
 
 void writePanel(
 	unsigned drawBorder,
@@ -65,9 +64,12 @@ void writePanel(
 
 
 void drawBox(
-	unsigned char, unsigned char,
-	unsigned char, unsigned char,
-	unsigned char, unsigned);
+	unsigned char x,
+	unsigned char y,
+	unsigned char w,
+	unsigned char h,
+	unsigned char color,
+	unsigned reverse);
 
 enum results  drawDialog(
 	unsigned char* message[],

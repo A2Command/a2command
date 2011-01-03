@@ -40,6 +40,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
+#include "A2-disks.h"
 #include "constants.h"
 #include "drives.h"
 #include "globals.h"
@@ -70,6 +71,7 @@ void  rereadSelectedPanel(void)
 
 	selectedPanel->currentIndex = 0;
 	selectedPanel->displayStartAt = 0;
+
 	getDirectory(selectedPanel, 0);
 	resetSelectedFiles(selectedPanel);
 	displayDirectory(selectedPanel);
@@ -90,7 +92,8 @@ void  rereadSelectedPanel(void)
 
 void  writeDriveSelectionPanel(enum menus menu)
 {
-	listDrives(menu);
+	//listDrives(menu);
+	selectDrive((menu == left ? &leftPanelDrive : &rightPanelDrive));
 	retrieveScreen();
 
 	rereadDrivePanel(menu);

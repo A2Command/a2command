@@ -34,6 +34,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
+#include <stdbool.h>
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,7 +79,7 @@ unsigned int main(void)
 	writeFunctionKeys();
 	writeMenu();
 
-	while(TRUE)
+	while(true)
 	{
 		readKeyboard();
 	}
@@ -102,17 +103,6 @@ void  readKeyboard(void)
 		break;
 	case KEY_F3:
 		save();
-		break;
-	case '1':
-	case '2':
-	case '3':
-	case '4':
-	case '5':
-	case '6':
-	case '7':
-	case '8':
-	case '9':
-		changeColor(result);
 		break;
 	case 'l':
 		++defaultLeftDrive;
@@ -186,9 +176,9 @@ void  displayColor(
 {
 	cclearxy(x, y, 12);
 	//textcolor(color);
-	revers(TRUE);
+	revers(true);
 	cputsxy(x, y, " ");
-	revers(FALSE);
+	revers(false);
 	//textcolor(color_text_menus);
 	cputsxy(x+1, y, colors[color]);
 }
@@ -229,7 +219,7 @@ void  quit(void)
 
 	result = writeYesNo("Confirm", quit_message, 1);
 	
-	if(result == TRUE)
+	if(result == true)
 	{
 		writeStatusBar("Goodbye!");
 		exit(EXIT_SUCCESS);
@@ -240,7 +230,7 @@ void  quit(void)
 
 void  writeMenu(void)
 {
-	writePanel(TRUE, FALSE, color_text_borders,
+	writePanel(true, false, color_text_borders,
 		0, 0, size_y - 3, size_x - 1,
 		"CBM-Command Configuration Manager",
 		NULL, NULL);
@@ -270,12 +260,12 @@ void  writeFunctionKeys(void)
 	cclearxy(0, bottom, size_x);
 	cputsxy(0, bottom, "  HELP     QUIT    SAVE");
 
-	revers(TRUE);
+	revers(true);
 	gotoxy(0, bottom); cputc('F'); cputc('1');
 	gotoxy(9, bottom); cputc('F'); cputc('2');
 	gotoxy(17, bottom); cputc('F'); cputc('3');
 
-	revers(FALSE);
+	revers(false);
 }
 
 void  save(void)

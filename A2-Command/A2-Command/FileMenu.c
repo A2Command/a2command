@@ -35,6 +35,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
@@ -70,7 +71,7 @@ void  copyFiles(void)
 #if defined(__C128__) || defined(__C64__)
 	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0, r = 0;
 	unsigned int index = 0, bytes = 0;
-	unsigned RELOAD = FALSE;
+	unsigned RELOAD = false;
 	unsigned char targetFilename[21], type[2], status[40];
 	struct dir_node *currentNode;
 
@@ -180,7 +181,7 @@ void  copyFiles(void)
 								}
 								writeStatusBarf("%s - %d of %d.", currentNode->name, index, currentNode->size);
 							}
-							RELOAD = TRUE;
+							RELOAD = true;
 						}
 						else
 						{
@@ -207,7 +208,7 @@ void  copyFiles(void)
 			}
 		}
 	}
-	if(RELOAD == TRUE)
+	if(RELOAD == true)
 	{
 		reloadPanels();
 	}
@@ -298,7 +299,7 @@ void  makeDirectory(void)
 
 			if(dialogResult == OK_RESULT)
 			{
-				strcpy(command, selectedPanel->header.name);
+				strcpy(command, selectedPanel->path);
 				strcat(command, filename);
 				if(command[strlen(command)-1] != '/')
 				{
@@ -340,7 +341,7 @@ void  deleteFiles(void)
 
 			retrieveScreen();
 
-			if(dialogResult == TRUE)
+			if(dialogResult == true)
 			{
 				writeStatusBarf("Deleting %s", selectedNode->name);
 
@@ -369,7 +370,7 @@ void  quit(void)
 
 	result = writeYesNo("Confirm", quit_message, 1);
 	
-	if(result == TRUE)
+	if(result == true)
 	{
 		writeStatusBar("Goodbye!");
 		exit(EXIT_SUCCESS);
@@ -400,7 +401,7 @@ void  executeSelectedFile(void)
 
 			retrieveScreen();
 	
-			if(result == TRUE)
+			if(result == true)
 			{
 				clrscr();
 				exit(EXIT_SUCCESS);

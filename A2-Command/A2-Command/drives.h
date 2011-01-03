@@ -95,7 +95,7 @@ struct panel_drive
 {
 	unsigned char* selectedEntries;
 	struct drive_status *drive;
-	struct dir_node header;
+	unsigned char path[256];
 	struct dir_node slidingWindow[30];
 	int length;
 	int currentIndex;

@@ -39,10 +39,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <dirent.h>
 #include <peekpoke.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
+#include "A2-disks.h"
 #include "Configuration.h"
 #include "constants.h"
 #include "drives.h"
@@ -67,7 +69,7 @@ struct drive_status drives[9] =
 	{ 16, "" }	// 8
 };
 
-unsigned areDrivesInitialized = FALSE;
+unsigned areDrivesInitialized = false;
 struct panel_drive leftPanelDrive; 
 struct panel_drive rightPanelDrive;
 struct panel_drive *selectedPanel;
@@ -104,7 +106,7 @@ void  initializeDrives(void)
 			rightPanelDrive.slidingWindow[i].type = 0;
 		}
 
-		areDrivesInitialized = TRUE;
+		areDrivesInitialized = true;
 		selectedPanel = &leftPanelDrive;
 	}
 }
@@ -115,40 +117,37 @@ int  getDriveStatus(
 	return 0;
 }
 
-void  listDrives(enum menus menu)
-{
-	unsigned char *message[] =
-	{
-		{ "Please select a directory." }
-	};
-	unsigned char dirName[81];
-	struct panel_drive *drive;
-
-	if(menu == left)
-	{
-		leftPanelDrive.drive = &(drives[0]);
-		currentLeft = leftPanelDrive.drive->drive;
-		drive = &leftPanelDrive;
-	}
-	else
-	{
-		rightPanelDrive.drive = &(drives[0]);
-		currentRight = rightPanelDrive.drive->drive;
-		drive = &rightPanelDrive;
-	}
-
-	saveScreen();
-	if(drawInputDialog(1, 76, message, "Open Directory", dirName) == OK_RESULT
-		&& strlen(dirName) > 0)
-	{
-			strncpy(drive->header.name, dirName, 16);
-			drive->header.size = 0;
-			drive->header.type = 10;
-			drive->header.index = 0;
-	}
-	retrieveScreen();
-
-}
+//void  listDrives(enum menus menu)
+//{
+//	unsigned char *message[] =
+//	{
+//		{ "Please select a directory." }
+//	};
+//	unsigned char dirName[81];
+//	struct panel_drive *drive;
+//
+//	if(menu == left)
+//	{
+//		leftPanelDrive.drive = &(drives[0]);
+//		currentLeft = leftPanelDrive.drive->drive;
+//		drive = &leftPanelDrive;
+//	}
+//	else
+//	{
+//		rightPanelDrive.drive = &(drives[0]);
+//		currentRight = rightPanelDrive.drive->drive;
+//		drive = &rightPanelDrive;
+//	}
+//
+//	saveScreen();
+//	if(drawInputDialog(1, 76, message, "Open Directory", dirName) == OK_RESULT
+//		&& strlen(dirName) > 0)
+//	{
+//			strncpy(drive->path, dirName, 16);
+//	}
+//	retrieveScreen();
+//
+//}
 
 int  getDirectory(
 	struct panel_drive *drive,
@@ -159,10 +158,10 @@ int  getDirectory(
 //	struct cbm_dirent currentDE;
 	struct dirent *currentDE;
 	DIR *dir = NULL;
-	unsigned char *message[] =
-	{
-		{ "Please select a directory." }
-	};
+	//unsigned char *message[] =
+	//{
+	//	{ "Please select a directory." }
+	//};
 	unsigned char dirName[81];
 	
 
@@ -177,26 +176,26 @@ int  getDirectory(
 		drive->slidingWindow[i].type = 0;
 	}
 
-	saveScreen();
-	if(strlen(drive->header.name) == 0 &&
-		drawInputDialog(1, 76, message, "Open Directory", dirName) == OK_RESULT
-		&& strlen(dirName) > 0)
-	{
-			strncpy(drive->header.name, dirName, 16);
-			drive->header.size = 0;
-			drive->header.type = 10;
-			drive->header.index = 0;
-	}
-	retrieveScreen();
+	//saveScreen();
+	//if(strlen(drive->path) == 0 &&
+	//	drawInputDialog(1, 76, message, "Open Directory", dirName) == OK_RESULT
+	//	&& strlen(dirName) > 0)
+	//{
+	//		strncpy(drive->path, dirName, 16);
+	//		drive->header.size = 0;
+	//		drive->header.type = 10;
+	//		drive->header.index = 0;
+	//}
+	//retrieveScreen();
 	
-	if(strlen(drive->header.name) == 0)
+	if(strlen(drive->path) == 0)
 	{
 		writeStatusBar("Aborting directory operation.");
 		return 0;
 	}
 	else
 	{
-		dir = opendir(drive->header.name);
+		dir = opendir(drive->path);
 		//result = cbm_opendir(dr, dr);
 		if(dir != NULL)
 		{
@@ -208,7 +207,7 @@ int  getDirectory(
 			{
 /*				if(currentDE.type == 10 && counter==0)
 				{
-					strcpy(drive->header.name, currentDE.name);
+					strcpy(drive->path, currentDE.name);
 					drive->header.size = currentDE.size;
 					drive->header.type = currentDE.type;
 					drive->header.index = 0;
@@ -281,19 +280,20 @@ void  displayDirectory(
 		resetSelectedFiles(drive);
 	}
 
-	if(drive->header.name == NULL)
+	if(drive->path == NULL)
 	{
+		selectDrive(drive);
 		getDirectory(drive, 0);
 	}
 
 	if(size_x > 40) w=39;
 	if(drive->position == right) x=w + 1;
 	
-	writePanel(TRUE, FALSE, color_text_borders, x, 1, 21, w, 
-		drive->header.name, NULL, NULL);
+	writePanel(true, false, color_text_borders, x, 1, 21, w, 
+		drive->path, NULL, NULL);
 
 	gotoxy(x+2, 22); cprintf("[%2d]", drive->drive->drive);
-	gotoxy(x + w - 8, 22); cprintf("[%5u]", drive->header.size);
+	//gotoxy(x + w - 8, 22); cprintf("[%5u]", drive->header.size);
 
 	start = drive->displayStartAt;
 
@@ -330,11 +330,11 @@ void  displayDirectory(
 		r = drive->selectedEntries[ii] & bit;
 		if(r != 0)
 		{
-			revers(TRUE);
+			revers(true);
 		}
 		else
 		{
-			revers(FALSE);
+			revers(false);
 		}		
 
 		y = i - start + 2;
@@ -342,7 +342,7 @@ void  displayDirectory(
 		cputsxy(x + 5, y, size);
 		cputsxy(x + 9, y, shortenString(currentNode->name));
 		
-		revers(FALSE);
+		revers(false);
 		
 	}
 	
@@ -356,7 +356,7 @@ void  writeSelectorPosition(struct panel_drive *panel,
 	x = (panel == &leftPanelDrive ? 1 : size_x / 2 + 1);
 	gotoxy(x, y);
 	//textcolor(color_selector);
-	revers(FALSE);
+	revers(false);
 	cputc(character);
 }
 
@@ -533,11 +533,11 @@ void  enterDirectory(struct panel_drive *panel)
 
 	if(isDirectory(panel))
 	{
-		strcpy(command, selectedPanel->header.name);
-		strcat(selectedPanel->header.name, node->name);
-		if(selectedPanel->header.name[strlen(selectedPanel->header.name)-1] != '/')
+		strcpy(command, selectedPanel->path);
+		strcat(selectedPanel->path, node->name);
+		if(selectedPanel->path[strlen(selectedPanel->path)-1] != '/')
 		{
-			strcat(selectedPanel->header.name, "/");
+			strcat(selectedPanel->path, "/");
 		}
 
 		getDirectory(selectedPanel, 0);
@@ -564,7 +564,7 @@ void  leaveDirectory(struct panel_drive *panel)
 
 //unsigned  isDiskImage(struct panel_drive *panel)
 //{
-//	unsigned result = FALSE;
+//	unsigned result = false;
 //	unsigned char name[17];
 //	struct dir_node *currentDirNode = NULL;
 //
@@ -581,11 +581,11 @@ void  leaveDirectory(struct panel_drive *panel)
 //			|| strstr(name, ".dnp") > 0
 //		)
 //		{
-//			result = TRUE;
+//			result = true;
 //		}
 //		else
 //		{
-//			result = FALSE;
+//			result = false;
 //		}
 //	}
 //
@@ -594,7 +594,7 @@ void  leaveDirectory(struct panel_drive *panel)
 
 unsigned  isDirectory(struct panel_drive *panel)
 {
-	unsigned result = FALSE;
+	unsigned result = false;
 	struct dir_node *currentDirNode = NULL;
 
 	currentDirNode = getSelectedNode(panel);
@@ -603,11 +603,11 @@ unsigned  isDirectory(struct panel_drive *panel)
 	{
 		if(currentDirNode->type == 0x0F)
 		{
-			result = TRUE;
+			result = true;
 		}
 		else
 		{
-			result = FALSE;
+			result = false;
 		}
 	}
 
@@ -660,7 +660,7 @@ void  selectAllFiles(struct panel_drive *panel,
 		for(;i< panel->length / 8 + 1; ++i)
 		{
 			panel->selectedEntries[i] = 
-				(select == TRUE ? 0xFF : 0x00);
+				(select == true ? 0xFF : 0x00);
 		}
 	}
 

@@ -35,45 +35,14 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
-#include <conio.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifndef _A2_DISKS_H
+#define _A2_DISKS_H
 
-#include "constants.h"
 #include "drives.h"
-#include "globals.h"
-#include "input.h"
-#include "menus.h"
-#include "screen.h"
 
+unsigned char _driveCount;
+unsigned char* _drives;
 
-void  togglePanels(void)
-{
-	if(arePanelsOn)
-	{
-		setupScreen();
-		writeMenuBar();
-		arePanelsOn = false;
-	}
-	else
-	{
-		retrieveScreen();
-		displayPanels();
-		arePanelsOn = true;
-	}
-}
+void selectDrive(struct panel_drive *panel);
 
-void  displayPanels(void)
-{
-	if(leftPanelDrive.drive != NULL)
-	{
-		rereadDrivePanel(left);
-	}
-	if(rightPanelDrive.drive != NULL)
-	{
-		rereadDrivePanel(right);
-	}
-}
-
+#endif

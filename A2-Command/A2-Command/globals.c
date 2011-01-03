@@ -34,6 +34,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
+#include <stdbool.h>
 #include <string.h>
 #include <conio.h>
 
@@ -46,7 +47,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 unsigned char size_x;
 unsigned char size_y;
-unsigned arePanelsOn = TRUE;
+unsigned arePanelsOn = true;
 unsigned char buffer[41];
 
 unsigned char startupDevice = 8;

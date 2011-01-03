@@ -35,6 +35,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
@@ -50,193 +51,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 unsigned char currentMenuX;
 unsigned char currentMenuLine;
 
-//void  writeMenu(enum menus menu)
-//{
-//	unsigned char x;
-//
-//	if(menu == left)
-//	{
-//		x = size_x * LEFT_MENU_X / 100;
-//		currentMenuLine = 0;
-//		drawDriveMenu(x);
-//		handleDriveMenu(left);
-//	}
-//	else if(menu == right)
-//	{
-//		x = RIGHT_MENU_X * size_x / 100;
-//		currentMenuLine = 0;
-//		drawDriveMenu(x);
-//		handleDriveMenu(right);
-//	}
-//	else if(menu == file)
-//	{
-//		x = FILE_MENU_X * size_x / 100;
-//		currentMenuLine = 0;
-//		drawFileMenu(x);
-//		handleFileMenu();
-//	}
-//	else if(menu == command)
-//	{
-//		x = COMMAND_MENU_X * size_x / 100;
-//		currentMenuLine = 0;
-//		drawCommandMenu(x);
-//		handleCommandMenu();
-//	}
-//	else if(menu == options)
-//	{
-//		x = OPTIONS_MENU_X * size_x / 100;
-//		currentMenuLine = 0;
-//		drawOptionsMenu(x);
-//		handleOptionMenu();
-//	}	
-//}
-//
-//void  drawFileMenu(unsigned char x)
-//{
-//	int i = 0;
-//	unsigned char oldColor;
-//	//unsigned char buffer[79];
-//	
-//	initFileMenu();
-//	
-//	//revers(TRUE);
-//	oldColor = //textcolor(color_text_menus);
-//
-//	drawMenu(x,
-//		FILE_MENU_WIDTH, 
-//		FILE_MENU_COUNT, 
-//		FILE_MENU_LABELS,
-//		FILE_MENU_KEYS);
-//
-//	//revers(FALSE);
-//	//textcolor(oldColor);
-//}
-//
-//void  drawDriveMenu(unsigned char x)
-//{
-//	int i = 0;
-//	unsigned char oldColor;
-//	//unsigned char buffer[79];
-//	
-//	initDriveMenu();
-//	
-//	//revers(TRUE);
-//	oldColor = //textcolor(color_text_menus);
-//
-//	drawMenu(x,
-//		DRIVE_MENU_WIDTH, 
-//		DRIVE_MENU_COUNT, 
-//		DRIVE_MENU_LABELS,
-//		DRIVE_MENU_KEYS);
-//
-//	//revers(FALSE);
-//	//textcolor(oldColor);
-//}
-//
-//
-//void  drawCommandMenu(unsigned char x)
-//{
-//	int i = 0;
-//	unsigned char oldColor;
-//	//unsigned char buffer[79];
-//	
-//	initCommandMenu();
-//	
-//	//revers(TRUE);
-//	oldColor = //textcolor(color_text_menus);
-//
-//	drawMenu(x,
-//		COMMAND_MENU_WIDTH, 
-//		COMMAND_MENU_COUNT, 
-//		COMMAND_MENU_LABELS,
-//		COMMAND_MENU_KEYS);
-//
-//	//revers(FALSE);
-//	//textcolor(oldColor);
-//}
-//
-//void  drawOptionsMenu(unsigned char x)
-//{
-//	int i = 0;
-//	unsigned char oldColor;
-//	//unsigned char buffer[79];
-//
-//	initOptionMenu();
-//	
-//	//revers(TRUE);
-//	oldColor = //textcolor(color_text_menus);
-//
-//	drawMenu(x,
-//		OPTION_MENU_WIDTH, 
-//		OPTION_MENU_COUNT, 
-//		OPTION_MENU_LABELS,
-//		OPTION_MENU_KEYS);
-//
-//	//revers(FALSE);
-//	//textcolor(oldColor);
-//}
-//
-//void  drawMenu(
-//	unsigned char x,
-//	unsigned char width, 
-//	unsigned char count, 
-//	char* labels[],
-//	unsigned char keys[])
-//{
-//	unsigned int i=0, j=0;
-//	const unsigned char offset = 0x80;
-//	//unsigned test;
-//
-//	currentMenuX = x;
-//	//currentMenuLine = 0;
-//
-//	saveScreen();
-//
-//	drawBox(x, 1, width + 1, 
-//		count + 1, color_text_borders, FALSE);
-//
-//	for(i=0; i < count; ++i)
-//	{
-//		drawMenuLine(
-//			(i==currentMenuLine), 
-//			keys[i], labels[i], 
-//			x + 1, i + 2);
-//	}
-//}
-//
-//void  drawMenuLine(
-//	unsigned reverse, 
-//	unsigned char key, 
-//	char* label, 
-//	unsigned char x, 
-//	unsigned char y)
-//{
-//	int j;
-//	const unsigned char offset = 0x80;
-//	unsigned test;
-//	revers(reverse);
-//
-//	for(j=0; j<strlen(label); j++)
-//	{
-//		test = 
-//			(unsigned char)(key + offset) == 
-//			(unsigned char)(label[j]);
-//
-//		if(test)
-//		{
-//			//textcolor(color_text_highlight);
-//		}
-//
-//		gotoxy(x + j, y);
-//		cputc(label[j]);
-//
-//		if(test)
-//		{
-//			//textcolor(color_text_menus);
-//		}
-//	}
-//}
-
 // Writes the menu bar at the top of the screen
 // which is scaled to the current screen size.
 void writeMenuBar(void)
@@ -248,7 +62,7 @@ void writeMenuBar(void)
 	cclearxy(0, bottom, size_x);
 	cputsxy(0, bottom, "  HELP     QUIT    SELECT   REFRESH   COPY    RENAME    MAKE DIRECTORY    DELETE");
 
-	revers(TRUE);
+	revers(true);
 	gotoxy(0, bottom); cputc('1');
 	gotoxy(10, bottom); cputc('2');
 	gotoxy(18, bottom); cputc('3');
@@ -258,6 +72,6 @@ void writeMenuBar(void)
 	gotoxy(55, bottom); cputc('7');
 	gotoxy(73, bottom); cputc('8');
 
-	revers(FALSE);
+	revers(false);
 }
 

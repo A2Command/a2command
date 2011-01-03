@@ -35,6 +35,7 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -42,11 +43,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <peekpoke.h>
 #include <apple2enh.h>
 
+#include "A2-disks.h"
 #include "Configuration.h"
 #include "constants.h"
 #include "drives.h"
 #include "AssemblerMethods.h"
 #include "globals.h";
+#include "globalInput.h";
 #include "menus.h";
 #include "screen.h";
 #include "input.h";
@@ -84,13 +87,17 @@ int main(void)
 	// to the screen.
 	writeMenuBar();
 
+	// TEMPORARY: Have the user select
+	// the drive to start with.
+	selectDrive(selectedPanel);
+
 	// Reads the directory of the 
 	// default drive and displays
 	// it in the left panel.
 	rereadSelectedPanel();
 
 	// Main Loop
-	while(TRUE)
+	while(true)
 	{
 		// Reads the keyboard
 		// and exits the application

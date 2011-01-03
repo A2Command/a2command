@@ -20,6 +20,7 @@ CONFIG_SOURCES = \
 SOURCES	= \
 	AssemblerMethods.c \
 	A2-Command.c \
+	A2-disks.c \
 	CommandMenu.c \
 	Configuration.c \
 	DriveMenu.c \

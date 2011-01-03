@@ -38,10 +38,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _CONSTANTS_H
 #define _CONSTANTS_H
 
-/* System BOOLEAN Values */
-#define TRUE 1
-#define FALSE 0
-
 /* Drive Constants */
 #define SLIDING_WINDOW_SIZE 30		// 30 directory entries are cached
 #define COPY_BUFFER_SIZE	1018	// The data of 4 blocks
@@ -49,16 +45,16 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Keyboad Constants */
 #define KEY_AT				'@'	// @
 
-#define KEY_F1				CH_F1
-#define KEY_F3				CH_F3
-#define KEY_F5				CH_F5
-#define KEY_F7				CH_F7
-#define KEY_F2				CH_F2
-#define KEY_F4				CH_F4
-#define KEY_F6				CH_F6
-#define KEY_F8				CH_F8
-#define KEY_SH_PLUS			CH_F9
-#define KEY_SH_MINUS		CH_F10
+#define KEY_F1				'1'
+#define KEY_F3				'3'
+#define KEY_F5				'5'
+#define KEY_F7				'7'
+#define KEY_F2				'2'
+#define KEY_F4				'4'
+#define KEY_F6				'6'
+#define KEY_F8				'8'
+#define KEY_SH_PLUS			'9'
+#define KEY_SH_MINUS		'0'
 #define KEY_TAB				0x09
 #define KEY_ALT_D			0xC4
 #define KEY_ALT_E			0xC5
