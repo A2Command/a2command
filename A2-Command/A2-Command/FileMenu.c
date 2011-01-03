@@ -71,8 +71,9 @@ void  copyFiles(void)
 	FILE *sourceFile = NULL, *targetFile = NULL;
 	static unsigned char sourcePath[256], targetPath[256];
 	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0, r = 0;
-	unsigned int index = 0, bytes = 0;
+	unsigned int index = 0, bytes = 0, readByte;
 	unsigned RELOAD = false;
+	unsigned long  bytesCopied = 0;
 	static unsigned char targetFilename[21], type[2], status[40];
 	struct dir_node *currentNode;
 
@@ -122,13 +123,19 @@ void  copyFiles(void)
 					targetFile = fopen(targetPath, "wb");
 					if(ferror(targetFile) == 0)
 					{
-						for(index=0; index < currentNode->size; index+=(COPY_BUFFER_SIZE/254))
+						//for(index=0; index < currentNode->size; index+=(COPY_BUFFER_SIZE/254))
+						bytesCopied = 0;
+						while(true)
 						{
-							bytes = fread(fileBuffer, COPY_BUFFER_SIZE, 1, sourceFile);
-							if(bytes == EOF)
+							//bytes = fread(fileBuffer, COPY_BUFFER_SIZE, 1, sourceFile);
+							readByte = fgetc(sourceFile);
+							if(readByte == EOF)
 							{
+								writeStatusBarf("Reached end of %s", currentNode->name);
 								break;
 							}
+
+							fileBuffer[0] = readByte;
 
 							if(kbhit())
 							{
@@ -146,7 +153,7 @@ void  copyFiles(void)
 
 							}
 
-							r = fwrite(fileBuffer, bytes, 1, targetFile);
+							r = fputc(fileBuffer[0], targetFile);
 							if(r == -1)
 							{
 								writeStatusBarf("Problem (%d) writing %s", 
@@ -155,9 +162,19 @@ void  copyFiles(void)
 								waitForEnterEsc();
 								break;
 							}
-							writeStatusBarf("%s - %d of %d.", currentNode->name, index, currentNode->size);
+							else
+							{
+								++bytesCopied;
+							}
+							//writeStatusBarf("%s - %d of %d.", currentNode->name, index, currentNode->size);
+							if(bytesCopied % 100l == 0l)
+							{
+								fflush(targetFile);
+								writeStatusBarf("%s - %u bytes copied.", currentNode->name, (unsigned)bytesCopied);
+							}
 						}
 						RELOAD = true;
+
 					}
 					else
 					{
@@ -172,6 +189,8 @@ void  copyFiles(void)
 						currentNode->name, r); 
 					waitForEnterEsc();
 				}
+				fflush(targetFile);
+				writeStatusBarf("%s - %u bytes copied.", currentNode->name, bytesCopied);
 				fclose(sourceFile);
 				fclose(targetFile);
 			}
