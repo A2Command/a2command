@@ -40,8 +40,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "drives.h"
 
-unsigned char _driveCount;
-unsigned char* _drives;
+extern unsigned char _driveCount;
+extern unsigned char* _drives;
 
 void selectDrive(struct panel_drive *panel);
 

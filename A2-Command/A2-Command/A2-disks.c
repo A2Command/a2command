@@ -43,6 +43,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "input.h"
 #include "globalInput.h"
 
+unsigned char _driveCount;
+unsigned char* _drives;
+
 void selectDrive(struct panel_drive *panel)
 {
 	unsigned char i, key, current;
