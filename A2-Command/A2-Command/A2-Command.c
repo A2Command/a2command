@@ -65,8 +65,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 int main(void)
 {
-	videomode(VIDEOMODE_80COL);
-
 	// Prepares the application
 	initialize();
 

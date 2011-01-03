@@ -71,8 +71,6 @@ unsigned char *colors[] =
 
 unsigned int main(void)
 {
-	videomode(VIDEOMODE_80COL);
-
 	initialize();
 	load();
 	setupScreen();

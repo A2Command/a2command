@@ -56,5 +56,7 @@ unsigned char startupDevice = 8;
 // strings as necessary.
 void initialize(void)
 {
+	videomode(VIDEOMODE_80COL);
+
 	screensize(&size_x, &size_y);
 }
