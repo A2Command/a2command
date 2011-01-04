@@ -43,6 +43,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <peekpoke.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "Configuration.h"
 #include "constants.h"
@@ -70,12 +71,16 @@ void  copyFiles(void)
 {
 	FILE *sourceFile = NULL, *targetFile = NULL;
 	static unsigned char sourcePath[256], targetPath[256];
-	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0, r = 0;
-	unsigned int index = 0, bytes = 0, readByte;
+	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0;
+	unsigned int index = 0, readByte;
+	size_t bytes;
 	unsigned RELOAD = false;
-	unsigned long  bytesCopied = 0;
+	size_t bytesCopied;
+	size_t r;
 	static unsigned char targetFilename[21], type[2], status[40];
 	struct dir_node *currentNode;
+	unsigned long totalBytes = 0;
+	//clock_t timeStart, timeSpent;
 
 	targetPanel = selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive;
 
@@ -88,10 +93,13 @@ void  copyFiles(void)
 		return;
 	}
 
+	//timeStart = time(NULL);
+	//timeStart = clock();
 	for(i=0; i<selectedPanel->length / 8 + 1; ++i)
 	{
 		for(j=0; j<8; ++j)
 		{
+			if(i*8 + j > selectedPanel->length) break;
 			bit = 1 << j;
 			r = selectedPanel->selectedEntries[i] & bit;
 			if(r != 0)
@@ -121,21 +129,12 @@ void  copyFiles(void)
 					sprintf(targetPath, "%s/%s", targetPanel->path, currentNode->name);
 					targetFile = NULL;
 					targetFile = fopen(targetPath, "wb");
-					if(ferror(targetFile) == 0)
+					if(targetFile != NULL && ferror(targetFile) == 0)
 					{
-						//for(index=0; index < currentNode->size; index+=(COPY_BUFFER_SIZE/254))
 						bytesCopied = 0;
 						while(true)
 						{
-							//bytes = fread(fileBuffer, COPY_BUFFER_SIZE, 1, sourceFile);
-							readByte = fgetc(sourceFile);
-							if(readByte == EOF)
-							{
-								writeStatusBarf("Reached end of %s", currentNode->name);
-								break;
-							}
-
-							fileBuffer[0] = readByte;
+							bytes = fread(fileBuffer, 1, sizeof(fileBuffer), sourceFile);
 
 							if(kbhit())
 							{
@@ -153,34 +152,41 @@ void  copyFiles(void)
 
 							}
 
-							r = fputc(fileBuffer[0], targetFile);
-							if(r == -1)
+							if(bytes > 0)
 							{
-								writeStatusBarf("Problem (%d) writing %s", 
-									_oserror, 
-									currentNode->name); 
-								waitForEnterEsc();
+								r = fwrite(fileBuffer, 1, bytes, targetFile);
+								
+								if(r == -1)
+								{
+									writeStatusBarf("Problem (%d) writing %s", 
+										_oserror, 
+										currentNode->name); 
+									waitForEnterEsc();
+									break;
+								}
+								else
+								{
+									fflush(targetFile);
+
+									bytesCopied += bytes;
+									totalBytes += bytes;
+								}
+							}
+
+							////timeSpent = (time(NULL) - timeStart);
+							//timeSpent = (clock() - timeStart)/CLOCKS_PER_SEC;
+							//writeStatusBarf("%u:%02u e.t. %d B/s",
+							//	(unsigned)timeSpent/60u,
+							//	(unsigned)timeSpent%60u,
+							//	(unsigned)((totalBytes +=
+							//		(unsigned long)bytes)/timeSpent));
+
+							if(bytes < sizeof(fileBuffer))
+							{
 								break;
-							}
-							else
-							{
-								++bytesCopied;
-							}
-							//writeStatusBarf("%s - %d of %d.", currentNode->name, index, currentNode->size);
-							if(bytesCopied % 100l == 0l)
-							{
-								fflush(targetFile);
-								writeStatusBarf("%s - %u bytes copied.", currentNode->name, (unsigned)bytesCopied);
 							}
 						}
 						RELOAD = true;
-
-					}
-					else
-					{
-						writeStatusBarf("Cannot open %s for write (%d)", 
-							currentNode->name, r); 
-						waitForEnterEsc();
 					}
 				}
 				else
@@ -189,13 +195,20 @@ void  copyFiles(void)
 						currentNode->name, r); 
 					waitForEnterEsc();
 				}
-				fflush(targetFile);
+				//fflush(targetFile);
 				writeStatusBarf("%s - %u bytes copied.", currentNode->name, bytesCopied);
 				fclose(sourceFile);
 				fclose(targetFile);
 			}
 		}
 	}
+
+	////timeSpent = (time(NULL) - timeStart);
+	//timeSpent = (clock() - timeStart)/CLOCKS_PER_SEC;
+	//writeStatusBarf("%u:%02u e.t. %d B/s",
+	//	(unsigned)timeSpent/60u,
+	//	(unsigned)timeSpent%60u,
+	//	(unsigned)(totalBytes/timeSpent));
 
 	if(RELOAD == true)
 	{
@@ -287,17 +300,13 @@ void  makeDirectory(void)
 
 			if(dialogResult == OK_RESULT)
 			{
-				strcpy(command, selectedPanel->path);
-				strcat(command, filename);
-				if(command[strlen(command)-1] != '/')
-				{
-					strcat(command, "/");
-				}
+				sprintf(command, "%s/%s", selectedPanel->path, filename);
 
 				mkdir(command);
 
 				getDirectory(selectedPanel, 
 					selectedPanel->slidingWindowStartAt);
+
 				displayDirectory(selectedPanel);
 			}
 	}
@@ -314,11 +323,19 @@ void  deleteFiles(void)
 		{ "Are you sure?" }
 	};
 
+	dialogResult = writeYesNo(
+		"Delete",
+		dialogMessage,
+		1);
+
+	if(dialogResult)
 	{
 		for(i=0; i<(selectedPanel->length + (7 - 1)) / 8u; ++i)
 		{
 			for(j=0; j<8; ++j)
 			{
+				if(i*8 + j > selectedPanel->length) break;
+
 				if ((selectedPanel->selectedEntries[i] & (1 << j)) != 0x00
 					&& (k = i*8+j) < selectedPanel->length - 1)
 				{
@@ -353,26 +370,15 @@ void  deleteFiles(void)
 					"File to delete: %s",
 					selectedNode->name);
 
-				dialogResult = writeYesNo(
-					"Delete",
-					dialogMessage,
-					1);
-
 				retrieveScreen();
 				writeCurrentFilename(selectedPanel);
 
-				if(dialogResult)
-				{
-					sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
-					remove(oldName);
-					rereadSelectedPanel();
-				}
+				sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
+				remove(oldName);
 			}
 		}
-		else
-		{
-			rereadSelectedPanel();
-		}
+
+		rereadSelectedPanel();
 	}
 }
 
@@ -426,39 +432,4 @@ void  executeSelectedFile(void)
 
 void  inputCommand(void)
 {
-	enum results dialogResult;
-	struct dir_node *selectedNode = NULL;
-	unsigned char command[77];
-	unsigned char* dialogMessage[] =
-	{
-		{ "Enter Command for drive:" }
-	};
-
-	if(selectedPanel != NULL)
-	{
-		selectedNode = getSelectedNode(selectedPanel);
-		if(selectedNode != NULL)
-		{
-			saveScreen();
-
-			dialogResult = drawInputDialog(
-				1, 
-				size_x - 4,
-				dialogMessage,
-				"Command",
-				command
-				);
-
-			retrieveScreen();
-
-			if(dialogResult == OK_RESULT)
-			{
-				sendCommand(selectedPanel, command);
-
-				waitForEnterEsc();
-
-				rereadSelectedPanel();				
-			}
-		}
-	}
 }

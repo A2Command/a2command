@@ -103,6 +103,5 @@ void selectDrive(struct panel_drive *panel)
 		rereadSelectedPanel();
 	}
 
-	waitForEnterEsc();
 	retrieveScreen();
 }

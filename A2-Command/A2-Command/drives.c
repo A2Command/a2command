@@ -55,6 +55,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "menus.h"
 
 unsigned char drivesBuffer[80];
+unsigned char commandPath[256];
 
 struct drive_status drives[9] =
 {
@@ -154,21 +155,12 @@ int  getDirectory(
 	int slidingWindowStartAt)
 {
 	unsigned int counter=0, read=0;
-	unsigned char result, dr, i;
-//	struct cbm_dirent currentDE;
+	unsigned char result, i;
 	struct dirent *currentDE;
 	DIR *dir = NULL;
-	//unsigned char *message[] =
-	//{
-	//	{ "Please select a directory." }
-	//};
-	unsigned char dirName[81];
-	
 
 	drive->length = 0;
 	drive->slidingWindowStartAt = slidingWindowStartAt;
-
-	dr = drive->drive->drive;
 
 	for(i=0; i<SLIDING_WINDOW_SIZE; ++i)
 	{
@@ -176,18 +168,6 @@ int  getDirectory(
 		drive->slidingWindow[i].type = 0;
 	}
 
-	//saveScreen();
-	//if(strlen(drive->path) == 0 &&
-	//	drawInputDialog(1, 76, message, "Open Directory", dirName) == OK_RESULT
-	//	&& strlen(dirName) > 0)
-	//{
-	//		strncpy(drive->path, dirName, 16);
-	//		drive->header.size = 0;
-	//		drive->header.type = 10;
-	//		drive->header.index = 0;
-	//}
-	//retrieveScreen();
-	
 	if(strlen(drive->path) == 0)
 	{
 		writeStatusBar("Aborting directory operation.");
@@ -196,56 +176,56 @@ int  getDirectory(
 	else
 	{
 		dir = opendir(drive->path);
-		//result = cbm_opendir(dr, dr);
+
 		if(dir != NULL)
 		{
-
 			writeStatusBar("Reading directory...");
 			counter = 0;
 			currentDE = readdir(dir);
-			while(currentDE != NULL)
+			if(strlen(currentDE->d_name) > 0 && currentDE->d_type > 0)
 			{
-/*				if(currentDE.type == 10 && counter==0)
+				while(currentDE != NULL)
 				{
-					strcpy(drive->path, currentDE.name);
-					drive->header.size = currentDE.size;
-					drive->header.type = currentDE.type;
-					drive->header.index = 0;
-				}
-				else*/ 
-				if(counter >= slidingWindowStartAt &&
-					read < SLIDING_WINDOW_SIZE)
-				{
-					++read;
-					i = counter - 1;
-					if(i - slidingWindowStartAt >= 0 && 
-						i - slidingWindowStartAt < SLIDING_WINDOW_SIZE)
+					if(counter >= slidingWindowStartAt &&
+						read <= SLIDING_WINDOW_SIZE)
 					{
-						strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, currentDE->d_name);
-						drive->slidingWindow[i - slidingWindowStartAt].size = currentDE->d_blocks;
-						drive->slidingWindow[i - slidingWindowStartAt].type = currentDE->d_type;
-						drive->slidingWindow[i - slidingWindowStartAt].index = counter;
+						++read;
+						i = counter;
+						if(i - slidingWindowStartAt >= 0 && 
+							i - slidingWindowStartAt <= SLIDING_WINDOW_SIZE)
+						{
+							strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, currentDE->d_name);
+							drive->slidingWindow[i - slidingWindowStartAt].size = currentDE->d_blocks;
+							drive->slidingWindow[i - slidingWindowStartAt].type = currentDE->d_type;
+							drive->slidingWindow[i - slidingWindowStartAt].index = counter;
+						}
 					}
+					++counter;
+					currentDE = readdir(dir);
 				}
-				++counter;
-				currentDE = readdir(dir);
-			}
-			//cbm_closedir(dr);
 
-			drive->length = counter;
-			if(drive->currentIndex >= drive->length)
+				drive->length = counter;
+				if(drive->currentIndex >= drive->length)
+				{
+					drive->currentIndex = drive->length;
+				}
+				writeStatusBarf("Finished reading %u files.", counter);
+			}
+			else
 			{
-				drive->currentIndex = drive->length - 1;
+				writeStatusBar("No entries in directory.");
 			}
 
-			//cbm_open(2,drive->drive->drive,0,"$:'y/%&");
-			//cbm_read(2,buffer,34); // skip unwanted data
-			//cbm_read(2,buffer,2);
-			//drive->header.size = buffer[1]*256 + buffer[0];
-
-			//cbm_close(2);
 			closedir(dir);
-			writeStatusBarf("Finished reading %u files.", counter - 1);
+		}
+		else
+		{
+			sprintf(commandPath, "Could not open %s", drive->path);
+			if(strlen(commandPath) > 76)
+			{
+				commandPath[76] = '\0';
+			}
+			waitForEnterEscf(commandPath);
 		}
 	}
 
@@ -271,14 +251,6 @@ void  displayDirectory(
 	unsigned char i = 0, start=0, ii = 0, mod = 0, bit = 0, r = 0;
 	unsigned char fileType;
 	struct dir_node *currentNode;
-	unsigned char size[4];
-
-	if(drive->drive == NULL)
-	{
-		drive->drive = &(drives[startupDevice - 8]);
-		getDirectory(drive, 0);
-		resetSelectedFiles(drive);
-	}
 
 	if(drive->path == NULL)
 	{
@@ -292,19 +264,16 @@ void  displayDirectory(
 	writePanel(true, false, color_text_borders, x, 1, 21, w, 
 		drive->path, NULL, NULL);
 
-	gotoxy(x+2, 22); cprintf("[%2d]", drive->drive->drive);
-	//gotoxy(x + w - 8, 22); cprintf("[%5u]", drive->header.size);
-
 	start = drive->displayStartAt;
 
-	for(i=start; i<start + 20 && i < drive->length - 1; i++)
+	for(i=start; i<start + 20 && i < drive->length; i++)
 	{
 		currentNode = getSpecificNode(drive, i);
 		if(currentNode == NULL ||
 			currentNode->name == NULL)
 		{
 			if(i == drive->length - 1) break;
-			if(i > start)
+			if(i >= start)
 			{
 				// we are at bottom and scrollable
 				drive->slidingWindowStartAt += 5;
@@ -320,12 +289,9 @@ void  displayDirectory(
 			}
 		}
 
-		shortenSize(size, currentNode->size);
-		fileType = currentNode->type;
-
 		//textcolor(color_text_files);
-		ii =  (currentNode->index - 1) / 8;
-		mod =  (currentNode->index - 1) % 8;
+		ii =  (currentNode->index) / 8;
+		mod =  (currentNode->index) % 8;
 		bit = 1 << mod;
 		r = drive->selectedEntries[ii] & bit;
 		if(r != 0)
@@ -338,9 +304,8 @@ void  displayDirectory(
 		}		
 
 		y = i - start + 2;
-		gotoxy(x + 2, y); cprintf("%2X", fileType);
-		cputsxy(x + 5, y, size);
-		cputsxy(x + 9, y, shortenString(currentNode->name));
+		sprintf(commandPath, "%2X %5u %s", currentNode->type, currentNode->size, currentNode->name);
+		cputsxy(x + 2, y, commandPath);
 		
 		revers(false);
 		
@@ -426,7 +391,7 @@ void  moveSelectorDown(struct panel_drive *panel)
 	}
 	else if(lastPage && 
 		(panel->currentIndex - panel->displayStartAt) < offset &&
-		(panel->currentIndex + 2) < panel->length)
+		(panel->currentIndex + 1) < panel->length)
 	{
 		panel->currentIndex++;
 	}
@@ -442,48 +407,14 @@ void  moveSelectorDown(struct panel_drive *panel)
 
 unsigned char  getFileType(unsigned char type)
 {
-	if(type < 7) return "DSPURCD"[type];
-	return 'O';
 }
 
 void  shortenSize(unsigned char* buffer, unsigned int value)
 {
-	if(value < 1000)
-	{
-		sprintf(buffer, "%3d", value);
-	}
-	else
-	{
-		sprintf(buffer, "%2dK", (value + 512)/1024);
-	}
 }
 
 unsigned char*  shortenString(unsigned char* source)
 {
-	const int targetLength = 11;
-	unsigned char buffer[18];
-
-	if(size_x == 40)
-	{
-		if(strlen(source) > targetLength)
-		{
-			strncpy(buffer, source, targetLength - 3);
-			buffer[targetLength - 3] = '.';
-			buffer[targetLength - 2] = '.';
-			buffer[targetLength - 1] = '.';
-			buffer[targetLength] = '\0';
-		}
-		else
-		{
-			return source;
-		}
-	}
-	else
-	{
-		return source;
-	}
-
-	return buffer;
 }
 
 void  selectCurrentFile(void)
@@ -501,8 +432,8 @@ void  selectCurrentFile(void)
 
 			if(currentDirNode != NULL)
 			{	
-				index = (currentDirNode->index - 1) / 8;
-				mod = (currentDirNode->index - 1) % 8;
+				index = (currentDirNode->index) / 8;
+				mod = (currentDirNode->index) % 8;
 				bit = 1 << mod;
 				nbit = (0xFF ^ bit);
 				o = selectedPanel->selectedEntries[index];
@@ -526,19 +457,15 @@ void  selectCurrentFile(void)
 
 void  enterDirectory(struct panel_drive *panel)
 {
-	unsigned char command[40];
 	struct dir_node *node;
 
 	node = getSelectedNode(panel);
 
 	if(isDirectory(panel))
 	{
-		strcpy(command, selectedPanel->path);
-		strcat(selectedPanel->path, node->name);
-		if(selectedPanel->path[strlen(selectedPanel->path)-1] != '/')
-		{
-			strcat(selectedPanel->path, "/");
-		}
+		sprintf(commandPath, "%s/%s", panel->path, node->name);
+
+		strcpy(panel->path, commandPath);
 
 		getDirectory(selectedPanel, 0);
 
@@ -550,13 +477,9 @@ void  enterDirectory(struct panel_drive *panel)
 
 void  leaveDirectory(struct panel_drive *panel)
 {
-	unsigned char buffer[4];
-	buffer[0] = 'c';
-	buffer[1] = 'd';
-	buffer[2] = 95;
-	buffer[3] = '\0';
+	unsigned char* position = strrchr(panel->path, '/');
+	panel->path[strlen(panel->path) - strlen(position)] = '\0';
 
-	sendCommand(panel, buffer);
 	panel->currentIndex = 0;
 	panel->displayStartAt = 0;
 	rereadSelectedPanel();

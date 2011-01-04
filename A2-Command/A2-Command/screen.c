@@ -298,22 +298,24 @@ enum results  drawDialog(
 		if(key == CH_ENTER) break;
 		if(key == CH_ESC 
 			) break;
-		if(key == 'o' && button & OK) break;
-		if(key == 'y' && button & YES) break;
-		if(key == 'c' && button & CANCEL) break;
-		if(key == 'n' && button & NO) break;
+		if((key == 'o'|| key == 'O') && button & OK) break;
+		if((key == 'y'|| key == 'Y') && button & YES) break;
+		if((key == 'c'|| key == 'C') && button & CANCEL) break;
+		if((key == 'n'|| key == 'N') && button & NO) break;
 	}
 
 	switch((int)key)
 	{
 	case CH_ESC: 
-	case (int)'n': 
-	case (int)'c':
+	case (int)'n': case (int)'N':
+	case (int)'c': case (int)'C':
 		if(button & NO) return NO_RESULT;
 		if(button & CANCEL) return CANCEL_RESULT;
 		break;
 
-	case CH_ENTER: case (int)'y': case (int)'o':
+	case CH_ENTER: 
+	case (int)'y': case (int)'Y':
+	case (int)'o': case (int)'O':
 		if(button & YES) return YES_RESULT;
 		if(button & OK) return OK_RESULT;
 		break;
