@@ -160,6 +160,11 @@ int  getDirectory(
 							drive->slidingWindow[i - slidingWindowStartAt].size = currentDE->d_blocks;
 							drive->slidingWindow[i - slidingWindowStartAt].type = currentDE->d_type;
 							drive->slidingWindow[i - slidingWindowStartAt].index = counter;
+							drive->slidingWindow[i - slidingWindowStartAt].date.day = currentDE->d_cdate.day;
+							drive->slidingWindow[i - slidingWindowStartAt].date.mon = currentDE->d_cdate.mon;
+							drive->slidingWindow[i - slidingWindowStartAt].date.year = currentDE->d_cdate.year;
+							drive->slidingWindow[i - slidingWindowStartAt].time.hour = currentDE->d_ctime.hour;
+							drive->slidingWindow[i - slidingWindowStartAt].time.min = currentDE->d_ctime.min;
 						}
 					}
 					++counter;
@@ -212,6 +217,7 @@ void  displayDirectory(
 	unsigned char w = 19, x = 0, y = 0;
 	unsigned char i = 0, start=0, ii = 0, mod = 0, bit = 0, r = 0;
 	unsigned char fileType;
+	unsigned char date[9];
 	struct dir_node *currentNode;
 
 	if(drive->path == NULL)
@@ -266,7 +272,16 @@ void  displayDirectory(
 		}		
 
 		y = i - start + 2;
-		sprintf(commandPath, "%2X %5u %s", currentNode->type, currentNode->size, currentNode->name);
+		sprintf(date, "%u-%u-%u", currentNode->date.year,
+			currentNode->date.mon,
+			currentNode->date.day);
+
+		sprintf(commandPath, "%5u %-17s %8s  %2X"
+			, currentNode->size
+			, currentNode->name
+			, date
+			, currentNode->type
+			);
 		cputsxy(x + 2, y, commandPath);
 		
 		revers(false);

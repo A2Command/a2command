@@ -70,6 +70,15 @@ struct dir_node
 	unsigned char type;
 	unsigned int size;
 	int index;
+	struct {
+        unsigned day  :5;
+        unsigned mon  :4;
+        unsigned year :7;
+    }             date;
+    struct {
+        unsigned char min;
+        unsigned char hour;
+    }             time;
 };
 
 /* Panel Drive
