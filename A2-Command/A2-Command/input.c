@@ -46,6 +46,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "input.h"
 #include "menus.h"
 #include "screen.h"
+#include "Viewer.h"
 
 void  readKeyboard(void)
 {
@@ -56,6 +57,9 @@ void  readKeyboard(void)
 
 	switch((int)key)
 	{
+	case HK_VIEW_FILE:
+		viewFile(
+		break;
 	case KEY_F4:
 		rereadSelectedPanel();
 		break;

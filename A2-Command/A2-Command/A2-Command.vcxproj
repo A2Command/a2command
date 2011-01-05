@@ -193,6 +193,7 @@
     <ClCompile Include="menus.c" />
     <ClCompile Include="OptionMenu.c" />
     <ClCompile Include="screen.c" />
+    <ClCompile Include="Viewer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="A2-disks.h" />
@@ -208,6 +209,7 @@
     <ClInclude Include="menus.h" />
     <ClInclude Include="PlatformSpecific.h" />
     <ClInclude Include="screen.h" />
+    <ClInclude Include="Viewer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

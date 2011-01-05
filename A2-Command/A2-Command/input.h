@@ -56,6 +56,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HK_PAGE_UP			'['
 #define HK_PAGE_DOWN		']'
 #define HK_SELECT			32
+#define HK_VIEW_FILE		CH_ENTER
 
 
 

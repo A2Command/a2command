@@ -31,7 +31,8 @@ SOURCES	= \
 	menus.c \
 	OptionMenu.c \
 	screen.c  \
-	globalInput.c
+	globalInput.c \
+	Viewer.c
 
 ASMFILES= \
 #	res/common/driveRoutines.s \
