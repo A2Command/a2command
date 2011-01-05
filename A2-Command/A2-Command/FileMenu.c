@@ -119,8 +119,6 @@ void  copyFiles(void)
 					}
 				}
 
-				writeStatusBarf("Selected %s", currentNode->name);
-
 				sprintf(sourcePath, "%s/%s", selectedPanel->path, currentNode->name);
 				sourceFile = NULL;
 				sourceFile = fopen(sourcePath, "rb");
@@ -181,6 +179,9 @@ void  copyFiles(void)
 							//	(unsigned)((totalBytes +=
 							//		(unsigned long)bytes)/timeSpent));
 
+							writeStatusBarf("%-17s - %8u bytes copied",
+								currentNode->name, bytesCopied);
+
 							if(bytes < sizeof(fileBuffer))
 							{
 								break;
@@ -195,8 +196,8 @@ void  copyFiles(void)
 						currentNode->name, r); 
 					waitForEnterEsc();
 				}
-				//fflush(targetFile);
-				writeStatusBarf("%s - %u bytes copied.", currentNode->name, bytesCopied);
+				writeStatusBarf("%-17s - %8u bytes copied",
+					currentNode->name, bytesCopied);
 				fclose(sourceFile);
 				fclose(targetFile);
 			}
