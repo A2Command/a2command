@@ -323,10 +323,12 @@ void  deleteFiles(void)
 		{ "Are you sure?" }
 	};
 
+	saveScreen();
 	dialogResult = writeYesNo(
 		"Delete",
 		dialogMessage,
 		1);
+	retrieveScreen();
 
 	if(dialogResult)
 	{
@@ -337,7 +339,7 @@ void  deleteFiles(void)
 				if(i*8 + j > selectedPanel->length) break;
 
 				if ((selectedPanel->selectedEntries[i] & (1 << j)) != 0x00
-					&& (k = i*8+j) < selectedPanel->length - 1)
+					&& (k = i*8+j) < selectedPanel->length )
 				{
 					isBatch = true;
 

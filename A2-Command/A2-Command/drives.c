@@ -112,44 +112,6 @@ void  initializeDrives(void)
 	}
 }
 
-int  getDriveStatus(
-	struct drive_status *drive)
-{
-	return 0;
-}
-
-//void  listDrives(enum menus menu)
-//{
-//	unsigned char *message[] =
-//	{
-//		{ "Please select a directory." }
-//	};
-//	unsigned char dirName[81];
-//	struct panel_drive *drive;
-//
-//	if(menu == left)
-//	{
-//		leftPanelDrive.drive = &(drives[0]);
-//		currentLeft = leftPanelDrive.drive->drive;
-//		drive = &leftPanelDrive;
-//	}
-//	else
-//	{
-//		rightPanelDrive.drive = &(drives[0]);
-//		currentRight = rightPanelDrive.drive->drive;
-//		drive = &rightPanelDrive;
-//	}
-//
-//	saveScreen();
-//	if(drawInputDialog(1, 76, message, "Open Directory", dirName) == OK_RESULT
-//		&& strlen(dirName) > 0)
-//	{
-//			strncpy(drive->path, dirName, 16);
-//	}
-//	retrieveScreen();
-//
-//}
-
 int  getDirectory(
 	struct panel_drive *drive,
 	int slidingWindowStartAt)
@@ -405,18 +367,6 @@ void  moveSelectorDown(struct panel_drive *panel)
 	writeCurrentFilename(panel);
 }
 
-unsigned char  getFileType(unsigned char type)
-{
-}
-
-void  shortenSize(unsigned char* buffer, unsigned int value)
-{
-}
-
-unsigned char*  shortenString(unsigned char* source)
-{
-}
-
 void  selectCurrentFile(void)
 {
 	unsigned char index = 0, bit = 0, mod = 0, 
@@ -657,7 +607,7 @@ void  moveBottom(struct panel_drive *panel)
 {
 	if(panel != NULL)
 	{
-		panel->currentIndex = panel->length - 2;
+		panel->currentIndex = panel->length - 1;
 
 		if(panel->length > 30)
 		{

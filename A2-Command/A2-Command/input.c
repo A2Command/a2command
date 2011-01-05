@@ -47,6 +47,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "menus.h"
 #include "screen.h"
 #include "Viewer.h"
+#include "A2-disks.h"
 
 void  readKeyboard(void)
 {
@@ -65,6 +66,9 @@ void  readKeyboard(void)
 		rereadSelectedPanel();
 		break;
 	case KEY_F3:
+		selectDrive(selectedPanel);
+		rereadSelectedPanel();
+		break;
 	case HK_SELECT:
 		selectCurrentFile();
 		break;

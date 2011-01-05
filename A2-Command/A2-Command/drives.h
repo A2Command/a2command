@@ -114,15 +114,7 @@ extern struct panel_drive *selectedPanel;	// The current panel
 /* METHODS */
 void  initializeDrives(void);
 
-int  getDriveStatus(
-	struct drive_status *drive);
-
 void  listDrives(enum menus menu);
-
-extern unsigned char  checkDrive(
-	unsigned char length,
-	unsigned char* file,
-	unsigned char drive);
 
 int  getDirectory(
 	struct panel_drive *drive,
@@ -130,16 +122,6 @@ int  getDirectory(
 
 void  displayDirectory(
 	struct panel_drive *drive);
-
-unsigned char  getFileType(
-	unsigned char type);
-
-void  shortenSize(
-	unsigned char* buffer, 
-	unsigned int value);
-
-unsigned char*  shortenString(
-	unsigned char* source);
 
 void  writeSelectorPosition(
 	struct panel_drive *panel,
