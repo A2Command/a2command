@@ -38,6 +38,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _MENUS_H
 #define _MENUS_H
 
+#include "constants.h"
+
 // Menu Globals
 extern unsigned char currentMenuX;
 extern unsigned char currentMenuLine;
@@ -78,4 +80,6 @@ void  drawOptionsMenu(unsigned char);
 void  drawMenu(unsigned char, unsigned char, unsigned char, char*[], unsigned char[]);
 void  drawMenuLine(unsigned, unsigned char, char*, unsigned char, unsigned char);
 void writeMenuBar(void);
+
+extern unsigned char fileBuffer[COPY_BUFFER_SIZE];
 #endif

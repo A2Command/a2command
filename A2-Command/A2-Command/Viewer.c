@@ -36,30 +36,23 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
 #include <stdbool.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
-#ifdef __CBM__
-#include <cbm.h>
-#endif
 #include <string.h>
 
 #include "Viewer.h"
 #include "Configuration.h"
-//#include "constants.h"
 #include "globalInput.h"
 #include "globals.h"
-//#include "drives.h"
 #include "screen.h"
 #include "menus.h"
 
 #define BUFFERSIZE (sizeof fileBuffer)
 
 void viewFile(
-	unsigned char drive,
 	const char *filename)
 {
-//#ifndef __VIC20__
 	char file[22];
 	char line[81];
 	char word[81];
@@ -69,26 +62,19 @@ void viewFile(
 	unsigned char
 		counter = 0,
 		currentLine = 1;
+	FILE *fileStream;
 
-#ifdef __CBM__
-	//strcpy(file, filename);
-	//strcat(file, ",s,r");
-	sprintf(file, ":%s", filename);
-
-	cbm_open(15,drive,15,"");
-
+	fileStream = fopen(filename, "rb");
 	saveScreen();
 
-	if(cbm_open(2,drive,2,file) == 0)
+	if(file != NULL)
 	{
-		(void)textcolor(color_text_other);
 		clrscr();
 
 		memset(word, line[0] = '\0', sizeof word);
 		do
 		{
-			//memset(fileBuffer, '\0', BUFFERSIZE);
-			r = cbm_read(2, fileBuffer, BUFFERSIZE);
+			r = fread(fileBuffer, 1, BUFFERSIZE, fileStream);
 
 			for(i=0; i<r; i++)
 			{
@@ -135,14 +121,11 @@ void viewFile(
 					if(++currentLine == size_y)
 					{
 						writeStatusBar(
-#if size_x > 22
-							"RETURN to cont., ESC/"
-#endif
-							"STOP to end");
-						if(waitForEnterEsc() == CH_STOP)
+							"RETURN to continue, ESC to stop");
+						if(waitForEnterEsc() == CH_ESC)
 						{
 							retrieveScreen();
-							cbm_close(2); cbm_close(15);
+							fclose(fileStream);
 							return;
 						}
 						else
@@ -161,24 +144,10 @@ void viewFile(
 		cputsxy(0, currentLine, line);
 		cputs(word);
 
-#if size_x < 40
-		writeStatusBar("Done reading");
-		waitForEnterEsc();
-#else
 		waitForEnterEscf("Done reading :%s", filename);
-#endif
-	}
-	else
-	{
-		r = cbm_read(15, buffer, (sizeof buffer) - 1);
-		buffer[r < 0 ? 0 : r] = '\0';
-		writeStatusBar(buffer);
-		waitForEnterEsc();
 	}
 
 	retrieveScreen();
 
-	cbm_close(2); cbm_close(15);
-#endif
-//#endif
+	fclose(fileStream);
 }

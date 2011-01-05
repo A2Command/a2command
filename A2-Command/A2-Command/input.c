@@ -51,14 +51,15 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void  readKeyboard(void)
 {
 	unsigned char key;
-//	unsigned char buffer[39];
+	static unsigned char buffer[129];
 
 	key = cgetc();
 
 	switch((int)key)
 	{
 	case HK_VIEW_FILE:
-		viewFile(
+		sprintf(buffer, "%s/%s", selectedPanel->path, getSelectedNode(selectedPanel)->name);
+		viewFile(buffer);
 		break;
 	case KEY_F4:
 		rereadSelectedPanel();
