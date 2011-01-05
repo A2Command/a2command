@@ -100,7 +100,6 @@ void selectDrive(struct panel_drive *panel)
 		panel->drive->drive = current;		
 
 		selectedPanel = panel;
-		//rereadSelectedPanel();
 	}
 
 	retrieveScreen();

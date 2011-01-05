@@ -197,9 +197,6 @@ int  getDirectory(
 	}
 
 	return counter;
-//#else
-//	return 0;
-//#endif
 }
 
 void  resetSelectedFiles(struct panel_drive *panel)
@@ -241,7 +238,7 @@ void  displayDirectory(
 			currentNode->name == NULL)
 		{
 			if(i == drive->length - 1) break;
-			if(i >= start)
+			if(i >= start && drive->slidingWindowStartAt <= start)
 			{
 				// we are at bottom and scrollable
 				drive->slidingWindowStartAt += 5;
@@ -257,7 +254,6 @@ void  displayDirectory(
 			}
 		}
 
-		//textcolor(color_text_files);
 		ii =  (currentNode->index) / 8;
 		mod =  (currentNode->index) % 8;
 		bit = 1 << mod;
@@ -285,9 +281,7 @@ void  displayDirectory(
 		cputsxy(x + 2, y, commandPath);
 		
 		revers(false);
-		
 	}
-	
 }
 
 void  writeSelectorPosition(struct panel_drive *panel,
@@ -624,9 +618,9 @@ void  moveBottom(struct panel_drive *panel)
 	{
 		panel->currentIndex = panel->length - 1;
 
-		if(panel->length > 30)
+		if(panel->length > SLIDING_WINDOW_SIZE)
 		{
-			panel->slidingWindowStartAt = panel->length - 30;
+			panel->slidingWindowStartAt = panel->length - SLIDING_WINDOW_SIZE;
 		}
 		else
 		{
@@ -635,7 +629,7 @@ void  moveBottom(struct panel_drive *panel)
 
 		if(panel->length > 21)
 		{
-			panel->displayStartAt = panel->length - 21;
+			panel->displayStartAt = panel->length - 20;
 		}
 		else
 		{

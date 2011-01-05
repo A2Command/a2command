@@ -65,18 +65,26 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 int main(void)
 {
+	puts("Starting A2Command...");
+
 	// Prepares the application
 	initialize();
+
+	puts("Initialized...");
 
 	// Loads configuration from
 	// drive that the application
 	// was started from.
 	load();
 
+	puts("Configuration loaded...");
+
 	// Initializes the disk drives
 	// which sets up structures for
 	// the disk panels.
 	initializeDrives();
+
+	puts("Drives initialized...");
 
 	// Prepares the screen for use.
 	setupScreen();
