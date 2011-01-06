@@ -214,7 +214,7 @@ void  displayDirectory(
 {
 	unsigned char w = 19, x = 0, y = 0;
 	unsigned char i = 0, start=0, ii = 0, mod = 0, bit = 0, r = 0;
-	unsigned char date[9];
+	unsigned char date[9], slotDrive[7];
 	struct dir_node *currentNode;
 
 	if(drive->path == NULL)
@@ -229,6 +229,8 @@ void  displayDirectory(
 	writePanel(true, false, color_text_borders, x, 1, 21, w, 
 		drive->path, NULL, NULL);
 
+	sprintf(slotDrive, "[S%uD%u]", (_drives[drive->drive->drive] >> 4) & 7, (_drives[drive->drive->drive] >> 7) & 1);
+	cputsxy(x + 3, 22, slotDrive);
 	start = drive->displayStartAt;
 
 	for(i=start; i<start + 20 && i < drive->length; i++)

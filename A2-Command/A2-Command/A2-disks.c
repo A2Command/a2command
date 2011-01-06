@@ -38,6 +38,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <conio.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "A2-disks.h"
 #include "screen.h"
@@ -66,11 +67,11 @@ void selectDrive(struct panel_drive *panel)
 	{
 		if(rootdir(_drives[i], buffer) > -1)
 		{
-			sprintf(temp, "%2u - %s", i, buffer);
+			sprintf(temp, "S%uD%u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
 		}
 		else
 		{
-			sprintf(temp, "%2u - ERROR", i);
+			sprintf(temp, "S%uD%u - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1, i);
 		}
 
 		cputsxy(8, 9 + i, temp); 
@@ -108,17 +109,14 @@ void selectDrive(struct panel_drive *panel)
 
 	if(key == CH_ENTER)
 	{
-		if(rootdir(_drives[current], panel->path) > -1)
+		panel->drive->drive = current;		
+		if(rootdir(_drives[current], panel->path) == -1)
 		{
-			panel->drive->drive = current;		
-	
-			selectedPanel = panel;
+			strcpy(panel->path, "");
+		}
 
-			return;
-		}
-		else
-		{
-			selectDrive(panel);
-		}
+		selectedPanel = panel;
+
+		return;
 	}
 }
