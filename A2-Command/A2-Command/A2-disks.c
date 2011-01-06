@@ -64,9 +64,15 @@ void selectDrive(struct panel_drive *panel)
 
 	for(i=0; i<_driveCount; ++i)
 	{
-		rootdir(_drives[i], buffer);
+		if(rootdir(_drives[i], buffer) > -1)
+		{
+			sprintf(temp, "%2u - %s", i, buffer);
+		}
+		else
+		{
+			sprintf(temp, "%2u - ERROR", i);
+		}
 
-		sprintf(temp, "%2u - %s", i, buffer);
 		cputsxy(8, 9 + i, temp); 
 	}
 
@@ -98,14 +104,21 @@ void selectDrive(struct panel_drive *panel)
 		}
 	}
 
+	retrieveScreen();
+
 	if(key == CH_ENTER)
 	{
-		rootdir(_drives[current], panel->path);
+		if(rootdir(_drives[current], panel->path) > -1)
+		{
+			panel->drive->drive = current;		
+	
+			selectedPanel = panel;
 
-		panel->drive->drive = current;		
-
-		selectedPanel = panel;
+			return;
+		}
+		else
+		{
+			selectDrive(panel);
+		}
 	}
-
-	retrieveScreen();
 }

@@ -167,9 +167,9 @@ struct dir_node*  getSpecificNode(
 	struct panel_drive *panel, 
 	int index);
 
-unsigned char  sendCommand(
-	struct panel_drive *panel,
-	unsigned char *command);
+//unsigned char  sendCommand(
+//	struct panel_drive *panel,
+//	unsigned char *command);
 
 void  resetSelectedFiles(
 	struct panel_drive *panel);

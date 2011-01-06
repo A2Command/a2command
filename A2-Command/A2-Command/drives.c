@@ -117,7 +117,7 @@ int  getDirectory(
 	int slidingWindowStartAt)
 {
 	unsigned int counter=0, read=0;
-	unsigned char result, i;
+	unsigned char i;
 	struct dirent *currentDE;
 	DIR *dir = NULL;
 
@@ -214,7 +214,6 @@ void  displayDirectory(
 {
 	unsigned char w = 19, x = 0, y = 0;
 	unsigned char i = 0, start=0, ii = 0, mod = 0, bit = 0, r = 0;
-	unsigned char fileType;
 	unsigned char date[9];
 	struct dir_node *currentNode;
 
@@ -527,12 +526,12 @@ struct dir_node*  getSpecificNode(
 	return currentDirNode;
 }
 
-unsigned char  sendCommand(
-	struct panel_drive *panel,
-	unsigned char *command)
-{
-	return 0;
-}
+//unsigned char  sendCommand(
+//	struct panel_drive *panel,
+//	unsigned char *command)
+//{
+//	return 0;
+//}
 
 void  selectAllFiles(struct panel_drive *panel, 
 	unsigned select)

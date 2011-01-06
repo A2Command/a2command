@@ -70,16 +70,18 @@ struct panel_drive *targetPanel = NULL, *tempPanel = NULL;
 void  copyFiles(void)
 {
 	FILE *sourceFile = NULL, *targetFile = NULL;
+	unsigned numSelectors = (selectedPanel->length + 7) / 8u;
 	static unsigned char sourcePath[256], targetPath[256];
 	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0;
-	unsigned int index = 0, readByte;
+	unsigned int index = 0;
 	size_t bytes;
 	unsigned RELOAD = false;
 	size_t bytesCopied;
 	size_t r;
-	static unsigned char targetFilename[21], type[2], status[40];
+	//static unsigned char targetFilename[21], type[2], status[40];
 	struct dir_node *currentNode;
 	unsigned long totalBytes = 0;
+	bool multipleSelected;
 	//clock_t timeStart, timeSpent;
 
 	targetPanel = selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive;
@@ -93,7 +95,17 @@ void  copyFiles(void)
 		return;
 	}
 
-	//timeStart = time(NULL);
+	for(i=0; i<numSelectors; ++i)
+	{
+		if(selectedPanel->selectedEntries[i] != 0x00) multipleSelected = true;
+	}
+	if(!multipleSelected)
+	{
+		selectCurrentFile();
+		writeSelectorPosition(selectedPanel, '>');
+	}
+
+//timeStart = time(NULL);
 	//timeStart = clock();
 	for(i=0; i<selectedPanel->length / 8 + 1; ++i)
 	{
