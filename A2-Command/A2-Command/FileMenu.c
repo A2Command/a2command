@@ -53,6 +53,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "input.h"
 #include "menus.h"
 #include "screen.h"
+#include "Viewer.h"
 
 unsigned char *quit_message[1] =
 {
@@ -62,7 +63,8 @@ unsigned char *quit_message[1] =
 
 void  writeHelpPanel(void)
 {
-	writeStatusBar("See http://a2command.codeplex.com/documentation");
+	//writeStatusBar("See http://a2command.codeplex.com/documentation");
+	viewFile("a2cmdhelp.txt");
 }
 
 unsigned char fileBuffer[COPY_BUFFER_SIZE];

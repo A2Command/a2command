@@ -39,6 +39,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <string.h>
 
 #include "constants.h"
 #include "drives.h"
@@ -81,7 +82,7 @@ void  readKeyboard(void)
 
 	case CH_CURS_LEFT:
 		if(selectedPanel == &rightPanelDrive
-			&& leftPanelDrive.drive != NULL
+			&& strlen(leftPanelDrive.path) > 0
 			&& arePanelsOn)
 		{
 			selectedPanel = &leftPanelDrive;
@@ -91,7 +92,7 @@ void  readKeyboard(void)
 		break;
 	case CH_CURS_RIGHT:
 		if(selectedPanel == &leftPanelDrive
-			&& rightPanelDrive.drive != NULL
+			&& strlen(rightPanelDrive.path) > 0
 			&& arePanelsOn)
 		{
 			selectedPanel = &rightPanelDrive;
@@ -132,9 +133,6 @@ void  readKeyboard(void)
 		break;
 	case HK_DRIVE_RIGHT:
 		writeDriveSelectionPanel(right);
-		break;
-	case HK_TOGGLE_PANELS:
-		togglePanels();
 		break;
 	case HK_SELECT_ALL:
 		selectAllFiles(selectedPanel, true);
