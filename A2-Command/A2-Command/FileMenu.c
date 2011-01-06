@@ -126,6 +126,8 @@ void  copyFiles(void)
 				{
 					sprintf(targetPath, "%s/%s", targetPanel->path, currentNode->name);
 					targetFile = NULL;
+					_filetype = currentNode->type;
+					_auxtype = currentNode->aux_type;
 					targetFile = fopen(targetPath, "wb");
 					if(targetFile != NULL && ferror(targetFile) == 0)
 					{

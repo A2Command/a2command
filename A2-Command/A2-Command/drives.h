@@ -68,6 +68,7 @@ struct dir_node
 {
 	unsigned char name[17];
 	unsigned char type;
+	unsigned int aux_type;
 	unsigned int size;
 	int index;
 	struct {

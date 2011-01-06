@@ -36,6 +36,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 #include <apple2enh.h>
 #include <conio.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "A2-disks.h"
 #include "screen.h"
@@ -50,6 +52,7 @@ void selectDrive(struct panel_drive *panel)
 {
 	unsigned char i, key, current;
 	unsigned char buffer[68];
+	unsigned char temp[80];
 
 	_driveCount = drivecount();
 	_drives = drivelist();
@@ -62,7 +65,9 @@ void selectDrive(struct panel_drive *panel)
 	for(i=0; i<_driveCount; ++i)
 	{
 		rootdir(_drives[i], buffer);
-		cputsxy(8, 9 + i, buffer); 
+
+		sprintf(temp, "%2u - %s", i, buffer);
+		cputsxy(8, 9 + i, temp); 
 	}
 
 	cputcxy(7, 9, '>');

@@ -159,6 +159,7 @@ int  getDirectory(
 							strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, currentDE->d_name);
 							drive->slidingWindow[i - slidingWindowStartAt].size = currentDE->d_blocks;
 							drive->slidingWindow[i - slidingWindowStartAt].type = currentDE->d_type;
+							drive->slidingWindow[i - slidingWindowStartAt].aux_type = currentDE->d_auxtype;
 							drive->slidingWindow[i - slidingWindowStartAt].index = counter;
 							drive->slidingWindow[i - slidingWindowStartAt].date.day = currentDE->d_cdate.day;
 							drive->slidingWindow[i - slidingWindowStartAt].date.mon = currentDE->d_cdate.mon;
