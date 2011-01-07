@@ -144,12 +144,12 @@ void writeDiskImage(void)
 {
 	static unsigned int i, r;
 	static unsigned char filePath[MAX_PATH_LENGTH];
-	static unsigned char *sectorBuffer;
 	static struct panel_drive *targetPanel;
 	static dhandle_t targetDrive;
 	static FILE *sourceFile;
 	static struct dir_node *selectedNode;
 	static unsigned long targetDriveSize;
+	static unsigned int sectorSize;
 	
 	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
 
@@ -165,15 +165,15 @@ void writeDiskImage(void)
 
 		targetDrive = dio_open(targetPanel->drive->drive);
 
-		sectorBuffer = malloc(dio_query_sectsize(targetDrive));
+		sectorSize = dio_query_sectsize(targetDrive);
 
 		for(i=0; i<dio_query_sectcount(targetDrive); ++i)
 		{
-			r = fread(sectorBuffer, sizeof(sectorBuffer), 1, sourceFile);
+			r = fread(fileBuffer, sectorSize, 1, sourceFile);
 
 			if(r == 1)
 			{
-				r = dio_write(targetDrive, i, sectorBuffer);
+				r = dio_write(targetDrive, i, fileBuffer);
 
 				writeStatusBarf("Wrote sector %u", i);
 			}
@@ -211,10 +211,10 @@ void createDiskImage(void)
 	//static unsigned int i, r;
 	//static unsigned char filePath[MAX_PATH_LENGTH];
 	//static unsigned char newName[17];
-	//unsigned char *sectorBuffer;
 	//static struct panel_drive *targetPanel;
 	//static dhandle_t sourceDrive;
 	//static FILE *targetFile;
+	//static unsigned int sectorSize;
 	//
 	//targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
 
@@ -233,15 +233,15 @@ void createDiskImage(void)
 
 	//	sourceDrive = dio_open(targetPanel->drive->drive);
 
-	//	sectorBuffer = malloc(dio_query_sectsize(sourceDrive));
+	//	sectorSize = dio_query_sectsize(sourceDrive);
 
 	//	for(i=0; i<dio_query_sectcount(sourceDrive); ++i)
 	//	{
-	//		r = dio_read(sourceDrive, i, sectorBuffer);
+	//		r = dio_read(sourceDrive, i, fileBuffer);
 
 	//		if(r == 0)
 	//		{
-	//			r = fwrite(sectorBuffer, sizeof(sectorBuffer), 1, targetFile);
+	//			r = fwrite(fileBuffer, sectorSize, 1, targetFile);
 
 	//			writeStatusBarf("Wrote sector %u", i);
 	//		}
