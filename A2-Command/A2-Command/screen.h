@@ -38,7 +38,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _SCREEN_H
 #define _SCREEN_H
 
-
+#include <stdbool.h>
 
 enum results { OK_RESULT, CANCEL_RESULT, YES_RESULT, NO_RESULT };
 enum buttons { OK = 1, CANCEL = 2, YES = 4, NO = 8 };
@@ -77,7 +77,7 @@ enum results  drawDialog(
 	unsigned char* title,
 	enum buttons button);
 
-unsigned  writeYesNo(
+bool writeYesNo(
 	unsigned char *title,
 	unsigned char *message[],
 	unsigned char lineCount);

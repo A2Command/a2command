@@ -54,7 +54,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "screen.h"
 #include "menus.h"
 
-unsigned char drivesBuffer[80];
+#ifndef __fastcall
+#define __fastcall __fastcall
+#endif
+
 unsigned char commandPath[256];
 
 struct drive_status drives[9] =
@@ -78,9 +81,10 @@ struct panel_drive *selectedPanel;
 unsigned char currentLeft = 0;
 unsigned char currentRight = 0;
 
-void  initializeDrives(void)
+void __fastcall  initializeDrives(void)
 {
-	unsigned char i = 0;
+	static unsigned char i = 0;
+
 	if(!areDrivesInitialized)
 	{
 		startupDevice = PEEK(0x00BA);
@@ -112,9 +116,9 @@ void  initializeDrives(void)
 	}
 }
 
-int  getDirectory(
+int __fastcall  getDirectory(
 	struct panel_drive *drive,
-	int slidingWindowStartAt)
+	const int slidingWindowStartAt)
 {
 	unsigned int counter=0, read=0;
 	unsigned char i;
@@ -139,7 +143,7 @@ int  getDirectory(
 	{
 		dir = opendir(drive->path);
 
-		if(true)//(dir != NULL)
+		if(dir != NULL)
 		{
 			writeStatusBar("Reading directory...");
 			counter = 0;
@@ -201,7 +205,8 @@ int  getDirectory(
 	return counter;
 }
 
-void  resetSelectedFiles(struct panel_drive *panel)
+void __fastcall  resetSelectedFiles(
+	struct panel_drive *panel)
 {
 	free(panel->selectedEntries);
 			
@@ -210,12 +215,13 @@ void  resetSelectedFiles(struct panel_drive *panel)
 			sizeof(unsigned char));
 }
 
-void  displayDirectory(
+void __fastcall  displayDirectory(
 	struct panel_drive *drive)
 {
 	unsigned char w = 19, x = 0, y = 0;
-	unsigned char i = 0, start=0, ii = 0, mod = 0, bit = 0, r = 0;
-	unsigned char date[9], slotDrive[7];
+	unsigned char 
+		i = 0, start=0, ii = 0, mod = 0, bit = 0, r = 0;
+	unsigned char temp[9];
 	struct dir_node *currentNode;
 
 	if(drive->path == NULL)
@@ -230,8 +236,10 @@ void  displayDirectory(
 	writePanel(true, false, color_text_borders, x, 1, 21, w, 
 		drive->path, NULL, NULL);
 
-	sprintf(slotDrive, "[S%uD%u]", (drive->drive->drive >> 4) & 7, (drive->drive->drive >> 7) & 1);
-	cputsxy(x + 3, 22, slotDrive);
+	sprintf(temp, "[S%uD%u]", 
+		(drive->drive->drive >> 4) & 7, 
+		(drive->drive->drive >> 7) + 1);
+	cputsxy(x + 3, 22, temp);
 	start = drive->displayStartAt;
 
 	for(i=start; i<start + 20 && i < drive->length; i++)
@@ -271,14 +279,14 @@ void  displayDirectory(
 		}		
 
 		y = i - start + 2;
-		sprintf(date, "%u-%u-%u", currentNode->date.year,
+		sprintf(temp, "%u-%u-%u", currentNode->date.year,
 			currentNode->date.mon,
 			currentNode->date.day);
 
 		sprintf(commandPath, "%5u %-17s %8s %2X"
 			, currentNode->blocks
 			, currentNode->name
-			, date
+			, temp
 			, currentNode->type
 			);
 		cputsxy(x + 2, y, commandPath);
@@ -287,19 +295,20 @@ void  displayDirectory(
 	}
 }
 
-void  writeSelectorPosition(struct panel_drive *panel,
-	unsigned char character)
+void __fastcall  writeSelectorPosition(
+	struct panel_drive *panel,
+	const unsigned char character)
 {
-	unsigned char x, y;
-	y = (panel->currentIndex - panel->displayStartAt) + 2;
-	x = (panel == &leftPanelDrive ? 1 : size_x / 2 + 1);
-	gotoxy(x, y);
-	//textcolor(color_selector);
+	gotoxy(
+		(panel == &leftPanelDrive ? 1 : size_x / 2 + 1),
+		(panel->currentIndex - panel->displayStartAt) + 2);
+
 	revers(false);
 	cputc(character);
 }
 
-void  writeCurrentFilename(struct panel_drive *panel)
+void __fastcall  writeCurrentFilename(
+	struct panel_drive *panel)
 {
 	struct dir_node *currentDirNode;
 
@@ -312,19 +321,20 @@ void  writeCurrentFilename(struct panel_drive *panel)
 			if(currentDirNode != NULL &&
 				currentDirNode->name != NULL)
 			{
-				writeStatusBarf("Idx: %3u Sz: %5u Nm: %s",
+				writeStatusBarf("Idx: %3u Sz: %8ld Nm: %s",
 					currentDirNode->index,
-					currentDirNode->blocks,
+					currentDirNode->size,
 					currentDirNode->name);
 			}
 		}
 	}
 }
 
-void  moveSelectorUp(struct panel_drive *panel)
+void __fastcall  moveSelectorUp(
+	struct panel_drive *panel)
 {
-	unsigned char diff;
-	unsigned firstPage;
+	static unsigned char diff;
+	static unsigned firstPage;
 
 	writeSelectorPosition(panel, ' ');
 	firstPage = panel->displayStartAt == 0;
@@ -332,24 +342,25 @@ void  moveSelectorUp(struct panel_drive *panel)
 
 	if(!firstPage && diff == 1)
 	{
-		panel->displayStartAt--;
-		panel->currentIndex--;
+		--(panel->displayStartAt);
+		--(panel->currentIndex);
 		displayDirectory(panel);
 	}
 	else if(diff > 0)
 	{
-		panel->currentIndex--;
+		--(panel->currentIndex);
 	}
 	
 	writeSelectorPosition(panel, '>');
 	writeCurrentFilename(panel);
 }
 
-void  moveSelectorDown(struct panel_drive *panel)
+void __fastcall  moveSelectorDown(
+	struct panel_drive *panel)
 {
-	const unsigned char offset = 19;
-	unsigned char diff;
-	unsigned lastPage;
+	static const unsigned char offset = 19;
+	static unsigned char diff;
+	static unsigned lastPage;
 
 	writeSelectorPosition(panel, ' ');
 
@@ -359,19 +370,19 @@ void  moveSelectorDown(struct panel_drive *panel)
 	if(!lastPage && diff > offset &&
 		((panel->currentIndex - panel->displayStartAt) == offset))
 	{
-		panel->displayStartAt++;
-		panel->currentIndex++;
+		++(panel->displayStartAt);
+		++(panel->currentIndex);
 		displayDirectory(panel);
 	}
 	else if(lastPage && 
 		(panel->currentIndex - panel->displayStartAt) < offset &&
 		(panel->currentIndex + 1) < panel->length)
 	{
-		panel->currentIndex++;
+		++(panel->currentIndex);
 	}
 	else if(!lastPage)
 	{
-		panel->currentIndex++;
+		++(panel->currentIndex);
 	}
 
 	if(panel->currentIndex < 0) panel->currentIndex=0;
@@ -379,12 +390,13 @@ void  moveSelectorDown(struct panel_drive *panel)
 	writeCurrentFilename(panel);
 }
 
-void  selectCurrentFile(void)
+void __fastcall  selectCurrentFile(void)
 {
-	unsigned char index = 0, bit = 0, mod = 0, 
+	static unsigned char 
+		index = 0, bit = 0, mod = 0, 
 		r = 0, nbit = 0, v = 0, o = 0;
 
-	struct dir_node *currentDirNode;
+	static struct dir_node *currentDirNode;
 
 	if(selectedPanel != NULL)
 	{
@@ -417,9 +429,10 @@ void  selectCurrentFile(void)
 	}
 }
 
-void  enterDirectory(struct panel_drive *panel)
+void __fastcall  enterDirectory(
+	struct panel_drive *panel)
 {
-	struct dir_node *node;
+	static struct dir_node *node;
 
 	node = getSelectedNode(panel);
 
@@ -437,9 +450,12 @@ void  enterDirectory(struct panel_drive *panel)
 	}
 }
 
-void  leaveDirectory(struct panel_drive *panel)
+void __fastcall  leaveDirectory(
+	struct panel_drive *panel)
 {
-	unsigned char* position = strrchr(panel->path, '/');
+	const unsigned char* position = 
+		strrchr(panel->path, '/');
+
 	panel->path[strlen(panel->path) - strlen(position)] = '\0';
 
 	panel->currentIndex = 0;
@@ -447,40 +463,42 @@ void  leaveDirectory(struct panel_drive *panel)
 	rereadSelectedPanel();
 }
 
-//unsigned  isDiskImage(struct panel_drive *panel)
-//{
-//	unsigned result = false;
-//	unsigned char name[17];
-//	struct dir_node *currentDirNode = NULL;
-//
-//	currentDirNode = getSelectedNode(panel);
-//
-//	strcpy(name, currentDirNode->name);
-//	strlower(name);
-//
-//	if(currentDirNode != NULL)
-//	{
-//		if(strstr(name, ".d64") > 0
-//			|| strstr(name, ".d81") > 0
-//			|| strstr(name, ".d71") > 0
-//			|| strstr(name, ".dnp") > 0
-//		)
-//		{
-//			result = true;
-//		}
-//		else
-//		{
-//			result = false;
-//		}
-//	}
-//
-//	return result;
-//}
-
-unsigned  isDirectory(struct panel_drive *panel)
+bool __fastcall  isDiskImage(
+	struct panel_drive *panel)
 {
-	unsigned result = false;
-	struct dir_node *currentDirNode = NULL;
+	static unsigned result = false;
+	static unsigned char name[17];
+	static struct dir_node *currentDirNode = NULL;
+
+	currentDirNode = getSelectedNode(panel);
+
+	strcpy(name, currentDirNode->name);
+	strlower(name);
+
+	if(currentDirNode != NULL)
+	{
+		if(strstr(name, ".d0") > 0
+			|| strstr(name, ".dsk") > 0
+			|| strstr(name, ".po") > 0
+			|| strstr(name, ".hdv") > 0
+		)
+		{
+			result = true;
+		}
+		else
+		{
+			result = false;
+		}
+	}
+
+	return result;
+}
+
+bool __fastcall isDirectory(
+	struct panel_drive *panel)
+{
+	static unsigned result = false;
+	static struct dir_node *currentDirNode = NULL;
 
 	currentDirNode = getSelectedNode(panel);
 
@@ -499,15 +517,17 @@ unsigned  isDirectory(struct panel_drive *panel)
 	return result;
 }
 
-struct dir_node*  getSelectedNode(struct panel_drive *panel)
+struct dir_node*  __fastcall getSelectedNode(
+	struct panel_drive *panel)
 {
 	return getSpecificNode(panel, panel->currentIndex);
 }
 
-struct dir_node*  getSpecificNode(
-	struct panel_drive *panel, int index)
+struct dir_node*  __fastcall getSpecificNode(
+	struct panel_drive *panel, 
+	const int index)
 {
-	struct dir_node *currentDirNode = NULL;
+	static struct dir_node *currentDirNode = NULL;
 
 	if(panel != NULL)
 	{
@@ -536,10 +556,12 @@ struct dir_node*  getSpecificNode(
 //	return 0;
 //}
 
-void  selectAllFiles(struct panel_drive *panel, 
-	unsigned select)
+void  __fastcall selectAllFiles(
+	struct panel_drive *panel, 
+	const unsigned select)
 {
-	unsigned int i = 0;
+	static unsigned int i = 0;
+
 	if(panel != NULL)
 	{
 		for(;i< panel->length / 8 + 1; ++i)
@@ -554,7 +576,8 @@ void  selectAllFiles(struct panel_drive *panel,
 	writeCurrentFilename(panel);
 }
 
-void  moveTop(struct panel_drive *panel)
+void __fastcall  moveTop(
+	struct panel_drive *panel)
 {
 	if(panel != NULL)
 	{
@@ -569,7 +592,8 @@ void  moveTop(struct panel_drive *panel)
 	}
 }
 
-void  movePageUp(struct panel_drive *panel)
+void __fastcall  movePageUp(
+	struct panel_drive *panel)
 {
 	if(panel != NULL)
 	{
@@ -592,7 +616,8 @@ void  movePageUp(struct panel_drive *panel)
 	}
 }
 
-void  movePageDown(struct panel_drive *panel)
+void  __fastcall movePageDown(
+	struct panel_drive *panel)
 {
 	if(panel != NULL)
 	{
@@ -615,7 +640,8 @@ void  movePageDown(struct panel_drive *panel)
 	}
 }
 
-void  moveBottom(struct panel_drive *panel)
+void __fastcall  moveBottom(
+	struct panel_drive *panel)
 {
 	if(panel != NULL)
 	{

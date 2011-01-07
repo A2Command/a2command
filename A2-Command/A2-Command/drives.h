@@ -38,6 +38,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _DRIVES_H
 #define _DRIVES_H
 
+#ifndef __fastcall
+#define __fastcall __fastcall__
+#endif
+
+#include <stdbool.h>
+
 #include "menus.h"
 
 /* STRUCTS */
@@ -123,71 +129,71 @@ extern struct panel_drive rightPanelDrive;	// The right panel
 extern struct panel_drive *selectedPanel;	// The current panel
 
 /* METHODS */
-void  initializeDrives(void);
+void __fastcall initializeDrives(void);
 
-void  listDrives(enum menus menu);
+void  __fastcall listDrives(enum menus menu);
 
-int  getDirectory(
+int  __fastcall getDirectory(
 	struct panel_drive *drive,
-	int slidingWindowStartAt);
+	const int slidingWindowStartAt);
 
-void  displayDirectory(
+void  __fastcall displayDirectory(
 	struct panel_drive *drive);
 
-void  writeSelectorPosition(
+void  __fastcall writeSelectorPosition(
 	struct panel_drive *panel,
-	unsigned char character);
+	const unsigned char character);
 
-void  moveSelectorUp(
+void __fastcall  moveSelectorUp(
 	struct panel_drive *panel);
 
-void  moveSelectorDown(
+void __fastcall  moveSelectorDown(
 	struct panel_drive *panel);
 
-void  selectCurrentFile(void);
+void __fastcall  selectCurrentFile(void);
 
-void  writeCurrentFilename(
+void __fastcall  writeCurrentFilename(
 	struct panel_drive *panel);
 
-void  enterDirectory(
+void __fastcall  enterDirectory(
 	struct panel_drive *panel);
 
-void  leaveDirectory(
+void __fastcall  leaveDirectory(
 	struct panel_drive *panel);
 
-//unsigned  isDiskImage(
-//	struct panel_drive *panel);
-
-unsigned  isDirectory(
+bool __fastcall  isDiskImage(
 	struct panel_drive *panel);
 
-struct dir_node*  getSelectedNode(
+bool __fastcall  isDirectory(
 	struct panel_drive *panel);
 
-struct dir_node*  getSpecificNode(
+struct dir_node* __fastcall  getSelectedNode(
+	struct panel_drive *panel);
+
+struct dir_node* __fastcall  getSpecificNode(
 	struct panel_drive *panel, 
-	int index);
+	const int index);
 
 //unsigned char  sendCommand(
 //	struct panel_drive *panel,
 //	unsigned char *command);
 
-void  resetSelectedFiles(
+void __fastcall  resetSelectedFiles(
 	struct panel_drive *panel);
 
-void  selectAllFiles(
+void __fastcall  selectAllFiles(
 	struct panel_drive *panel, 
-	unsigned select);
+	const unsigned select);
 
-void  moveTop(
+void __fastcall  moveTop(
 	struct panel_drive *panel);
 
-void  movePageUp(
+void __fastcall  movePageUp(
 	struct panel_drive *panel);
 
-void  movePageDown(
+void __fastcall  movePageDown(
 	struct panel_drive *panel);
 
-void  moveBottom(
+void __fastcall moveBottom(
 	struct panel_drive *panel);
 #endif

@@ -321,6 +321,7 @@ enum results  drawDialog(
 		break;
 	}
 
+	waitForEnterEscf("Fell through!");
 	return CANCEL_RESULT;
 }
 
@@ -415,7 +416,7 @@ enum results  drawInputDialog(
 	return result;
 }
 
-unsigned  writeYesNo(
+bool writeYesNo(
 	unsigned char *title,
 	unsigned char *message[],
 	unsigned char lineCount)

@@ -38,16 +38,20 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _A2_DISKS_H
 #define _A2_DISKS_H
 
+#ifndef __fastcall
+#define __fastcall __fastcall__
+#endif
+
 #include "drives.h"
 #define MAX_PATH_LENGTH 256
 
 extern unsigned char _driveCount;
 extern unsigned char* _drives;
 
-void selectDrive(struct panel_drive *panel);
-unsigned long getDriveSize(unsigned char driveNumber);
-void writeDiskImage(void);
-void createDiskImage(void);
-void copyDisk();
+void __fastcall__ selectDrive(struct panel_drive *panel);
+unsigned long __fastcall__ getDriveSize(unsigned char driveNumber);
+void __fastcall__ writeDiskImage(void);
+void __fastcall__ createDiskImage(void);
+void __fastcall__ copyDisk(void);
 
 #endif

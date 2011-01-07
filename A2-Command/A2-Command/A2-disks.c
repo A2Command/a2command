@@ -47,15 +47,16 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "input.h"
 #include "globalInput.h"
 #include "drives.h"
+#include "menus.h"
 
 unsigned char _driveCount;
 unsigned char* _drives;
 
-void selectDrive(struct panel_drive *panel)
+void __fastcall__ selectDrive(struct panel_drive *panel)
 {
-	unsigned char i, key, current;
-	unsigned char buffer[68];
-	unsigned char temp[80];
+	static unsigned char i, key, current;
+	static unsigned char buffer[68];
+	static unsigned char temp[80];
 
 	_driveCount = drivecount();
 	_drives = drivelist();
@@ -69,11 +70,11 @@ void selectDrive(struct panel_drive *panel)
 	{
 		if(rootdir(_drives[i], buffer) > -1)
 		{
-			sprintf(temp, "S%uD%u (%u) - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, _drives[i], buffer);
+			sprintf(temp, "S%uD%u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
 		}
 		else
 		{
-			sprintf(temp, "S%uD%u (%u) - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1, _drives[i], i);
+			sprintf(temp, "S%uD%u - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1);
 		}
 
 		cputsxy(8, 9 + i, temp); 
@@ -124,12 +125,12 @@ void selectDrive(struct panel_drive *panel)
 	}
 }
 
-unsigned long getDriveSize(unsigned char driveNumber)
+unsigned long __fastcall__ getDriveSize(unsigned char driveNumber)
 {
-	dhandle_t drive;
-	sectsize_t sectorSize;
-	sectnum_t sectorCount;
-	unsigned long driveSize;	
+	static dhandle_t drive;
+	static sectsize_t sectorSize;
+	static sectnum_t sectorCount;
+	static unsigned long driveSize;	
 		
 	drive = dio_open(driveNumber);
 	sectorSize = dio_query_sectsize(drive);
@@ -140,47 +141,184 @@ unsigned long getDriveSize(unsigned char driveNumber)
 	return driveSize;
 }
 
-void writeDiskImage(void)
+unsigned char filePath[MAX_PATH_LENGTH];
+void __fastcall__ writeDiskImage(void)
 {
-	static unsigned int i, r;
-	static unsigned char filePath[MAX_PATH_LENGTH];
-	static struct panel_drive *targetPanel;
-	static dhandle_t targetDrive;
-	static FILE *sourceFile;
-	static struct dir_node *selectedNode;
-	static unsigned long targetDriveSize;
-	static unsigned int sectorSize;
+	unsigned int i, r;
+	struct panel_drive *targetPanel;
+	dhandle_t targetDrive;
+	FILE *sourceFile;
+	struct dir_node *selectedNode;
+	unsigned long targetDriveSize;
+	unsigned int sectorSize;
 	
 	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
 
 	selectedNode = getSelectedNode(selectedPanel);
 
-	sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
-
-	targetDriveSize = getDriveSize(targetPanel->drive->drive);
-
-	if(selectedNode->size == targetDriveSize)
+	if(isDiskImage(selectedPanel))
 	{
-		sourceFile = fopen(filePath, "rb");
+		sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
 
-		targetDrive = dio_open(targetPanel->drive->drive);
+		targetDriveSize = getDriveSize(targetPanel->drive->drive);
 
-		sectorSize = dio_query_sectsize(targetDrive);
-
-		for(i=0; i<dio_query_sectcount(targetDrive); ++i)
+		if(selectedNode->size == targetDriveSize)
 		{
-			r = fread(fileBuffer, sectorSize, 1, sourceFile);
+			sourceFile = fopen(filePath, "rb");
 
-			if(r == 1)
+			targetDrive = dio_open(targetPanel->drive->drive);
+
+			sectorSize = dio_query_sectsize(targetDrive);
+
+			for(i=0; i<dio_query_sectcount(targetDrive); ++i)
 			{
-				r = dio_write(targetDrive, i, fileBuffer);
+				r = fread(fileBuffer, sectorSize, 1, sourceFile);
+
+				if(r == 1)
+				{
+					r = dio_write(targetDrive, i, fileBuffer);
+
+					writeStatusBarf("Wrote sector %u", i);
+				}
+			}
+		
+			dio_close(targetDrive);
+			fclose(sourceFile);
+
+			if(rootdir(targetPanel->drive->drive, targetPanel->path) == -1)
+			{
+				strcpy(targetPanel->path, "");
+			}
+
+			selectedPanel = targetPanel;	
+			rereadSelectedPanel();
+
+			writeStatusBarf("Wrote %s to disk.", selectedNode->name);
+		}
+		else
+		{
+			dio_close(targetDrive);
+			fclose(sourceFile);
+
+			writeStatusBarf("Disk image size does not match target drive. (drive: %ld, image: %ld)", 
+				targetDriveSize, selectedNode->size);
+		}
+	}
+	else
+	{
+		writeStatusBarf("%s is not a disk image.", selectedNode->name);
+	}
+}
+
+void __fastcall__ createDiskImage(void)
+{
+	static unsigned char* message[] =
+	{
+		{ "Type a name for" },
+		{ "the disk image" }
+	};
+	static unsigned int i, r;
+	static unsigned char newName[17];
+	static dhandle_t sourceDrive;
+	static FILE *targetFile;
+	static unsigned int sectorSize;
+	static struct panel_drive *targetPanel;
+	
+	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
+
+	newName[0] = '\0';
+	r = drawInputDialog(
+		2, 17,
+		message, "Make Image",
+		newName);
+	retrieveScreen();
+
+	if((unsigned char)r == OK_RESULT)
+	{
+		sprintf(filePath, "%s/%s", targetPanel->path, newName);
+
+		targetFile = fopen(filePath, "wb");
+
+		sourceDrive = dio_open(selectedPanel->drive->drive);
+
+		sectorSize = dio_query_sectsize(sourceDrive);
+
+		for(i=0; i<dio_query_sectcount(sourceDrive); ++i)
+		{
+			r = dio_read(sourceDrive, i, fileBuffer);
+
+			if(r == 0)
+			{
+				r = fwrite(fileBuffer, sectorSize, 1, targetFile);
 
 				writeStatusBarf("Wrote sector %u", i);
 			}
 		}
 		
+		dio_close(sourceDrive);
+		fclose(targetFile);
+
+		selectedPanel = targetPanel;	
+		reloadPanels();
+
+		writeStatusBarf("Created %s.", filePath);
+
+	}
+}
+
+void __fastcall__ copyDisk(void)
+{
+	static unsigned char* message[] =
+	{
+		{ "Are you ready?" }
+	};
+	static bool yesNo;
+	unsigned long counter = 0;
+	static dhandle_t sourceDrive;
+	static dhandle_t targetDrive;
+	static unsigned long sectorCount;
+	static struct panel_drive *targetPanel;
+	
+	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
+
+	saveScreen();
+	yesNo = writeYesNo("Copy Disk", message, 1);
+	retrieveScreen();
+
+	if(yesNo)
+	{
+		sourceDrive = dio_open(selectedPanel->drive->drive);
+		targetDrive = dio_open(targetPanel->drive->drive);
+
+		if(dio_query_sectsize(sourceDrive) == dio_query_sectsize(targetDrive) 
+			&& dio_query_sectcount(sourceDrive) == dio_query_sectcount(targetDrive))
+		{
+			sectorCount = dio_query_sectcount(sourceDrive);
+
+			for(; counter < sectorCount; ++counter)
+			{
+				dio_read(sourceDrive, counter, fileBuffer);
+				dio_write(targetDrive, counter, fileBuffer);
+			
+				writeStatusBarf(
+					"Copied %ld blocks, %ld remaining.", 
+					counter + 1, 
+					sectorCount - counter + 1);
+			}
+
+			writeStatusBarf("Copied S%uD%u to S%uD%u",
+				(selectedPanel->drive->drive >> 4) & 7,
+				(selectedPanel->drive->drive >> 7) + 1,
+				(targetPanel->drive->drive >> 4) & 7,
+				(targetPanel->drive->drive >> 7) + 1);
+		}
+		else
+		{
+			writeStatusBarf("Cannot copy, drives are not the same size.");
+		}
+
+		dio_close(sourceDrive);
 		dio_close(targetDrive);
-		fclose(sourceFile);
 
 		if(rootdir(targetPanel->drive->drive, targetPanel->path) == -1)
 		{
@@ -190,73 +328,10 @@ void writeDiskImage(void)
 		selectedPanel = targetPanel;	
 		rereadSelectedPanel();
 
-		writeStatusBarf("Wrote %s to disk.", selectedNode->name);
+		writeStatusBarf("Disk copy complete.");
 	}
 	else
 	{
-		dio_close(targetDrive);
-		fclose(sourceFile);
-
-		writeStatusBarf("Disk image size does not match target drive. (drive: %ld, image: %ld)", 
-			targetDriveSize, selectedNode->size);
+		writeStatusBarf("Disk copy aborted.");
 	}
-}
-
-void createDiskImage(void)
-{
-	//static unsigned char* message[] =
-	//{
-	//	{ "Type a name for the disk image" }
-	//};
-	//static unsigned int i, r;
-	//static unsigned char filePath[MAX_PATH_LENGTH];
-	//static unsigned char newName[17];
-	//static struct panel_drive *targetPanel;
-	//static dhandle_t sourceDrive;
-	//static FILE *targetFile;
-	//static unsigned int sectorSize;
-	//
-	//targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
-
-	//newName[0] = '\0';
-	//r = drawInputDialog(
-	//	1, 17,
-	//	message, "Make Image",
-	//	newName);
-	//retrieveScreen();
-
-	//if((unsigned char)r == OK_RESULT)
-	//{
-	//	sprintf(filePath, "%s/%s", targetPanel->path, newName);
-
-	//	targetFile = fopen(filePath, "rb");
-
-	//	sourceDrive = dio_open(targetPanel->drive->drive);
-
-	//	sectorSize = dio_query_sectsize(sourceDrive);
-
-	//	for(i=0; i<dio_query_sectcount(sourceDrive); ++i)
-	//	{
-	//		r = dio_read(sourceDrive, i, fileBuffer);
-
-	//		if(r == 0)
-	//		{
-	//			r = fwrite(fileBuffer, sectorSize, 1, targetFile);
-
-	//			writeStatusBarf("Wrote sector %u", i);
-	//		}
-	//	}
-	//	
-	//	dio_close(sourceDrive);
-	//	fclose(targetFile);
-
-	//	selectedPanel = targetPanel;	
-	//	rereadSelectedPanel();
-
-	//	writeStatusBarf("Created %s.", newName);
-	//}
-}
-
-void copyDisk()
-{
 }

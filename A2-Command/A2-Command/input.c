@@ -181,6 +181,9 @@ void  readKeyboard(void)
 	case HK_CREATE_DISK_IMAGE:
 		createDiskImage();
 		break;
+	case HK_COPY_DISK:
+		copyDisk();
+		break;
 	default:
 		//writeStatusBarf("%c", key);
 		break;
