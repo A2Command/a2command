@@ -176,6 +176,9 @@ void  readKeyboard(void)
 	case HK_PAGE_DOWN:
 		movePageDown(selectedPanel);
 		break;
+	case HK_WRITE_DISK_IMAGE:
+		writeDiskImage();
+		break;
 	default:
 		//writeStatusBarf("%c", key);
 		break;

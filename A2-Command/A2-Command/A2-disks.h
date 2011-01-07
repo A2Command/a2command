@@ -39,10 +39,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _A2_DISKS_H
 
 #include "drives.h"
+#define MAX_PATH_LENGTH 256
 
 extern unsigned char _driveCount;
 extern unsigned char* _drives;
 
 void selectDrive(struct panel_drive *panel);
+unsigned long getDriveSize(unsigned char driveNumber);
+void writeDiskImage(void);
 
 #endif

@@ -36,6 +36,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 #include <apple2enh.h>
 #include <conio.h>
+#include <dio.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -45,6 +46,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "globals.h"
 #include "input.h"
 #include "globalInput.h"
+#include "drives.h"
 
 unsigned char _driveCount;
 unsigned char* _drives;
@@ -67,11 +69,11 @@ void selectDrive(struct panel_drive *panel)
 	{
 		if(rootdir(_drives[i], buffer) > -1)
 		{
-			sprintf(temp, "S%uD%u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
+			sprintf(temp, "S%uD%u (%u) - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, _drives[i], buffer);
 		}
 		else
 		{
-			sprintf(temp, "S%uD%u - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1, i);
+			sprintf(temp, "S%uD%u (%u) - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1, _drives[i], i);
 		}
 
 		cputsxy(8, 9 + i, temp); 
@@ -109,7 +111,8 @@ void selectDrive(struct panel_drive *panel)
 
 	if(key == CH_ENTER)
 	{
-		panel->drive->drive = current;		
+		panel->drive = &drives[current];
+		panel->drive->drive = _drives[current];		
 		if(rootdir(_drives[current], panel->path) == -1)
 		{
 			strcpy(panel->path, "");
@@ -118,5 +121,83 @@ void selectDrive(struct panel_drive *panel)
 		selectedPanel = panel;
 
 		return;
+	}
+}
+
+unsigned long getDriveSize(unsigned char driveNumber)
+{
+	dhandle_t drive;
+	sectsize_t sectorSize;
+	sectnum_t sectorCount;
+	unsigned long driveSize;	
+		
+	drive = dio_open(driveNumber);
+	sectorSize = dio_query_sectsize(drive);
+	sectorCount = dio_query_sectcount(drive);
+	dio_close(drive);
+	driveSize = (unsigned long)sectorSize * (unsigned long)sectorCount;
+
+	return driveSize;
+}
+
+void writeDiskImage(void)
+{
+	static unsigned int i, r;
+	static unsigned char filePath[MAX_PATH_LENGTH];
+	static unsigned char *sectorBuffer;
+	static struct panel_drive *targetPanel;
+	static dhandle_t targetDrive;
+	static FILE *sourceFile;
+	static struct dir_node *selectedNode;
+	static unsigned long targetDriveSize;
+	
+	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
+
+	selectedNode = getSelectedNode(selectedPanel);
+
+	sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
+
+	targetDriveSize = getDriveSize(targetPanel->drive->drive);
+
+	if(selectedNode->size == targetDriveSize)
+	{
+		sourceFile = fopen(filePath, "rb");
+
+		targetDrive = dio_open(targetPanel->drive->drive);
+
+		sectorBuffer = malloc(dio_query_sectsize(targetDrive));
+
+		for(i=0; i<dio_query_sectcount(targetDrive); ++i)
+		{
+			r = fread(sectorBuffer, sizeof(sectorBuffer), 1, sourceFile);
+
+			if(r == 1)
+			{
+				r = dio_write(targetDrive, i, sectorBuffer);
+
+				writeStatusBarf("Wrote sector %u", i);
+			}
+		}
+		
+		dio_close(targetDrive);
+		fclose(sourceFile);
+
+		if(rootdir(targetPanel->drive->drive, targetPanel->path) == -1)
+		{
+			strcpy(targetPanel->path, "");
+		}
+
+		selectedPanel = targetPanel;	
+		rereadSelectedPanel();
+
+		writeStatusBarf("Wrote %s to disk.", selectedNode->name);
+	}
+	else
+	{
+		dio_close(targetDrive);
+		fclose(sourceFile);
+
+		writeStatusBarf("Disk image size does not match target drive. (drive: %ld, image: %ld)", 
+			targetDriveSize, selectedNode->size);
 	}
 }

@@ -59,15 +59,15 @@ unsigned char commandPath[256];
 
 struct drive_status drives[9] =
 {
-	{ 8, "" },	// 0
-	{ 9, "" },	// 1
-	{ 10, "" },	// 2
-	{ 11, "" },	// 3
-	{ 12, "" },	// 4
-	{ 13, "" },	// 5
-	{ 14, "" },	// 6
-	{ 15, "" },	// 7
-	{ 16, "" }	// 8
+	{ 0, "" },	// 0
+	{ 0, "" },	// 1
+	{ 0, "" },	// 2
+	{ 0, "" },	// 3
+	{ 0, "" },	// 4
+	{ 0, "" },	// 5
+	{ 0, "" },	// 6
+	{ 0, "" },	// 7
+	{ 0, "" }	// 8
 };
 
 unsigned areDrivesInitialized = false;
@@ -157,7 +157,8 @@ int  getDirectory(
 							i - slidingWindowStartAt <= SLIDING_WINDOW_SIZE)
 						{
 							strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, currentDE->d_name);
-							drive->slidingWindow[i - slidingWindowStartAt].size = currentDE->d_blocks;
+							drive->slidingWindow[i - slidingWindowStartAt].size = currentDE->d_size;
+							drive->slidingWindow[i - slidingWindowStartAt].blocks = currentDE->d_blocks;
 							drive->slidingWindow[i - slidingWindowStartAt].type = currentDE->d_type;
 							drive->slidingWindow[i - slidingWindowStartAt].aux_type = currentDE->d_auxtype;
 							drive->slidingWindow[i - slidingWindowStartAt].index = counter;
@@ -229,7 +230,7 @@ void  displayDirectory(
 	writePanel(true, false, color_text_borders, x, 1, 21, w, 
 		drive->path, NULL, NULL);
 
-	sprintf(slotDrive, "[S%uD%u]", (_drives[drive->drive->drive] >> 4) & 7, (_drives[drive->drive->drive] >> 7) & 1);
+	sprintf(slotDrive, "[S%uD%u]", (drive->drive->drive >> 4) & 7, (drive->drive->drive >> 7) & 1);
 	cputsxy(x + 3, 22, slotDrive);
 	start = drive->displayStartAt;
 
@@ -274,8 +275,8 @@ void  displayDirectory(
 			currentNode->date.mon,
 			currentNode->date.day);
 
-		sprintf(commandPath, "%5u %-17s %8s  %2X"
-			, currentNode->size
+		sprintf(commandPath, "%5u %-17s %8s %2X"
+			, currentNode->blocks
 			, currentNode->name
 			, date
 			, currentNode->type
@@ -313,7 +314,7 @@ void  writeCurrentFilename(struct panel_drive *panel)
 			{
 				writeStatusBarf("Idx: %3u Sz: %5u Nm: %s",
 					currentDirNode->index,
-					currentDirNode->size,
+					currentDirNode->blocks,
 					currentDirNode->name);
 			}
 		}
