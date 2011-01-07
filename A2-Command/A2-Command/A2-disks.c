@@ -151,6 +151,7 @@ void __fastcall__ writeDiskImage(void)
 	struct dir_node *selectedNode;
 	unsigned long targetDriveSize;
 	unsigned int sectorSize;
+	unsigned long sectorCount;
 	
 	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
 
@@ -170,7 +171,10 @@ void __fastcall__ writeDiskImage(void)
 
 			sectorSize = dio_query_sectsize(targetDrive);
 
-			for(i=0; i<dio_query_sectcount(targetDrive); ++i)
+			sectorCount = dio_query_sectcount(targetDrive);
+
+			writeStatusBarf("Begin writing....");
+			for(i=0; i<sectorCount; ++i)
 			{
 				r = fread(fileBuffer, sectorSize, 1, sourceFile);
 
@@ -178,7 +182,7 @@ void __fastcall__ writeDiskImage(void)
 				{
 					r = dio_write(targetDrive, i, fileBuffer);
 
-					writeStatusBarf("Wrote sector %u", i);
+					writeStatusBarf("Wrote sector %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
 				}
 			}
 		
@@ -193,7 +197,7 @@ void __fastcall__ writeDiskImage(void)
 			selectedPanel = targetPanel;	
 			rereadSelectedPanel();
 
-			writeStatusBarf("Wrote %s to disk.", selectedNode->name);
+			writeStatusBarf("Writing completed.");
 		}
 		else
 		{
@@ -222,6 +226,7 @@ void __fastcall__ createDiskImage(void)
 	static dhandle_t sourceDrive;
 	static FILE *targetFile;
 	static unsigned int sectorSize;
+	static unsigned long sectorCount;
 	static struct panel_drive *targetPanel;
 	
 	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
@@ -243,7 +248,10 @@ void __fastcall__ createDiskImage(void)
 
 		sectorSize = dio_query_sectsize(sourceDrive);
 
-		for(i=0; i<dio_query_sectcount(sourceDrive); ++i)
+		sectorCount = dio_query_sectcount(sourceDrive);
+
+		writeStatusBarf("Begin creation...");
+		for(i=0; i<sectorCount; ++i)
 		{
 			r = dio_read(sourceDrive, i, fileBuffer);
 
@@ -251,7 +259,7 @@ void __fastcall__ createDiskImage(void)
 			{
 				r = fwrite(fileBuffer, sectorSize, 1, targetFile);
 
-				writeStatusBarf("Wrote sector %u", i);
+				writeStatusBarf("Created sector %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
 			}
 		}
 		
@@ -295,15 +303,17 @@ void __fastcall__ copyDisk(void)
 		{
 			sectorCount = dio_query_sectcount(sourceDrive);
 
+			writeStatusBarf("Begin copy....");
 			for(; counter < sectorCount; ++counter)
 			{
 				dio_read(sourceDrive, counter, fileBuffer);
 				dio_write(targetDrive, counter, fileBuffer);
 			
 				writeStatusBarf(
-					"Copied %ld blocks, %ld remaining.", 
+					"Copied %ld blocks, %ld remaining. (%ld%% complete)", 
 					counter + 1, 
-					sectorCount - counter + 1);
+					sectorCount - counter + 1,
+					(unsigned long)(counter * (unsigned long)100) / sectorCount);
 			}
 
 			writeStatusBarf("Copied S%uD%u to S%uD%u",
