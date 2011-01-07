@@ -139,7 +139,7 @@ int  getDirectory(
 	{
 		dir = opendir(drive->path);
 
-		if(dir != NULL)
+		if(true)//(dir != NULL)
 		{
 			writeStatusBar("Reading directory...");
 			counter = 0;
@@ -189,7 +189,7 @@ int  getDirectory(
 		}
 		else
 		{
-			sprintf(commandPath, "Could not open %s", drive->path);
+			sprintf(commandPath, "Could not open %s - %d", drive->path, _oserror);
 			if(strlen(commandPath) > 76)
 			{
 				commandPath[76] = '\0';

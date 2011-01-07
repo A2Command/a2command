@@ -146,7 +146,6 @@ void  readKeyboard(void)
 	case KEY_F2:
 		quit();
 		break;
-	case HK_COPY:
 	case KEY_F5:
 		copyFiles();
 		break;
@@ -178,6 +177,9 @@ void  readKeyboard(void)
 		break;
 	case HK_WRITE_DISK_IMAGE:
 		writeDiskImage();
+		break;
+	case HK_CREATE_DISK_IMAGE:
+		createDiskImage();
 		break;
 	default:
 		//writeStatusBarf("%c", key);

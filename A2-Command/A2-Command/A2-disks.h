@@ -47,5 +47,7 @@ extern unsigned char* _drives;
 void selectDrive(struct panel_drive *panel);
 unsigned long getDriveSize(unsigned char driveNumber);
 void writeDiskImage(void);
+void createDiskImage(void);
+void copyDisk();
 
 #endif

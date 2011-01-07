@@ -46,7 +46,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HK_SELECT_ALL		'A'	// CTRL-A
 #define HK_DESELECT_ALL		'S'	// CTRL-S
 #define HK_QUIT				'Q'	// CTRL-U
-#define HK_COPY				'C'	// CTRL-C
+//#define HK_COPY				'C'	// CTRL-C
 #define HK_RENAME			'R'	// CTRL-R
 #define HK_DELETE			'L'	// CTRL-L
 #define HK_MAKE_DIRECTORY	'M'	// CTRL-K
@@ -57,6 +57,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HK_SELECT			32
 #define HK_VIEW_FILE		CH_ENTER
 #define HK_WRITE_DISK_IMAGE 'W'
+#define HK_CREATE_DISK_IMAGE 'C'
 
 
 

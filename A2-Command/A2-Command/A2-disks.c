@@ -201,3 +201,62 @@ void writeDiskImage(void)
 			targetDriveSize, selectedNode->size);
 	}
 }
+
+void createDiskImage(void)
+{
+	//static unsigned char* message[] =
+	//{
+	//	{ "Type a name for the disk image" }
+	//};
+	//static unsigned int i, r;
+	//static unsigned char filePath[MAX_PATH_LENGTH];
+	//static unsigned char newName[17];
+	//unsigned char *sectorBuffer;
+	//static struct panel_drive *targetPanel;
+	//static dhandle_t sourceDrive;
+	//static FILE *targetFile;
+	//
+	//targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
+
+	//newName[0] = '\0';
+	//r = drawInputDialog(
+	//	1, 17,
+	//	message, "Make Image",
+	//	newName);
+	//retrieveScreen();
+
+	//if((unsigned char)r == OK_RESULT)
+	//{
+	//	sprintf(filePath, "%s/%s", targetPanel->path, newName);
+
+	//	targetFile = fopen(filePath, "rb");
+
+	//	sourceDrive = dio_open(targetPanel->drive->drive);
+
+	//	sectorBuffer = malloc(dio_query_sectsize(sourceDrive));
+
+	//	for(i=0; i<dio_query_sectcount(sourceDrive); ++i)
+	//	{
+	//		r = dio_read(sourceDrive, i, sectorBuffer);
+
+	//		if(r == 0)
+	//		{
+	//			r = fwrite(sectorBuffer, sizeof(sectorBuffer), 1, targetFile);
+
+	//			writeStatusBarf("Wrote sector %u", i);
+	//		}
+	//	}
+	//	
+	//	dio_close(sourceDrive);
+	//	fclose(targetFile);
+
+	//	selectedPanel = targetPanel;	
+	//	rereadSelectedPanel();
+
+	//	writeStatusBarf("Created %s.", newName);
+	//}
+}
+
+void copyDisk()
+{
+}
