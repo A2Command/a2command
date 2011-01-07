@@ -7,7 +7,7 @@ T := apple2enh
 JAVA := java
 AC := AppleCommander-1.3.5.jar
 DISK := a2command.dsk
-MASTER_DISK := PRODOS203.DSK
+MASTER_DISK := prodos.dsk
 EMULATOR := C:/AppleWin/Applewin.exe -d1 $(CURDIR)/$(DISK)
 
 CONFIG_SOURCES = \
