@@ -147,8 +147,9 @@ int __fastcall  getDirectory(
 		{
 			writeStatusBar("Reading directory...");
 			counter = 0;
+			read = 0;
 			currentDE = readdir(dir);
-			if(strlen(currentDE->d_name) > 0 && currentDE->d_type > 0)
+			if(strlen(currentDE->d_name) > 0)
 			{
 				while(currentDE != NULL)
 				{

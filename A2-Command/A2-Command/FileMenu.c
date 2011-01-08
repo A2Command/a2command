@@ -44,6 +44,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <peekpoke.h>
 #include <unistd.h>
 #include <time.h>
+#include <dirent.h>
 
 #include "Configuration.h"
 #include "constants.h"
@@ -127,8 +128,7 @@ void  copyFiles(void)
 					{
 						if(currentNode == NULL)
 						{
-							writeStatusBarf("Cannot get file %u", i*8+j); 
-							waitForEnterEsc();
+							waitForEnterEscf("Cannot get file %u", i*8+j); 
 							return;
 						}
 					}
@@ -333,14 +333,16 @@ void  makeDirectory(void)
 
 void  deleteFiles(void)
 {
-	const struct dir_node *selectedNode;
-	unsigned i, k;
+	struct dir_node *selectedNode;
+	unsigned i, k, l;
 	unsigned char j;
 	bool dialogResult, isBatch = false;
 	static unsigned char* dialogMessage[] =
 	{
 		{ "Are you sure?" }
 	};
+	struct dirent *currentDE;
+	DIR *dir = NULL;
 
 	saveScreen();
 	dialogResult = writeYesNo(
@@ -351,33 +353,34 @@ void  deleteFiles(void)
 
 	if(dialogResult)
 	{
-		for(i=0; i<(selectedPanel->length + (7 - 1)) / 8u; ++i)
+		dir = opendir(selectedPanel->path);
+
+		writeStatusBar("Deleting files...");
+		l = selectedPanel->length;
+		for(k=0; k<l; ++k)
 		{
-			for(j=0; j<8; ++j)
+			currentDE = readdir(dir);
+			i = k / 8;
+			j = k % 8;
+
+			if ((selectedPanel->selectedEntries[i] & (1 << j)) != 0x00)
+				//&& (k = i*8+j) < selectedPanel->length)
 			{
-				if(i*8 + j > selectedPanel->length) break;
+				isBatch = true;
 
-				if ((selectedPanel->selectedEntries[i] & (1 << j)) != 0x00
-					&& (k = i*8+j) < selectedPanel->length )
+				sprintf(oldName, "%s/%s", selectedPanel->path, currentDE->d_name);
+				waitForEnterEscf("Deleting %-17s - i:%u  j:%u  l:%u",currentDE->d_name, i, j, l);
+					
+				if (remove(oldName) < 0)
 				{
-					isBatch = true;
+					waitForEnterEscf("Error %u removing %s. - i:%u  j:%u  l:%u", _oserror, currentDE->d_name, i, j, l);
+				}
 
-					selectedNode = getSpecificNode(selectedPanel, k);
-					if(selectedNode == NULL)
-					{
-						getDirectory(selectedPanel, k);
-						selectedNode = getSpecificNode(selectedPanel, k);
-					}
-
-					sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
-					writeStatusBarf("Deleting %s.", selectedNode->name);
-					if (remove(oldName) < 0 ||
-						// Let us change our minds, and stop a batch delete.
-						kbhit() && cgetc() == CH_ESC)
-					{
-						rereadSelectedPanel();
-						return;
-					}
+				if(kbhit() && cgetc() == CH_ESC)
+				{
+					waitForEnterEscf("Aborted.");
+					rereadSelectedPanel();
+					return;
 				}
 			}
 		}
@@ -400,11 +403,12 @@ void  deleteFiles(void)
 				remove(oldName);
 			}
 		}
-
-		rereadSelectedPanel();
-
-		writeStatusBar("Deleted files.");
+		else
+		{
+			rereadSelectedPanel();
+		}
 	}
+
 }
 
 void  quit(void)
