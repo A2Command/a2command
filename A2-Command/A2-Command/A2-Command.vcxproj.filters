@@ -16,8 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AppleCommander-1.3.5.jar" />
-    <None Include="prodos.dsk" />
     <None Include="loader.system" />
+    <None Include="prodos.po" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile">
