@@ -62,15 +62,15 @@ unsigned char commandPath[256];
 
 struct drive_status drives[9] =
 {
-	{ 0, "" },	// 0
-	{ 0, "" },	// 1
-	{ 0, "" },	// 2
-	{ 0, "" },	// 3
-	{ 0, "" },	// 4
-	{ 0, "" },	// 5
-	{ 0, "" },	// 6
-	{ 0, "" },	// 7
-	{ 0, "" }	// 8
+	{ 0 },	// 0
+	{ 0 },	// 1
+	{ 0 },	// 2
+	{ 0 },	// 3
+	{ 0 },	// 4
+	{ 0 },	// 5
+	{ 0 },	// 6
+	{ 0 },	// 7
+	{ 0 }	// 8
 };
 
 unsigned areDrivesInitialized = false;
@@ -558,22 +558,24 @@ struct dir_node*  __fastcall getSpecificNode(
 
 void  __fastcall selectAllFiles(
 	struct panel_drive *panel, 
-	const unsigned select)
+	const bool select)
 {
-	static unsigned int i = 0;
+	unsigned int i = 0;
 
 	if(panel != NULL)
 	{
 		for(;i< panel->length / 8 + 1; ++i)
 		{
 			panel->selectedEntries[i] = 
-				(select == true ? 0xFF : 0x00);
+				(select ? 0xFF : 0x00);
 		}
 	}
 
 	displayDirectory(panel);
 	writeSelectorPosition(panel, '>');
 	writeCurrentFilename(panel);
+
+	writeStatusBarf("%s all files", select ? "Selected" : "Deselected");
 }
 
 void __fastcall  moveTop(

@@ -105,9 +105,10 @@ void  copyFiles(void)
 	{
 		selectCurrentFile();
 		writeSelectorPosition(selectedPanel, '>');
+		writeStatusBar("No files selected, selecting current file.");
 	}
 
-//timeStart = time(NULL);
+	//timeStart = time(NULL);
 	//timeStart = clock();
 	for(i=0; i<selectedPanel->length / 8 + 1; ++i)
 	{
@@ -133,6 +134,7 @@ void  copyFiles(void)
 					}
 				}
 
+				writeStatusBarf("Copying file %s.....", currentNode->name);
 				sprintf(sourcePath, "%s/%s", selectedPanel->path, currentNode->name);
 				sourceFile = NULL;
 				sourceFile = fopen(sourcePath, "rb");
@@ -368,6 +370,7 @@ void  deleteFiles(void)
 					}
 
 					sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
+					writeStatusBarf("Deleting %s.", selectedNode->name);
 					if (remove(oldName) < 0 ||
 						// Let us change our minds, and stop a batch delete.
 						kbhit() && cgetc() == CH_ESC)
@@ -393,11 +396,14 @@ void  deleteFiles(void)
 				writeCurrentFilename(selectedPanel);
 
 				sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
+				writeStatusBarf("Deleting %s.", selectedNode->name);
 				remove(oldName);
 			}
 		}
 
 		rereadSelectedPanel();
+
+		writeStatusBar("Deleted files.");
 	}
 }
 

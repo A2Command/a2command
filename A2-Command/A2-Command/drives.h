@@ -59,7 +59,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 struct drive_status
 {
 	unsigned char drive;
-	unsigned char message[39];
 };
 
 /* Directory Node
@@ -183,7 +182,7 @@ void __fastcall  resetSelectedFiles(
 
 void __fastcall  selectAllFiles(
 	struct panel_drive *panel, 
-	const unsigned select);
+	const bool select);
 
 void __fastcall  moveTop(
 	struct panel_drive *panel);
