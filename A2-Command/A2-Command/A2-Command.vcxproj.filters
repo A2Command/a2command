@@ -16,7 +16,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AppleCommander-1.3.5.jar" />
-    <None Include="a2command_master.po" />
+    <None Include="prodos.dsk" />
+    <None Include="loader.system" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile">

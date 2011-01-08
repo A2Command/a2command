@@ -7,15 +7,8 @@ T := apple2enh
 JAVA := java
 AC := AppleCommander-1.3.5.jar
 DISK := a2command.po
-MASTER_DISK := a2command_master.po
+MASTER_DISK := prodos.po
 EMULATOR := C:/AppleWin/Applewin.exe -d1 $(CURDIR)/$(DISK)
-
-CONFIG_SOURCES = \
-	ConfigurationManager.c \
-	Configuration.c \
-	globals.c \
-	screen.c \
-	globalInput.c
 
 SOURCES	= \
 	AssemblerMethods.c \
@@ -34,15 +27,9 @@ SOURCES	= \
 	globalInput.c \
 	Viewer.c
 
-ASMFILES= \
-#	res/common/driveRoutines.s \
-#	res/$(T)/PlatformSpecific.s
+PROGRAM	=a2cmd
 
-PROGRAM	=a2command.060803
-CONFIG_PROGRAM =a2cmdcfg.060803
-
-TITLE	=$(PROGRAM:.060803=)
-CONFIG_TITLE =$(CONFIG_PROGRAM:.060803=)
+TITLE	=$(PROGRAM)
 
 LIBS	=$(T).lib
 
@@ -57,8 +44,9 @@ A2Disk: T:=apple2enh
 A2Disk: all
 	cp $(MASTER_DISK) $(DISK)
 #	cp cffa_main.po cffa.po
-	$(JAVA) -jar $(AC) -cc65 $(DISK) $(TITLE) bin < $(T)/$(PROGRAM)
-#	$(JAVA) -jar $(AC) -cc65 cffa.po $(TITLE) bin < $(T)/$(PROGRAM)
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < loader.system
+	$(JAVA) -jar $(AC) -cc65 $(DISK) $(TITLE) bin       < $(T)/$(PROGRAM)
+#	$(JAVA) -jar $(AC) -cc65 cffa.po $(TITLE) bin		< $(T)/$(PROGRAM)
 
 $(T):
 	mkdir $(T)
@@ -66,14 +54,10 @@ $(T):
 # Build our program
 $(PROGRAM): $(SOURCES) $(ASMFILES) | $(T)
 	$(CL) -O -t $(T) -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
-	$(CL) -O -t $(T) -o $(T)/$(CONFIG_PROGRAM) $(CONFIG_SOURCES) $(ASMFILES) $(LIBS)
 
 # Our phony targets for managing the project
 #.PHONY: clean
 clean: 
 	$(RM) $(SOURCES:.c=.o) $(SOURCES:.c=.s)
-	$(RM) $(CONFIG_SOURCES:.c=.o) $(CONFIG_SOURCES:.c=.s)
-	$(RM) $(ASMFILES:.s=.o)
 	$(RM) $(T)/$(PROGRAM)
-	$(RM) $(T)/$(CONFIG_PROGRAM)
 	$(RM) $(DISK)
