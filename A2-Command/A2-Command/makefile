@@ -45,6 +45,7 @@ A2Disk: all
 	cp $(MASTER_DISK) $(DISK)
 #	cp cffa_main.po cffa.po
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < loader.system
+#	$(JAVA) -jar $(AC) -p cffa.po $(TITLE).system sys 0 < loader.system
 	$(JAVA) -jar $(AC) -cc65 $(DISK) $(TITLE) bin       < $(T)/$(PROGRAM)
 #	$(JAVA) -jar $(AC) -cc65 cffa.po $(TITLE) bin		< $(T)/$(PROGRAM)
 
