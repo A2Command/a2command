@@ -70,11 +70,11 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 	{
 		if(rootdir(_drives[i], buffer) > -1)
 		{
-			sprintf(temp, "S%uD%u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
+			sprintf(temp, "Slot %u Drive %u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
 		}
 		else
 		{
-			sprintf(temp, "S%uD%u - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1);
+			sprintf(temp, "Slot %u Drive %u - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1);
 		}
 
 		cputsxy(8, 9 + i, temp); 
