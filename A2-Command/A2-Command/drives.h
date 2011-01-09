@@ -160,7 +160,7 @@ void __fastcall  enterDirectory(
 void __fastcall  leaveDirectory(
 	struct panel_drive *panel);
 
-bool __fastcall  isDiskImage(
+unsigned char __fastcall  getDiskImageType(
 	struct panel_drive *panel);
 
 bool __fastcall  isDirectory(

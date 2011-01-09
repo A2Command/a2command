@@ -464,7 +464,7 @@ void __fastcall  leaveDirectory(
 	rereadSelectedPanel();
 }
 
-bool __fastcall  isDiskImage(
+unsigned char __fastcall  getDiskImageType(
 	struct panel_drive *panel)
 {
 	static unsigned result = false;
@@ -478,17 +478,21 @@ bool __fastcall  isDiskImage(
 
 	if(currentDirNode != NULL)
 	{
-		if(strstr(name, ".d0") > 0
+		if(strstr(name, ".do") > 0
 			|| strstr(name, ".dsk") > 0
-			|| strstr(name, ".po") > 0
+		)
+		{
+			result = 2;
+		}
+		else if(strstr(name, ".po") > 0
 			|| strstr(name, ".hdv") > 0
 		)
 		{
-			result = true;
+			result = 1;
 		}
 		else
 		{
-			result = false;
+			result = 0;
 		}
 	}
 

@@ -144,10 +144,11 @@ unsigned long __fastcall__ getDriveSize(unsigned char driveNumber)
 unsigned char filePath[MAX_PATH_LENGTH];
 void __fastcall__ writeDiskImage(void)
 {
-	unsigned int i, r;
+	unsigned int i, j, r;
 	struct panel_drive *targetPanel;
 	dhandle_t targetDrive;
 	FILE *sourceFile;
+	unsigned char imageType;
 	struct dir_node *selectedNode;
 	unsigned long targetDriveSize;
 	unsigned int sectorSize;
@@ -157,7 +158,9 @@ void __fastcall__ writeDiskImage(void)
 
 	selectedNode = getSelectedNode(selectedPanel);
 
-	if(isDiskImage(selectedPanel))
+	imageType = getDiskImageType(selectedPanel);
+
+	if(imageType)
 	{
 		sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
 
@@ -174,15 +177,42 @@ void __fastcall__ writeDiskImage(void)
 			sectorCount = dio_query_sectcount(targetDrive);
 
 			writeStatusBarf("Begin writing....");
-			for(i=0; i<sectorCount; ++i)
+
+			if(imageType == 1)
 			{
-				r = fread(fileBuffer, sectorSize, 1, sourceFile);
-
-				if(r == 1)
+				for(i=0; i<sectorCount; ++i)
 				{
-					r = dio_write(targetDrive, i, fileBuffer);
-
-					writeStatusBarf("Wrote sector %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
+					r = fread(fileBuffer, sectorSize, 1, sourceFile);
+					if(r == 1)
+					{
+						r = dio_write(targetDrive, i, fileBuffer);
+						writeStatusBarf("Wrote block %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
+					}
+				}
+			}
+			else
+			{
+				for(i=0; i<sectorCount/8; ++i)
+				{
+					r  = fread(fileBuffer +  512, 256, 1, sourceFile);
+					r &= fread(fileBuffer + 1024, 256, 1, sourceFile);
+					for(j=6; j>0; --j)
+					{
+						r  = fread(fileBuffer + 256, 256, 1, sourceFile);
+						r &= fread(fileBuffer,       256, 1, sourceFile);
+						if(r == 1)
+						{
+							r = dio_write(targetDrive, i * 8 + j, fileBuffer);
+						}
+					}
+					r  = fread(fileBuffer +  768, 256, 1, sourceFile);
+					r &= fread(fileBuffer + 1280, 256, 1, sourceFile);
+					if(r == 1)
+					{
+						r  = dio_write(targetDrive, i * 8,     fileBuffer +  512);
+						r |= dio_write(targetDrive, i * 8 + 7, fileBuffer + 1024);
+					}
+					writeStatusBarf("Wrote track %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / (sectorCount/8));
 				}
 			}
 		
