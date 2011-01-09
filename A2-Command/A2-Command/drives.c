@@ -151,6 +151,11 @@ int __fastcall  getDirectory(
 			currentDE = readdir(dir);
 			if(strlen(currentDE->d_name) > 0)
 			{
+				for(i = 0; i<SLIDING_WINDOW_SIZE; ++i)
+				{
+					sprintf(drive->slidingWindow[i - slidingWindowStartAt].name, "");
+				}
+
 				while(currentDE != NULL)
 				{
 					if(counter >= slidingWindowStartAt &&
@@ -320,14 +325,27 @@ void __fastcall  writeCurrentFilename(
 			currentDirNode = getSelectedNode(panel);
 
 			if(currentDirNode != NULL &&
-				currentDirNode->name != NULL)
+				currentDirNode->name != NULL &&
+				strlen(currentDirNode->name) > 0)
 			{
 				writeStatusBarf("Idx: %3u Sz: %8ld Nm: %s",
 					currentDirNode->index,
 					currentDirNode->size,
 					currentDirNode->name);
 			}
+			else
+			{
+				writeStatusBar("No file.");
+			}
 		}
+		else
+		{
+			writeStatusBar("No drive.");
+		}
+	}
+	else
+	{
+		writeStatusBar("No panel.");
 	}
 }
 

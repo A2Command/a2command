@@ -77,7 +77,7 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 			sprintf(temp, "Slot %u Drive %u - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1);
 		}
 
-		cputsxy(8, 9 + i, temp); 
+		cputsxy(8, (9+_driveCount) - i - 1, temp); 
 	}
 
 	cputcxy(7, 9, '>');
@@ -112,9 +112,9 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 
 	if(key == CH_ENTER)
 	{
-		panel->drive = &drives[current];
-		panel->drive->drive = _drives[current];		
-		if(rootdir(_drives[current], panel->path) == -1)
+		panel->drive = &drives[_driveCount - current - 1u];
+		panel->drive->drive = _drives[_driveCount - current - 1u];		
+		if(rootdir(panel->drive->drive, panel->path) == -1)
 		{
 			strcpy(panel->path, "");
 		}

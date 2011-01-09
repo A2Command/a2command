@@ -89,9 +89,12 @@ void  copyFiles(void)
 
 	targetPanel = selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive;
 
-	if(strcmp(selectedPanel->path, targetPanel->path) == 0)
+	if(strcmp(selectedPanel->path, targetPanel->path) == 0 
+		//&& targetPanel->drive->drive == selectedPanel->drive->drive
+		)
 	{
 		saveScreen();
+		//writeStatusBar("Cannot copy to the same path on the same drive.");
 		writeStatusBar("Cannot copy to the same path.");
 		waitForEnterEsc();
 		retrieveScreen();
@@ -369,11 +372,11 @@ void  deleteFiles(void)
 				isBatch = true;
 
 				sprintf(oldName, "%s/%s", selectedPanel->path, currentDE->d_name);
-				waitForEnterEscf("Deleting %-17s - i:%u  j:%u  l:%u",currentDE->d_name, i, j, l);
+				writeStatusBarf("Deleting %-17s",currentDE->d_name, i, j, l);
 					
 				if (remove(oldName) < 0)
 				{
-					waitForEnterEscf("Error %u removing %s. - i:%u  j:%u  l:%u", _oserror, currentDE->d_name, i, j, l);
+					waitForEnterEscf("Error %u removing %s.", _oserror, currentDE->d_name, i, j, l);
 				}
 
 				if(kbhit() && cgetc() == CH_ESC)

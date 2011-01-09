@@ -88,6 +88,7 @@ void  readKeyboard(void)
 			selectedPanel = &leftPanelDrive;
 			writeSelectorPosition(&leftPanelDrive, '>');
 			writeSelectorPosition(&rightPanelDrive, ' ');
+			writeCurrentFilename(selectedPanel);
 		}
 		break;
 	case CH_CURS_RIGHT:
@@ -98,6 +99,7 @@ void  readKeyboard(void)
 			selectedPanel = &rightPanelDrive;
 			writeSelectorPosition(&leftPanelDrive, ' ');
 			writeSelectorPosition(&rightPanelDrive, '>');
+			writeCurrentFilename(selectedPanel);
 		}
 		break;
 
