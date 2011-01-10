@@ -50,7 +50,8 @@ $(T):
 
 # Build our program
 $(PROGRAM): $(SOURCES) $(ASMFILES) | $(T)
-	$(CL) -O -t $(T) -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
+#	$(CL) -O -t $(T) -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
+	$(CL) -O -t $(T) -C apple2enh-loader.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
 
 # Our phony targets for managing the project
 #.PHONY: clean
