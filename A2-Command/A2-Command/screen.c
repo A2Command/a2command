@@ -43,12 +43,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "Configuration-Apple2Enh.h"
 #include "screen.h"
 #include "constants.h"
 #include "globalInput.h"
 #include "globals.h"
-#include "PlatformSpecific.h"
 #include "input.h"
 
 #ifndef __fastcall
