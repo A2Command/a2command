@@ -137,6 +137,7 @@ int __fastcall  getDirectory(
 	}
 	else
 	{
+		strcpy(fileBuffer, drive->path);
 		dir = opendir(drive->path);
 
 		if(dir != NULL)
@@ -202,6 +203,8 @@ int __fastcall  getDirectory(
 			}
 			waitForEnterEscf(commandPath);
 		}
+
+		strcpy(drive->path, fileBuffer);
 	}
 
 	return counter;

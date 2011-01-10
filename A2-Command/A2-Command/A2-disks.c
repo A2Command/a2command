@@ -234,6 +234,7 @@ void __fastcall__ writeDiskImage(void)
 
 			selectedPanel = targetPanel;	
 			rereadSelectedPanel();
+			writeSelectorPosition(selectedPanel, '>');
 
 			writeStatusBarf("Writing completed.");
 		}
@@ -332,6 +333,7 @@ void __fastcall__ createDiskImage(void)
 
 		selectedPanel = targetPanel;	
 		reloadPanels();
+		writeSelectorPosition(selectedPanel, '>');
 
 		writeStatusBarf("Created %s.", filePath);
 
@@ -400,6 +402,7 @@ void __fastcall__ copyDisk(void)
 
 		selectedPanel = targetPanel;	
 		rereadSelectedPanel();
+		writeSelectorPosition(selectedPanel, '>');
 
 		writeStatusBarf("Disk copy complete.");
 	}

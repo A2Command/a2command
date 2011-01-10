@@ -59,7 +59,7 @@ void writeMenuBar(void)
 	bottom = size_y - 1;
 	
 	cclearxy(0, bottom, size_x);
-	cputsxy(0, bottom, "  HELP     QUIT    SELECT   REFRESH   COPY    RENAME    MAKE DIRECTORY    DELETE");
+	cputsxy(0, bottom, " HELP      QUIT    SELECT   REFRESH   COPY    RENAME    MAKE DIRECTORY    DELETE");
 
 	revers(true);
 	gotoxy(0, bottom); cputc('1');
