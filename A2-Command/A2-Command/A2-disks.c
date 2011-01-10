@@ -40,6 +40,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 
 #include "A2-disks.h"
 #include "screen.h"
@@ -68,15 +69,12 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 
 	for(i=0; i<_driveCount; ++i)
 	{
-		if(rootdir(_drives[i], buffer) > -1)
+		if(rootdir(_drives[i], buffer))
 		{
-			sprintf(temp, "Slot %u Drive %u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
-		}
-		else
-		{
-			sprintf(temp, "Slot %u Drive %u - ERROR or No Disk", (_drives[i]>>4)&7, (_drives[i]>>7)+1);
+			strcpy(buffer, _stroserror(_oserror));
 		}
 
+                sprintf(temp, "Slot %u Drive %u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
 		cputsxy(8, (9+_driveCount) - i - 1, temp); 
 	}
 
