@@ -50,19 +50,11 @@ enum menus
 
 
 // Menu actions
-void  inputCommand(void);
-void  executeSelectedFile(void);
-void  rereadDrivePanel(enum menus menu);
-void  rereadSelectedPanel(void);
+void __fastcall__ rereadDrivePanel(enum menus menu);
+void __fastcall__ rereadSelectedPanel(void);
 void  reloadPanels(void);
-void  writeDriveSelectionPanel(enum menus menu);
-void  writeAboutBox(void);
+void __fastcall__ writeDriveSelectionPanel(enum menus menu);
 void  displayPanels(void);
-void  writeMenu(enum menus);
-void  writeOptionsPanel(void);
-void  saveOptions(void);
-void  swapPanels(void);
-void  togglePanels(void);
 void  writeHelpPanel(void);
 void  copyFiles(void);
 void  renameFile(void);
@@ -73,13 +65,5 @@ void  createD64(void);
 void  quit(void);
 
 // Menu drawing
-void  drawFileMenu(unsigned char);
-void  drawDriveMenu(unsigned char);
-void  drawCommandMenu(unsigned char);
-void  drawOptionsMenu(unsigned char);
-void  drawMenu(unsigned char, unsigned char, unsigned char, char*[], unsigned char[]);
-void  drawMenuLine(unsigned, unsigned char, char*, unsigned char, unsigned char);
 void writeMenuBar(void);
-
-extern unsigned char fileBuffer[COPY_BUFFER_SIZE];
 #endif

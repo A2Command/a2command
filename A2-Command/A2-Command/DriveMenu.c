@@ -48,7 +48,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "menus.h"
 #include "screen.h"
 
-void  rereadDrivePanel(enum menus menu)
+void __fastcall__ rereadDrivePanel(enum menus menu)
 {
 	if(menu == left)
 	{
@@ -63,7 +63,7 @@ void  rereadDrivePanel(enum menus menu)
 }
 
 
-void  rereadSelectedPanel(void)
+void __fastcall__ rereadSelectedPanel(void)
 {
 	if(selectedPanel == NULL)
 	{
@@ -91,9 +91,8 @@ void  rereadSelectedPanel(void)
 	writeCurrentFilename(selectedPanel);
 }
 
-void  writeDriveSelectionPanel(enum menus menu)
+void __fastcall__ writeDriveSelectionPanel(enum menus menu)
 {
-	//listDrives(menu);
 	selectDrive((menu == left ? &leftPanelDrive : &rightPanelDrive));
 	retrieveScreen();
 

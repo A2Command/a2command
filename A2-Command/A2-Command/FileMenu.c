@@ -46,7 +46,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <time.h>
 #include <dirent.h>
 
-#include "Configuration.h"
 #include "constants.h"
 #include "globalInput.h"
 #include "globals.h"
@@ -68,9 +67,8 @@ void  writeHelpPanel(void)
 	viewFile("a2cmdhelp.txt");
 }
 
-unsigned char fileBuffer[COPY_BUFFER_SIZE];
-struct panel_drive *targetPanel = NULL, *tempPanel = NULL;
-void  copyFiles(void)
+struct panel_drive *tempPanel = NULL;
+void copyFiles(void)
 {
 	FILE *sourceFile = NULL, *targetFile = NULL;
 	unsigned numSelectors = (selectedPanel->length + 7) / 8u;
@@ -238,7 +236,7 @@ void  copyFiles(void)
 	}
 }
 
-void  reloadPanels(void)
+void reloadPanels(void)
 {
 	tempPanel = selectedPanel;
 	selectedPanel = targetPanel;
@@ -251,7 +249,7 @@ void  reloadPanels(void)
 }
 
 unsigned char oldName[256], newName[256];
-void  renameFile(void)
+void renameFile(void)
 {
 	enum results dialogResult;
 	struct dir_node *selectedNode = NULL;
@@ -296,7 +294,7 @@ void  renameFile(void)
 	}
 }
 
-void  makeDirectory(void)
+void makeDirectory(void)
 {
 	enum results dialogResult;
 	struct dir_node *selectedNode = NULL;
@@ -334,7 +332,7 @@ void  makeDirectory(void)
 	}
 }
 
-void  deleteFiles(void)
+void deleteFiles(void)
 {
 	struct dir_node *selectedNode;
 	unsigned i, k, l;
@@ -414,7 +412,7 @@ void  deleteFiles(void)
 
 }
 
-void  quit(void)
+void quit(void)
 {
 	unsigned result;
 
@@ -429,39 +427,4 @@ void  quit(void)
 	}
 
 	retrieveScreen();
-}
-
-void  writeAboutBox(void)
-{
-	writeStatusBarf("Thank You for using A2-Command Alpa");
-}
-
-void  executeSelectedFile(void)
-{
-	struct dir_node *currentNode;
-	unsigned result;
-
-	if(selectedPanel != NULL)
-	{
-		currentNode = getSelectedNode(selectedPanel);
-
-		if(currentNode != NULL && currentNode->type == 2)
-		{
-			saveScreen();
-
-			result = writeYesNo("Confirm", quit_message, 1);
-
-			retrieveScreen();
-	
-			if(result == true)
-			{
-				clrscr();
-				exit(EXIT_SUCCESS);
-			}
-		}
-	}
-}
-
-void  inputCommand(void)
-{
 }

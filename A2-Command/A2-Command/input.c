@@ -53,7 +53,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void  readKeyboard(void)
 {
 	unsigned char key;
-	static unsigned char buffer[129];
+	//static unsigned char buffer[129];
 
 	key = cgetc();
 
@@ -82,8 +82,7 @@ void  readKeyboard(void)
 
 	case CH_CURS_LEFT:
 		if(selectedPanel == &rightPanelDrive
-			&& strlen(leftPanelDrive.path) > 0
-			&& arePanelsOn)
+			&& strlen(leftPanelDrive.path) > 0)
 		{
 			selectedPanel = &leftPanelDrive;
 			writeSelectorPosition(&leftPanelDrive, '>');
@@ -93,8 +92,7 @@ void  readKeyboard(void)
 		break;
 	case CH_CURS_RIGHT:
 		if(selectedPanel == &leftPanelDrive
-			&& strlen(rightPanelDrive.path) > 0
-			&& arePanelsOn)
+			&& strlen(rightPanelDrive.path) > 0)
 		{
 			selectedPanel = &rightPanelDrive;
 			writeSelectorPosition(&leftPanelDrive, ' ');
@@ -159,9 +157,9 @@ void  readKeyboard(void)
 	case KEY_F8:
 		deleteFiles();
 		break;
-	case KEY_AT:
-		inputCommand();
-		break;
+	//case KEY_AT:
+	//	inputCommand();
+	//	break;
 	case KEY_F7:
 		makeDirectory();
 		break;

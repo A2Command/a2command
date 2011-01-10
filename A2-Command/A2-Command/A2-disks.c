@@ -55,7 +55,7 @@ unsigned char* _drives;
 void __fastcall__ selectDrive(struct panel_drive *panel)
 {
 	static unsigned char i, key, current;
-	static unsigned char buffer[68];
+	//static unsigned char buffer[68];
 	static unsigned char temp[80];
 
 	_driveCount = drivecount();
@@ -145,7 +145,6 @@ unsigned char filePath[MAX_PATH_LENGTH];
 void __fastcall__ writeDiskImage(void)
 {
 	unsigned int i, j, r;
-	struct panel_drive *targetPanel;
 	dhandle_t targetDrive;
 	FILE *sourceFile;
 	unsigned char imageType;
@@ -170,6 +169,11 @@ void __fastcall__ writeDiskImage(void)
 		{
 			sourceFile = fopen(filePath, "rb");
 
+			if(sourceFile == NULL)
+			{
+				waitForEnterEscf("Could not open %s", filePath);
+			}
+
 			targetDrive = dio_open(targetPanel->drive->drive);
 
 			sectorSize = dio_query_sectsize(targetDrive);
@@ -177,16 +181,20 @@ void __fastcall__ writeDiskImage(void)
 			sectorCount = dio_query_sectcount(targetDrive);
 
 			writeStatusBarf("Begin writing....");
-
 			if(imageType == 1)
 			{
 				for(i=0; i<sectorCount; ++i)
 				{
+					r = 0;
 					r = fread(fileBuffer, sectorSize, 1, sourceFile);
 					if(r == 1)
 					{
 						r = dio_write(targetDrive, i, fileBuffer);
 						writeStatusBarf("Wrote block %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
+					}
+					else
+					{
+						waitForEnterEscf("Could not read source file. r=%ld", r);
 					}
 				}
 			}
@@ -257,7 +265,6 @@ void __fastcall__ createDiskImage(void)
 	static FILE *targetFile;
 	static unsigned int sectorSize;
 	static unsigned long sectorCount;
-	static struct panel_drive *targetPanel;
 	
 	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
 
@@ -315,7 +322,6 @@ void __fastcall__ copyDisk(void)
 	static dhandle_t sourceDrive;
 	static dhandle_t targetDrive;
 	static unsigned long sectorCount;
-	static struct panel_drive *targetPanel;
 	
 	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
 

@@ -38,6 +38,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _SCREEN_H
 #define _SCREEN_H
 
+#ifndef __fastcall
+#define __fastcall __fastcall__
+#endif
+
 #include <stdbool.h>
 
 enum results { OK_RESULT, CANCEL_RESULT, YES_RESULT, NO_RESULT };
@@ -48,11 +52,11 @@ enum buttons { OK = 1, CANCEL = 2, YES = 4, NO = 8 };
 
 void setupScreen(void);
 
-void writeStatusBar(const char[]);
+void __fastcall writeStatusBar(const char[]);
 void vwriteStatusBarf(const char[], va_list);
 void writeStatusBarf(const char[], ...);
 
-void writePanel(
+void __fastcall writePanel(
 	unsigned drawBorder,
 	unsigned reverse,
 	unsigned char color,
@@ -63,7 +67,7 @@ void writePanel(
 	unsigned char *ok);
 
 
-void drawBox(
+void __fastcall drawBox(
 	unsigned char x,
 	unsigned char y,
 	unsigned char w,
@@ -71,18 +75,18 @@ void drawBox(
 	unsigned char color,
 	unsigned reverse);
 
-enum results  drawDialog(
+enum results __fastcall drawDialog(
 	unsigned char* message[],
 	unsigned char lineCount,
 	unsigned char* title,
 	enum buttons button);
 
-bool writeYesNo(
+bool __fastcall writeYesNo(
 	unsigned char *title,
 	unsigned char *message[],
 	unsigned char lineCount);
 
-enum results  drawInputDialog(
+enum results __fastcall drawInputDialog(
 	unsigned char lineCount,
 	unsigned char length,
 	unsigned char *message[],
@@ -94,6 +98,6 @@ void  retrieveScreen(void);
 
 void  notImplemented(void);
 
-unsigned char  getCenterX(unsigned char w);
-unsigned char  getCenterY(unsigned char h);
+unsigned char __fastcall getCenterX(unsigned char w);
+unsigned char __fastcall getCenterY(unsigned char h);
 #endif

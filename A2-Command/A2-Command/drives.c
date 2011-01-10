@@ -45,7 +45,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "A2-disks.h"
-#include "Configuration.h"
 #include "constants.h"
 #include "drives.h"
 #include "globalInput.h"
@@ -59,6 +58,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 unsigned char commandPath[256];
+unsigned char fileBuffer[COPY_BUFFER_SIZE];
 
 struct drive_status drives[9] =
 {
@@ -77,19 +77,15 @@ unsigned areDrivesInitialized = false;
 struct panel_drive leftPanelDrive; 
 struct panel_drive rightPanelDrive;
 struct panel_drive *selectedPanel;
+struct panel_drive *targetPanel;
 
-unsigned char currentLeft = 0;
-unsigned char currentRight = 0;
-
-void __fastcall  initializeDrives(void)
+void initializeDrives(void)
 {
 	static unsigned char i = 0;
 
 	if(!areDrivesInitialized)
 	{
-		startupDevice = PEEK(0x00BA);
-
-		leftPanelDrive.drive = &(drives[defaultLeftDrive - 8]);
+		leftPanelDrive.drive = NULL;
 		leftPanelDrive.currentIndex = 0;
 		leftPanelDrive.displayStartAt = 0;
 		leftPanelDrive.position = left;
@@ -100,7 +96,7 @@ void __fastcall  initializeDrives(void)
 			leftPanelDrive.slidingWindow[i].type = 0;
 		}
 
-		rightPanelDrive.drive = &(drives[defaultRightDrive - 8]);
+		rightPanelDrive.drive = NULL;
 		rightPanelDrive.currentIndex = 0;
 		rightPanelDrive.displayStartAt = 0;
 		rightPanelDrive.position = right;
@@ -136,7 +132,7 @@ int __fastcall  getDirectory(
 
 	if(strlen(drive->path) == 0)
 	{
-		writeStatusBar("Aborting directory operation.");
+		writeStatusBar("Aborting.");
 		return 0;
 	}
 	else
@@ -153,7 +149,7 @@ int __fastcall  getDirectory(
 			{
 				for(i = 0; i<SLIDING_WINDOW_SIZE; ++i)
 				{
-					sprintf(drive->slidingWindow[i - slidingWindowStartAt].name, "");
+					strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, "");
 				}
 
 				while(currentDE != NULL)
@@ -196,6 +192,8 @@ int __fastcall  getDirectory(
 			}
 
 			closedir(dir);
+	
+			rootdir(drive->drive->drive, drive->path);
 		}
 		else
 		{
@@ -239,7 +237,7 @@ void __fastcall  displayDirectory(
 	if(size_x > 40) w=39;
 	if(drive->position == right) x=w + 1;
 	
-	writePanel(true, false, color_text_borders, x, 1, 21, w, 
+	writePanel(true, false, COLOR_WHITE, x, 1, 21, w, 
 		drive->path, NULL, NULL);
 
 	sprintf(temp, "[S%uD%u]", 
@@ -285,14 +283,13 @@ void __fastcall  displayDirectory(
 		}		
 
 		y = i - start + 2;
-		sprintf(temp, "%u-%u-%u", currentNode->date.year,
-			currentNode->date.mon,
-			currentNode->date.day);
 
-		sprintf(commandPath, "%5u %-17s %8s %2X"
+		sprintf(commandPath, "%5u %-17s %02u-%02u-%02u %2X"
 			, currentNode->blocks
 			, currentNode->name
-			, temp
+			, currentNode->date.year
+			, currentNode->date.mon
+			, currentNode->date.day
 			, currentNode->type
 			);
 		cputsxy(x + 2, y, commandPath);
@@ -409,7 +406,7 @@ void __fastcall  moveSelectorDown(
 	writeCurrentFilename(panel);
 }
 
-void __fastcall  selectCurrentFile(void)
+void selectCurrentFile(void)
 {
 	static unsigned char 
 		index = 0, bit = 0, mod = 0, 

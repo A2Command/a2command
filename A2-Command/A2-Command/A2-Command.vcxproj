@@ -179,11 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="A2-disks.c" />
-    <ClCompile Include="AssemblerMethods.c" />
     <ClCompile Include="A2-Command.c" />
-    <ClCompile Include="CommandMenu.c" />
-    <ClCompile Include="Configuration.c" />
-    <ClCompile Include="ConfigurationManager.c" />
     <ClCompile Include="DriveMenu.c" />
     <ClCompile Include="drives.c" />
     <ClCompile Include="FileMenu.c" />
@@ -192,23 +188,17 @@
     <ClCompile Include="input.c" />
     <ClCompile Include="makefile" />
     <ClCompile Include="menus.c" />
-    <ClCompile Include="OptionMenu.c" />
     <ClCompile Include="screen.c" />
     <ClCompile Include="Viewer.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="A2-disks.h" />
-    <ClInclude Include="AssemblerMethods.h" />
-    <ClInclude Include="Configuration-Apple2Enh.h" />
-    <ClInclude Include="Configuration.h" />
-    <ClInclude Include="ConfigurationManager.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="drives.h" />
     <ClInclude Include="globalInput.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="menus.h" />
-    <ClInclude Include="PlatformSpecific.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="Viewer.h" />
   </ItemGroup>

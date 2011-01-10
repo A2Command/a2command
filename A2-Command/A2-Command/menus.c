@@ -41,7 +41,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <conio.h>
 #include <string.h>
 
-#include "Configuration.h"
 #include "constants.h"
 #include "globals.h"
 #include "input.h"

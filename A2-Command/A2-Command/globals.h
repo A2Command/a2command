@@ -40,12 +40,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern unsigned char size_x;
 extern unsigned char size_y;
-//extern unsigned char blank_line[81];
-extern unsigned arePanelsOn;
-extern unsigned char buffer[41];
-
-extern unsigned char startupDevice;
-
+extern unsigned char buffer[129];
 
 void initialize(void);
 #endif

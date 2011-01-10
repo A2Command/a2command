@@ -126,9 +126,10 @@ extern struct drive_status drives[9];		// The collection of drive statuses
 extern struct panel_drive leftPanelDrive;	// The left panel
 extern struct panel_drive rightPanelDrive;	// The right panel
 extern struct panel_drive *selectedPanel;	// The current panel
+extern struct panel_drive *targetPanel;
 
 /* METHODS */
-void __fastcall initializeDrives(void);
+void initializeDrives(void);
 
 void  __fastcall listDrives(enum menus menu);
 
@@ -149,7 +150,7 @@ void __fastcall  moveSelectorUp(
 void __fastcall  moveSelectorDown(
 	struct panel_drive *panel);
 
-void __fastcall  selectCurrentFile(void);
+void selectCurrentFile(void);
 
 void __fastcall  writeCurrentFilename(
 	struct panel_drive *panel);
@@ -195,4 +196,8 @@ void __fastcall  movePageDown(
 
 void __fastcall moveBottom(
 	struct panel_drive *panel);
+
+	
+extern unsigned char fileBuffer[COPY_BUFFER_SIZE];
+
 #endif

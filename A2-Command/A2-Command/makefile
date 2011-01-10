@@ -11,18 +11,14 @@ MASTER_DISK := prodos.po
 EMULATOR := C:/AppleWin/Applewin.exe -d1 $(CURDIR)/$(DISK)
 
 SOURCES	= \
-	AssemblerMethods.c \
 	A2-Command.c \
 	A2-disks.c \
-	CommandMenu.c \
-	Configuration.c \
 	DriveMenu.c \
 	drives.c \
 	FileMenu.c \
 	globals.c \
 	input.c \
 	menus.c \
-	OptionMenu.c \
 	screen.c  \
 	globalInput.c \
 	Viewer.c

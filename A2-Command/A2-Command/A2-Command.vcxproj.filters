@@ -23,9 +23,6 @@
     <ClCompile Include="makefile">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AssemblerMethods.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="menus.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -44,22 +41,10 @@
     <ClCompile Include="input.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OptionMenu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CommandMenu.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="drives.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="globalInput.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConfigurationManager.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Configuration.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="A2-Command.c">
@@ -76,9 +61,6 @@
     <ClInclude Include="constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AssemblerMethods.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="menus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -91,22 +73,10 @@
     <ClInclude Include="input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlatformSpecific.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="drives.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigurationManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="globalInput.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Configuration-Apple2Enh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="A2-disks.h">

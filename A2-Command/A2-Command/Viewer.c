@@ -42,18 +42,21 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #include "Viewer.h"
-#include "Configuration.h"
 #include "globalInput.h"
 #include "globals.h"
 #include "screen.h"
 #include "menus.h"
+#include "drives.h"
+
+#ifndef __fastcall
+#define __fastcall __fastcall__
+#endif
 
 #define BUFFERSIZE (sizeof fileBuffer)
 
-void viewFile(
+void __fastcall viewFile(
 	const char *filename)
 {
-	char file[22];
 	char line[81];
 	char word[81];
 	int r, i;
@@ -67,7 +70,7 @@ void viewFile(
 	fileStream = fopen(filename, "rb");
 	saveScreen();
 
-	if(file != NULL)
+	if(fileStream != NULL)
 	{
 		clrscr();
 

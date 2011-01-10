@@ -38,12 +38,11 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 #include <conio.h>
 
-#include "Configuration.h"
 #include "constants.h"
 #include "globals.h"
 #include "screen.h"
 
-unsigned char  waitForEnterEsc(void)
+unsigned char waitForEnterEsc(void)
 {
 	unsigned char key = 0;
 

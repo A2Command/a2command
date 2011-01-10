@@ -44,7 +44,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <apple2enh.h>
 
 #include "A2-disks.h"
-#include "Configuration.h"
 #include "constants.h"
 #include "drives.h"
 #include "AssemblerMethods.h"
@@ -67,11 +66,6 @@ int main(void)
 {
 	// Prepares the application
 	initialize();
-
-	// Loads configuration from
-	// drive that the application
-	// was started from.
-	load();
 
 	// Initializes the disk drives
 	// which sets up structures for

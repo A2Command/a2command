@@ -47,10 +47,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 unsigned char size_x;
 unsigned char size_y;
-unsigned arePanelsOn = true;
-unsigned char buffer[41];
-
-unsigned char startupDevice = 8;
+unsigned char buffer[129];
 
 // Obtains the screen size and sets up global
 // strings as necessary.

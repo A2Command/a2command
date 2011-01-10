@@ -45,12 +45,15 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Configuration-Apple2Enh.h"
 #include "screen.h"
-#include "Configuration.h"
 #include "constants.h"
 #include "globalInput.h"
 #include "globals.h"
 #include "PlatformSpecific.h"
 #include "input.h"
+
+#ifndef __fastcall
+#define __fastcall __fastcall__
+#endif
 
 unsigned char SCREEN_BUFFER[2][24][40];
 
@@ -100,7 +103,7 @@ void  retrieveScreen(void)
 	}
 }
 
-void writeStatusBar(const char message[])
+void __fastcall writeStatusBar(const char message[])
 {
 	unsigned char oldX, oldY;
 
@@ -119,7 +122,7 @@ void writeStatusBar(const char message[])
 	gotoxy(oldY, oldY);
 }
 
-void drawBox(
+void __fastcall drawBox(
 	unsigned char x,
 	unsigned char y,
 	unsigned char w,
@@ -142,17 +145,17 @@ void drawBox(
 	}
 }
 
-unsigned char  getCenterX(unsigned char w)
+unsigned char __fastcall  getCenterX(unsigned char w)
 {
 	return (size_x / 2) - (w / 2) - 1;
 }
 
-unsigned char  getCenterY(unsigned char h)
+unsigned char __fastcall  getCenterY(unsigned char h)
 {
 	return (size_y / 2) - (h / 2) - 1;
 }
 
-void writePanel(
+void __fastcall writePanel(
 	unsigned drawBorder,
 	unsigned reverse,
 	unsigned char color,
@@ -163,7 +166,7 @@ void writePanel(
 	unsigned char *ok)
 {
 	unsigned int i = 0, okLeft = 0, cancelLeft = 0;
-	unsigned char buffer[80];
+	//unsigned char buffer[80];
 
 	saveScreen();
 
@@ -216,33 +219,7 @@ void writePanel(
 	}
 }
 
-void  notImplemented(void)
-{
-	//unsigned char h = 5, w = 23;
-	//unsigned char x, y;
-
-	//saveScreen();
-
-	//x = getCenterX(w);
-	//y = getCenterY(h);
-
-	//writePanel(true, true, color_border, x, y, h, w,
-	//	"Sorry...", "OK", NULL);
-
-	////textcolor(color_text_other);
-	//revers(true);
-	//cputsxy(x+2, y+2, "Not yet implemented.");
-
-	//waitForEnterEsc();
-
-	//retrieveScreen();
-	saveScreen();
-	writeStatusBar("Not implemented...");
-	waitForEnterEsc();
-	retrieveScreen();
-}
-
-enum results  drawDialog(
+enum results __fastcall drawDialog(
 	unsigned char* message[],
 	unsigned char lineCount,
 	unsigned char* title,
@@ -279,7 +256,7 @@ enum results  drawDialog(
 	}
 
 	writePanel(
-		true, false, color_text_borders,
+		true, false, COLOR_WHITE,
 		x, y, h, w,
 		title,
 		(button & NO || button & CANCEL ? cancelButton : NULL),
@@ -325,7 +302,7 @@ enum results  drawDialog(
 	return CANCEL_RESULT;
 }
 
-enum results  drawInputDialog(
+enum results __fastcall drawInputDialog(
 	unsigned char lineCount,
 	unsigned char length,
 	unsigned char *message[],
@@ -349,7 +326,7 @@ enum results  drawInputDialog(
 	y = getCenterY(h);
 
 	writePanel(
-		true, false, color_text_borders,
+		true, false, COLOR_WHITE,
 		x, y, h, w,
 		title,
 		"Cancel",
@@ -416,7 +393,7 @@ enum results  drawInputDialog(
 	return result;
 }
 
-bool writeYesNo(
+bool __fastcall writeYesNo(
 	unsigned char *title,
 	unsigned char *message[],
 	unsigned char lineCount)
@@ -429,7 +406,7 @@ bool writeYesNo(
 
 void vwriteStatusBarf(const char format[], va_list ap)
 {
-	char buffer[81];
+	//char buffer[81];
 
 	vsprintf(buffer, format, ap);
 	writeStatusBar(buffer);
