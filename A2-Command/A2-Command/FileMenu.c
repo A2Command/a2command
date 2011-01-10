@@ -328,6 +328,8 @@ void makeDirectory(void)
 					selectedPanel->slidingWindowStartAt);
 
 				displayDirectory(selectedPanel);
+				writeSelectorPosition(selectedPanel, '>');
+				writeCurrentFilename(selectedPanel);
 			}
 	}
 }
@@ -402,6 +404,7 @@ void deleteFiles(void)
 				sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
 				writeStatusBarf("Deleting %s.", selectedNode->name);
 				remove(oldName);
+				rereadSelectedPanel();
 			}
 		}
 		else

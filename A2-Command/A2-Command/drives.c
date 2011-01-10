@@ -192,8 +192,6 @@ int __fastcall  getDirectory(
 			}
 
 			closedir(dir);
-	
-			rootdir(drive->drive->drive, drive->path);
 		}
 		else
 		{
@@ -361,6 +359,8 @@ void __fastcall  moveSelectorUp(
 		--(panel->displayStartAt);
 		--(panel->currentIndex);
 		displayDirectory(panel);
+		writeSelectorPosition(panel, '>');
+		writeCurrentFilename(panel);
 	}
 	else if(diff > 0)
 	{
@@ -389,6 +389,8 @@ void __fastcall  moveSelectorDown(
 		++(panel->displayStartAt);
 		++(panel->currentIndex);
 		displayDirectory(panel);
+		writeSelectorPosition(panel, '>');
+		writeCurrentFilename(panel);
 	}
 	else if(lastPage && 
 		(panel->currentIndex - panel->displayStartAt) < offset &&

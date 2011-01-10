@@ -75,13 +75,13 @@ int main(void)
 	// Prepares the screen for use.
 	setupScreen();
 
-	// Writes the function key bar
-	// to the screen.
-	writeMenuBar();
-
 	// TEMPORARY: Have the user select
 	// the drive to start with.
 	selectDrive(selectedPanel);
+
+	// Writes the function key bar
+	// to the screen.
+	writeMenuBar();
 
 	// Reads the directory of the 
 	// default drive and displays

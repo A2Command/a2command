@@ -52,6 +52,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void  readKeyboard(void)
 {
+	struct dir_node *currentNode;
 	unsigned char key;
 	//static unsigned char buffer[129];
 
@@ -60,8 +61,16 @@ void  readKeyboard(void)
 	switch((int)key)
 	{
 	case HK_VIEW_FILE:
-		sprintf(buffer, "%s/%s", selectedPanel->path, getSelectedNode(selectedPanel)->name);
-		viewFile(buffer);
+		currentNode = getSelectedNode(selectedPanel);
+		if(currentNode != NULL && !isDirectory(selectedPanel))
+		{
+			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
+			viewFile(buffer);
+		}
+		else if(isDirectory(selectedPanel))
+		{
+			enterDirectory(selectedPanel);
+		}
 		break;
 	case KEY_F4:
 		rereadSelectedPanel();
