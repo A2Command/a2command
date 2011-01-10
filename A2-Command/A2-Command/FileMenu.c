@@ -383,6 +383,8 @@ void deleteFiles(void)
 				{
 					waitForEnterEscf("Aborted.");
 					rereadSelectedPanel();
+					writeSelectorPosition(selectedPanel, '>');
+					writeCurrentFilename(selectedPanel);
 					return;
 				}
 			}
@@ -405,11 +407,15 @@ void deleteFiles(void)
 				writeStatusBarf("Deleting %s.", selectedNode->name);
 				remove(oldName);
 				rereadSelectedPanel();
+				writeSelectorPosition(selectedPanel, '>');
+				writeCurrentFilename(selectedPanel);
 			}
 		}
 		else
 		{
 			rereadSelectedPanel();
+			writeSelectorPosition(selectedPanel, '>');
+			writeCurrentFilename(selectedPanel);
 		}
 	}
 
