@@ -259,7 +259,7 @@ void __fastcall__ createDiskImage(void)
 		{ "Type a name for" },
 		{ "the disk image" }
 	};
-	static unsigned int i, r;
+	static unsigned int i, j, r;
 	static unsigned char newName[17];
 	static dhandle_t sourceDrive;
 	static FILE *targetFile;
@@ -288,19 +288,46 @@ void __fastcall__ createDiskImage(void)
 		sectorCount = dio_query_sectcount(sourceDrive);
 
 		writeStatusBarf("Begin creation...");
-		for(i=0; i<sectorCount; ++i)
+
+		if(strstr(filePath, ".po") || strstr(filePath, ".hdv"))
 		{
-			r = dio_read(sourceDrive, i, fileBuffer);
-
-			if(r == 0)
+			for(i=0; i<sectorCount; ++i)
 			{
-				r = fwrite(fileBuffer, sectorSize, 1, targetFile);
-
-				writeStatusBarf("Created sector %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
+				r = dio_read(sourceDrive, i, fileBuffer);
+				if(r == 0)
+				{
+					r = fwrite(fileBuffer, sectorSize, 1, targetFile);
+					writeStatusBarf("Created block %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
+				}
 			}
 		}
-		
-		dio_close(sourceDrive);
+		else
+		{
+			for(i=0; i<sectorCount/8; ++i)
+			{
+				r  = dio_read(sourceDrive, i * 8,     fileBuffer +  512);
+				r |= dio_read(sourceDrive, i * 8 + 7, fileBuffer + 1024);
+				if(r == 0)
+				{
+					r  = fwrite(fileBuffer +  512, 256, 1, targetFile);
+					r &= fwrite(fileBuffer + 1024, 256, 1, targetFile);
+				}
+				for(j=6; j>0; --j)
+				{
+					r = dio_read(sourceDrive, i * 8 + j, fileBuffer);
+					if(r == 0)
+					{
+						r  = fwrite(fileBuffer + 256, 256, 1, targetFile);
+						r &= fwrite(fileBuffer,       256, 1, targetFile);
+					}
+				}
+				r  = fwrite(fileBuffer +  768, 256, 1, targetFile);
+				r &= fwrite(fileBuffer + 1280, 256, 1, targetFile);
+				writeStatusBarf("Created track %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / (sectorCount/8));
+			}
+		}
+
+                dio_close(sourceDrive);
 		fclose(targetFile);
 
 		selectedPanel = targetPanel;	
