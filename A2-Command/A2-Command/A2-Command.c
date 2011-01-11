@@ -66,6 +66,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 int main(void)
 {
+	_heapadd((void*)0x0800, 0x1800);
+
 	// Prepares the application
 	initialize();
 

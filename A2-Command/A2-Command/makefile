@@ -40,10 +40,11 @@ A2Disk: T:=apple2enh
 A2Disk: all
 	cp $(MASTER_DISK) $(DISK)
 #	cp cffa_main.po cffa.po
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < loader.system
+#	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < loader.system
 #	$(JAVA) -jar $(AC) -p cffa.po $(TITLE).system sys 0 < loader.system
-	$(JAVA) -jar $(AC) -cc65 $(DISK) $(TITLE) bin       < $(T)/$(PROGRAM)
-#	$(JAVA) -jar $(AC) -cc65 cffa.po $(TITLE) bin		< $(T)/$(PROGRAM)
+#	$(JAVA) -jar $(AC) -cc65 $(DISK) $(TITLE) bin       < $(T)/$(PROGRAM)
+#	$(JAVA) -jar $(AC) -cc65 cffa.po $(TITLE) bin	    < $(T)/$(PROGRAM)
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < $(T)/$(PROGRAM)
 
 $(T):
 	mkdir $(T)
@@ -51,7 +52,8 @@ $(T):
 # Build our program
 $(PROGRAM): $(SOURCES) $(ASMFILES) | $(T)
 #	$(CL) -O -t $(T) -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
-	$(CL) -O -t $(T) -C apple2enh-loader.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
+#	$(CL) -O -t $(T) -C apple2enh-loader.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
+	$(CL) -O -t $(T) -C apple2enh-system.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
 
 # Our phony targets for managing the project
 #.PHONY: clean
