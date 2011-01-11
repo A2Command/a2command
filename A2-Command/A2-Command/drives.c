@@ -477,11 +477,14 @@ void __fastcall  leaveDirectory(
 	const unsigned char* position = 
 		strrchr(panel->path, '/');
 
-	panel->path[strlen(panel->path) - strlen(position)] = '\0';
+	if((void *)position != (void*)(panel->path))
+	{
+		panel->path[strlen(panel->path) - strlen(position)] = '\0';
 
-	panel->currentIndex = 0;
-	panel->displayStartAt = 0;
-	rereadSelectedPanel();
+		panel->currentIndex = 0;
+		panel->displayStartAt = 0;
+		rereadSelectedPanel();
+	}
 }
 
 unsigned char __fastcall  getDiskImageType(

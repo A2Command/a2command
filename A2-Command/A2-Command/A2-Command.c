@@ -88,6 +88,10 @@ int main(void)
 	// it in the left panel.
 	rereadSelectedPanel();
 
+	writeStatusBar(
+		"A2Command, built: "
+		__DATE__ " " __TIME__);
+
 	// Main Loop
 	while(true)
 	{
