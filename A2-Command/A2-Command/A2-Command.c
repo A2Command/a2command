@@ -35,6 +35,10 @@ OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
+#ifndef __VERSION__
+#define __VERSION__ "1.0RC1"
+#endif
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -89,7 +93,7 @@ int main(void)
 	rereadSelectedPanel();
 
 	writeStatusBar(
-		"A2Command, built: "
+		"A2Command version " __VERSION__ ", built: "
 		__DATE__ " " __TIME__);
 
 	// Main Loop
