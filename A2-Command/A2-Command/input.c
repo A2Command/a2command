@@ -114,6 +114,7 @@ void  readKeyboard(void)
 		enterDirectory(selectedPanel);
 		break;
 	case KEY_SH_MINUS:
+	case CH_ESC:
 		leaveDirectory(selectedPanel);
 		break;
 	//case 188: // C= C - Command Menu

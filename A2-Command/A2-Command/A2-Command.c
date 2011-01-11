@@ -70,10 +70,12 @@ int main(void)
 	// the disk panels.
 	initializeDrives();
 
+	setupFileTypes();
+
 	// Prepares the screen for use.
 	setupScreen();
 
-	// TEMPORARY: Have the user select
+	// Have the user select
 	// the drive to start with.
 	selectDrive(selectedPanel);
 

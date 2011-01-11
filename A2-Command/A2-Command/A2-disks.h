@@ -47,11 +47,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern unsigned char _driveCount;
 extern unsigned char* _drives;
+extern unsigned char _fileTypes[256][4];
 
 void __fastcall__ selectDrive(struct panel_drive *panel);
 unsigned long __fastcall__ getDriveSize(unsigned char driveNumber);
 void __fastcall__ writeDiskImage(void);
 void __fastcall__ createDiskImage(void);
 void __fastcall__ copyDisk(void);
+void setupFileTypes(void);
 
 #endif

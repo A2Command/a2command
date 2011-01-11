@@ -285,13 +285,13 @@ void __fastcall  displayDirectory(
 
 		y = i - start + 2;
 
-		sprintf(commandPath, "%5u %-17s %02u-%02u-%02u %2X"
+		sprintf(commandPath, "%5u %-16s %02u-%02u-%02u %3s"
 			, currentNode->blocks
 			, currentNode->name
 			, currentNode->date.year
 			, currentNode->date.mon
 			, currentNode->date.day
-			, currentNode->type
+			, _fileTypes[currentNode->type]
 			);
 		cputsxy(x + 2, y, commandPath);
 		
