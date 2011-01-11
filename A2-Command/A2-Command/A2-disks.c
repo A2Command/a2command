@@ -423,7 +423,23 @@ void __fastcall__ copyDisk(void)
 }
 
 
-unsigned char _fileTypes[256][4];
+unsigned char _fileTypes[256][4] = {
+"UNK", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT", "FOT", "BA3", "DA3", "WPF", "SOS", ""   , ""   , "DIR",
+"RPD", "RPI", "AFD", "AFM", "AFR", "SCL", "PFS", ""   , ""   , "ADB", "AWP", "ASP", ""   , ""   , ""   , ""   ,
+"TDM", "IPS", "UPV", ""   , ""   , ""   , ""   , ""   , ""   , "3SD", "8SC", "8OB", "8IC", "8LD", "P8C", ""   ,
+""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   ,
+""   , "OCR", "FTD", ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   ,
+"GWP", "GSS", "GDB", "DRW", "GDP", "HMD", "EDU", "STN", "HLP", "COM", "CFG", "ANM", "MUM", "ENT", "DVU", ""   ,
+"PRE", ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , "BIO", "NCF", "DVR", "PRE", "HDV",
+"SN2", "KMT", "DSR", "BAN", "CG7", "TNJ", "SA7", "KES", "JAP", "CSL", "TME", "TLB", "MR7", "MLR", "MMM", "JCP",
+"GES", "GEA", "GEO", "GED", "GEF", "GEP", "GEI", "GEX", ""   , "GEV", ""   , "GEC", "GEK", "GEW", ""   , ""   ,
+""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   ,
+"WP ", ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , "GSB", "TDF", "BDF", ""   , ""   ,
+"SRC", "OBJ", "LIB", "S16", "RTL", "EXE", "PIF", "TIF", "NDA", "CDA", "TOL", "DRV", "LDF", "FST", ""   , "DOC",
+"PNT", "PIC", "ANI", "PAL", ""   , "OOG", "SCR", "CDV", "FON", "FND", "ICN", ""   , ""   , ""   , ""   , ""   ,
+""   , ""   , ""   , ""   , ""   , "MUS", "INS", "MDI", "SND", ""   , ""   , "DBM", ""   , ""   , ""   , ""   ,
+"LBR", ""   , "ATK", ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , ""   , "R16", "PAR",
+"CMD", "OVL", "UD2", "UD3", "UD4", "BAT", "UD6", "UD7", "PRG", "P16", "INT", "IVR", "BAS", "VAR", "REL", "SYS"};
 
 void setupFileTypes(void)
 {
@@ -431,158 +447,9 @@ void setupFileTypes(void)
 
 	for(i = 0; i<=0xFF; ++i)
 	{
-		sprintf(_fileTypes[i], "%3X", i);
+		if(!_fileTypes[i][0])
+		{
+			sprintf(_fileTypes[i], "$%2X", i);
+		}
 	}
-
-	strcpy(_fileTypes[0x00], "UNK");
-	strcpy(_fileTypes[0x01], "BAD");
-	strcpy(_fileTypes[0x02], "PCD");
-	strcpy(_fileTypes[0x03], "PTX");
-	strcpy(_fileTypes[0x04], "TXT");
-	strcpy(_fileTypes[0x05], "PDA");
-	strcpy(_fileTypes[0x06], "BIN");
-	strcpy(_fileTypes[0x07], "FNT");
-	strcpy(_fileTypes[0x08], "FOT");
-	strcpy(_fileTypes[0x09], "BA3");
-	strcpy(_fileTypes[0x0A], "DA3");
-	strcpy(_fileTypes[0x0B], "WPF");
-	strcpy(_fileTypes[0x0C], "SOS");
-	strcpy(_fileTypes[0x0F], "DIR");
-
-	strcpy(_fileTypes[0x10], "RPD");
-	strcpy(_fileTypes[0x11], "RPI");
-	strcpy(_fileTypes[0x12], "AFD");
-	strcpy(_fileTypes[0x13], "AFM");
-	strcpy(_fileTypes[0x14], "AFR");
-	strcpy(_fileTypes[0x15], "SCL");
-	strcpy(_fileTypes[0x16], "PFS");
-	strcpy(_fileTypes[0x19], "ADB");
-	strcpy(_fileTypes[0x1A], "AWP");
-	strcpy(_fileTypes[0x1B], "ASP");
-
-	strcpy(_fileTypes[0x20], "TDM");
-	strcpy(_fileTypes[0x21], "IPS");
-	strcpy(_fileTypes[0x22], "UPV");
-	strcpy(_fileTypes[0x29], "3SD");
-	strcpy(_fileTypes[0x2A], "8SC");
-	strcpy(_fileTypes[0x2B], "8OB");
-	strcpy(_fileTypes[0x2C], "8IC");
-	strcpy(_fileTypes[0x2D], "8LD");
-	strcpy(_fileTypes[0x2E], "P8C");
-
-	strcpy(_fileTypes[0x41], "OCR");
-	strcpy(_fileTypes[0x42], "FTD");
-
-	strcpy(_fileTypes[0x50], "GWP");
-	strcpy(_fileTypes[0x51], "GSS");
-	strcpy(_fileTypes[0x52], "GDB");
-	strcpy(_fileTypes[0x53], "DRW");
-	strcpy(_fileTypes[0x54], "GDP");
-	strcpy(_fileTypes[0x55], "HMD");
-	strcpy(_fileTypes[0x56], "EDU");
-	strcpy(_fileTypes[0x57], "STN");
-	strcpy(_fileTypes[0x58], "HLP");
-	strcpy(_fileTypes[0x59], "COM");
-	strcpy(_fileTypes[0x5A], "CFG");
-	strcpy(_fileTypes[0x5B], "ANM");
-	strcpy(_fileTypes[0x5C], "MUM");
-	strcpy(_fileTypes[0x5D], "ENT");
-	strcpy(_fileTypes[0x5E], "DVU");
-
-	strcpy(_fileTypes[0x60], "PRE");
-	strcpy(_fileTypes[0x6B], "BIO");
-	strcpy(_fileTypes[0x66], "NCF");
-	strcpy(_fileTypes[0x6D], "DVR");
-	strcpy(_fileTypes[0x6E], "PRE");
-	strcpy(_fileTypes[0x6F], "HDV");
-
-	strcpy(_fileTypes[0x70], "SN2");
-	strcpy(_fileTypes[0x71], "KMT");
-	strcpy(_fileTypes[0x72], "DSR");
-	strcpy(_fileTypes[0x73], "BAN");
-	strcpy(_fileTypes[0x74], "CG7");
-	strcpy(_fileTypes[0x75], "TNJ");
-	strcpy(_fileTypes[0x76], "SA7");
-	strcpy(_fileTypes[0x77], "KES");
-	strcpy(_fileTypes[0x78], "JAP");
-	strcpy(_fileTypes[0x79], "CSL");
-	strcpy(_fileTypes[0x7A], "TME");
-	strcpy(_fileTypes[0x7B], "TLB");
-	strcpy(_fileTypes[0x7C], "MR7");
-	strcpy(_fileTypes[0x7D], "MLR");
-	strcpy(_fileTypes[0x7E], "MMM");
-	strcpy(_fileTypes[0x7F], "JCP");
-
-	strcpy(_fileTypes[0x80], "GES");
-	strcpy(_fileTypes[0x81], "GEA");
-	strcpy(_fileTypes[0x82], "GEO");
-	strcpy(_fileTypes[0x83], "GED");
-	strcpy(_fileTypes[0x84], "GEF");
-	strcpy(_fileTypes[0x85], "GEP");
-	strcpy(_fileTypes[0x86], "GEI");
-	strcpy(_fileTypes[0x87], "GEX");
-	strcpy(_fileTypes[0x89], "GEV");
-	strcpy(_fileTypes[0x8B], "GEC");
-	strcpy(_fileTypes[0x8C], "GEK");
-	strcpy(_fileTypes[0x8D], "GEW");
-
-	strcpy(_fileTypes[0xA0], "WP ");
-	strcpy(_fileTypes[0xAB], "GSB");
-	strcpy(_fileTypes[0xAC], "TDF");
-	strcpy(_fileTypes[0xAD], "BDF");
-
-	strcpy(_fileTypes[0xB0], "SRC");
-	strcpy(_fileTypes[0xB1], "OBJ");
-	strcpy(_fileTypes[0xB2], "LIB");
-	strcpy(_fileTypes[0xB3], "S16");
-	strcpy(_fileTypes[0xB4], "RTL");
-	strcpy(_fileTypes[0xB5], "EXE");
-	strcpy(_fileTypes[0xB6], "PIF");
-	strcpy(_fileTypes[0xB7], "TIF");
-	strcpy(_fileTypes[0xB8], "NDA");
-	strcpy(_fileTypes[0xB9], "CDA");
-	strcpy(_fileTypes[0xBA], "TOL");
-	strcpy(_fileTypes[0xBB], "DRV");
-	strcpy(_fileTypes[0xBC], "LDF");
-	strcpy(_fileTypes[0xBD], "FST");
-	strcpy(_fileTypes[0xBF], "DOC");
-
-	strcpy(_fileTypes[0xC0], "PNT");
-	strcpy(_fileTypes[0xC1], "PIC");
-	strcpy(_fileTypes[0xC2], "ANI");
-	strcpy(_fileTypes[0xC3], "PAL");
-	strcpy(_fileTypes[0xC5], "OOG");
-	strcpy(_fileTypes[0xC6], "SCR");
-	strcpy(_fileTypes[0xC7], "CDV");
-	strcpy(_fileTypes[0xC8], "FON");
-	strcpy(_fileTypes[0xC9], "FND");
-	strcpy(_fileTypes[0xCA], "ICN");
-
-	strcpy(_fileTypes[0xD5], "MUS");
-	strcpy(_fileTypes[0xD6], "INS");
-	strcpy(_fileTypes[0xD7], "MDI");
-	strcpy(_fileTypes[0xD8], "SND");
-	strcpy(_fileTypes[0xDB], "DBM");
-
-	strcpy(_fileTypes[0xE0], "LBR");
-	strcpy(_fileTypes[0xE2], "ATK");
-	strcpy(_fileTypes[0xEE], "R16");
-	strcpy(_fileTypes[0xEF], "PAR");
-
-	strcpy(_fileTypes[0xF0], "CMD");
-	strcpy(_fileTypes[0xF1], "OVL");
-	strcpy(_fileTypes[0xF2], "UD2");
-	strcpy(_fileTypes[0xF3], "UD3");
-	strcpy(_fileTypes[0xF4], "UD4");
-	strcpy(_fileTypes[0xF5], "BAT");
-	strcpy(_fileTypes[0xF6], "UD6");
-	strcpy(_fileTypes[0xF7], "UD7");
-	strcpy(_fileTypes[0xF8], "PRG");
-	strcpy(_fileTypes[0xF9], "P16");
-	strcpy(_fileTypes[0xFA], "INT");
-	strcpy(_fileTypes[0xFB], "IVR");
-	strcpy(_fileTypes[0xFC], "BAS");
-	strcpy(_fileTypes[0xFD], "VAR");
-	strcpy(_fileTypes[0xFE], "REL");
-	strcpy(_fileTypes[0xFF], "SYS");
 }
