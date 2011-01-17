@@ -62,7 +62,9 @@ void  readKeyboard(void)
 	{
 	case HK_VIEW_FILE:
 		currentNode = getSelectedNode(selectedPanel);
-		if(currentNode != NULL && !isDirectory(selectedPanel))
+		if(currentNode != NULL && !isDirectory(selectedPanel) 
+			&& currentNode->type != 0xFF
+			&& currentNode->type != 0x06)
 		{
 			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
 			viewFile(buffer);
@@ -70,6 +72,16 @@ void  readKeyboard(void)
 		else if(isDirectory(selectedPanel))
 		{
 			enterDirectory(selectedPanel);
+		}
+		else if(currentNode->type == 0xFF)
+		{
+			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
+			launchSystemFile(buffer);
+		}
+		else if(currentNode->type == 0x06)
+		{
+			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
+			launchBinaryFile(buffer);
 		}
 		break;
 	case KEY_F4:

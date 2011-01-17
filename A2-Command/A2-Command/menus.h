@@ -63,6 +63,8 @@ void  deleteFiles(void);
 void  writeD64(void);
 void  createD64(void);
 void  quit(void);
+void __fastcall__ launchSystemFile(const unsigned char* path);
+void __fastcall__ launchBinaryFile(const unsigned char* path);
 
 // Menu drawing
 void writeMenuBar(void);
