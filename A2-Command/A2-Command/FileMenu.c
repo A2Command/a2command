@@ -253,7 +253,7 @@ void renameFile(void)
 {
 	enum results dialogResult;
 	struct dir_node *selectedNode = NULL;
-	unsigned char filename[17];
+	unsigned char filename[16];
 	unsigned char* dialogMessage[] =
 	{
 		{ "Enter new name" },
@@ -270,7 +270,7 @@ void renameFile(void)
 			writeStatusBarf("Old name: %s", selectedNode->name);
 
 			dialogResult = drawInputDialog(
-				2, 16,
+				2, 15,
 				dialogMessage,
 				"Rename File",
 				filename);
@@ -299,7 +299,7 @@ void makeDirectory(void)
 	enum results dialogResult;
 	struct dir_node *selectedNode = NULL;
 	unsigned char command[40];
-	unsigned char filename[17];
+	unsigned char filename[16];
 	unsigned char* dialogMessage[] =
 	{
 		{ "Enter name for" },
@@ -311,7 +311,7 @@ void makeDirectory(void)
 			saveScreen();
 
 			dialogResult = drawInputDialog(
-				2, 16,
+				2, 15,
 				dialogMessage,
 				"New Directory",
 				filename);
@@ -417,6 +417,8 @@ void deleteFiles(void)
 			writeSelectorPosition(selectedPanel, '>');
 			writeCurrentFilename(selectedPanel);
 		}
+
+		closedir(dir);
 	}
 
 }

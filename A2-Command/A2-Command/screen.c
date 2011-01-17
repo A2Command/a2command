@@ -313,7 +313,7 @@ enum results __fastcall drawInputDialog(
 	unsigned char *input;
 	input = calloc(length+1, sizeof(unsigned char));
 	h = lineCount + 6;
-	w = length + 3;
+	w = length + 4;
 	//for(i=0; i<lineCount; ++i);
 	//{
 	//	if(strlen(message[i]) > w) 
@@ -348,10 +348,10 @@ enum results __fastcall drawInputDialog(
 	while(key != CH_ESC 
 		&& key != CH_ENTER)
 	{
+		writeStatusBarf("%c - %d", key, key);
 		if( count < length &&
 			(
-				(key >= 32 && key <= 95) ||
-				(key >= 65 + 0x80 && key <= 90 + 0x80)
+				(key >= 32 && key <= 126)
 			)
 		)
 		{
@@ -364,7 +364,7 @@ enum results __fastcall drawInputDialog(
 			cputc('<');
 		}
 		else if(
-			key == 127
+			key == 8
 			&& count > 0)
 		{
 			input[count] = '\0';
