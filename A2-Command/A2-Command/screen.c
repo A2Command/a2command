@@ -164,7 +164,7 @@ void __fastcall writePanel(
 	unsigned char *ok)
 {
 	unsigned int i = 0, okLeft = 0, cancelLeft = 0;
-	//unsigned char buffer[80];
+	unsigned char titleBuffer[80];
 
 	saveScreen();
 
@@ -189,12 +189,13 @@ void __fastcall writePanel(
 
 	if(title != NULL)
 	{
-		if(strlen(title) > w-4)
+		strcpy(titleBuffer, title);
+		if(strlen(titleBuffer) > w-4)
 		{
-			title[w-4]='\0';
+			titleBuffer[w-4]='\0';
 		}
 
-		sprintf(buffer, "[%s]", title);
+		sprintf(buffer, "[%s]", titleBuffer);
 		cputsxy(x+2, y,buffer);
 	}
 

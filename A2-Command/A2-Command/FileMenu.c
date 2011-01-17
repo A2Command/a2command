@@ -298,7 +298,7 @@ void makeDirectory(void)
 {
 	enum results dialogResult;
 	struct dir_node *selectedNode = NULL;
-	unsigned char command[40];
+	unsigned char command[65];
 	unsigned char filename[16];
 	unsigned char* dialogMessage[] =
 	{
@@ -320,16 +320,23 @@ void makeDirectory(void)
 
 			if(dialogResult == OK_RESULT)
 			{
-				sprintf(command, "%s/%s", selectedPanel->path, filename);
+				if(strlen(selectedPanel->path) + 1 + strlen(filename) < 65)
+				{
+					sprintf(command, "%s/%s", selectedPanel->path, filename);
 
-				mkdir(command);
+					mkdir(command);
 
-				getDirectory(selectedPanel, 
-					selectedPanel->slidingWindowStartAt);
+					getDirectory(selectedPanel, 
+						selectedPanel->slidingWindowStartAt);
 
-				displayDirectory(selectedPanel);
-				writeSelectorPosition(selectedPanel, '>');
-				writeCurrentFilename(selectedPanel);
+					displayDirectory(selectedPanel);
+					writeSelectorPosition(selectedPanel, '>');
+					writeCurrentFilename(selectedPanel);
+				}
+				else
+				{
+					writeStatusBarf("Cannot create directory, path too long.");
+				}
 			}
 	}
 }

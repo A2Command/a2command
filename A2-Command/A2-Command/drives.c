@@ -461,13 +461,20 @@ void __fastcall  enterDirectory(
 	{
 		sprintf(commandPath, "%s/%s", panel->path, node->name);
 
-		strcpy(panel->path, commandPath);
+		if(strlen(commandPath) < 65)
+		{
+			strcpy(panel->path, commandPath);
 
-		getDirectory(selectedPanel, 0);
+			getDirectory(selectedPanel, 0);
 
-		panel->currentIndex = 0;
-		panel->displayStartAt = 0;
-		rereadSelectedPanel();
+			panel->currentIndex = 0;
+			panel->displayStartAt = 0;
+			rereadSelectedPanel();
+		}
+		else
+		{
+			writeStatusBar("Path would be too long.");
+		}
 	}
 }
 
