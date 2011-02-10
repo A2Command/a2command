@@ -41,6 +41,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "A2-disks.h"
 #include "screen.h"
@@ -156,7 +158,7 @@ void __fastcall__ writeDiskImage(void)
 {
 	unsigned int i, j, r;
 	dhandle_t targetDrive;
-	FILE *sourceFile;
+	int sourceFile;
 	unsigned char imageType;
 	struct dir_node *selectedNode;
 	unsigned long targetDriveSize;
@@ -177,9 +179,9 @@ void __fastcall__ writeDiskImage(void)
 
 		if(selectedNode->size == targetDriveSize)
 		{
-			sourceFile = fopen(filePath, "rb");
+			sourceFile = open(filePath, O_RDONLY);
 
-			if(sourceFile == NULL)
+			if(sourceFile == -1)
 			{
 				waitForEnterEscf("Could not open %s", filePath);
 			}
@@ -196,7 +198,7 @@ void __fastcall__ writeDiskImage(void)
 				for(i=0; i<sectorCount; ++i)
 				{
 					r = 0;
-					r = fread(fileBuffer, sectorSize, 1, sourceFile);
+					r = read(sourceFile, fileBuffer, sectorSize);
 					if(r == 1)
 					{
 						r = dio_write(targetDrive, i, fileBuffer);
@@ -212,19 +214,19 @@ void __fastcall__ writeDiskImage(void)
 			{
 				for(i=0; i<sectorCount/8; ++i)
 				{
-					r  = fread(fileBuffer +  512, 256, 1, sourceFile);
-					r &= fread(fileBuffer + 1024, 256, 1, sourceFile);
+					r  = read(sourceFile, fileBuffer +  512, 256);
+					r &= read(sourceFile, fileBuffer + 1024, 256);
 					for(j=6; j>0; --j)
 					{
-						r  = fread(fileBuffer + 256, 256, 1, sourceFile);
-						r &= fread(fileBuffer,       256, 1, sourceFile);
+						r  = read(sourceFile, fileBuffer + 256, 256);
+						r &= read(sourceFile, fileBuffer,       256);
 						if(r == 1)
 						{
 							r = dio_write(targetDrive, i * 8 + j, fileBuffer);
 						}
 					}
-					r  = fread(fileBuffer +  768, 256, 1, sourceFile);
-					r &= fread(fileBuffer + 1280, 256, 1, sourceFile);
+					r  = read(sourceFile, fileBuffer +  768, 256);
+					r &= read(sourceFile, fileBuffer + 1280, 256);
 					if(r == 1)
 					{
 						r  = dio_write(targetDrive, i * 8,     fileBuffer +  512);
@@ -235,7 +237,7 @@ void __fastcall__ writeDiskImage(void)
 			}
 		
 			dio_close(targetDrive);
-			fclose(sourceFile);
+			close(sourceFile);
 
 			if(rootdir(targetPanel->drive->drive, targetPanel->path) == -1)
 			{
@@ -251,7 +253,7 @@ void __fastcall__ writeDiskImage(void)
 		else
 		{
 			dio_close(targetDrive);
-			fclose(sourceFile);
+			close(sourceFile);
 
 			writeStatusBarf("Disk image size does not match target drive. (drive: %ld, image: %ld)", 
 				targetDriveSize, selectedNode->size);
@@ -273,7 +275,7 @@ void __fastcall__ createDiskImage(void)
 	static unsigned int i, j, r;
 	static unsigned char newName[17];
 	static dhandle_t sourceDrive;
-	static FILE *targetFile;
+	static int targetFile;
 	static unsigned int sectorSize;
 	static unsigned long sectorCount;
 	
@@ -290,7 +292,7 @@ void __fastcall__ createDiskImage(void)
 	{
 		sprintf(filePath, "%s/%s", targetPanel->path, newName);
 
-		targetFile = fopen(filePath, "wb");
+		targetFile = open(filePath, O_WRONLY | O_CREAT | O_TRUNC);
 
 		sourceDrive = dio_open(selectedPanel->drive->drive);
 
@@ -307,7 +309,7 @@ void __fastcall__ createDiskImage(void)
 				r = dio_read(sourceDrive, i, fileBuffer);
 				if(r == 0)
 				{
-					r = fwrite(fileBuffer, sectorSize, 1, targetFile);
+					r = write(targetFile, fileBuffer, sectorSize);
 					writeStatusBarf("Created block %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
 				}
 			}
@@ -320,26 +322,26 @@ void __fastcall__ createDiskImage(void)
 				r |= dio_read(sourceDrive, i * 8 + 7, fileBuffer + 1024);
 				if(r == 0)
 				{
-					r  = fwrite(fileBuffer +  512, 256, 1, targetFile);
-					r &= fwrite(fileBuffer + 1024, 256, 1, targetFile);
+					r  = write(targetFile, fileBuffer +  512, 256);
+					r &= write(targetFile, fileBuffer + 1024, 256);
 				}
 				for(j=6; j>0; --j)
 				{
 					r = dio_read(sourceDrive, i * 8 + j, fileBuffer);
 					if(r == 0)
 					{
-						r  = fwrite(fileBuffer + 256, 256, 1, targetFile);
-						r &= fwrite(fileBuffer,       256, 1, targetFile);
+						r  = write(targetFile, fileBuffer + 256, 256);
+						r &= write(targetFile, fileBuffer,       256);
 					}
 				}
-				r  = fwrite(fileBuffer +  768, 256, 1, targetFile);
-				r &= fwrite(fileBuffer + 1280, 256, 1, targetFile);
+				r  = write(targetFile, fileBuffer +  768, 256);
+				r &= write(targetFile, fileBuffer + 1280, 256);
 				writeStatusBarf("Created track %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / (sectorCount/8));
 			}
 		}
 
                 dio_close(sourceDrive);
-		fclose(targetFile);
+		close(targetFile);
 
 		selectedPanel = targetPanel;	
 		reloadPanels();

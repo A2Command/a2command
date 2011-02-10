@@ -40,6 +40,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <conio.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "Viewer.h"
 #include "globalInput.h"
@@ -65,19 +67,19 @@ void __fastcall viewFile(
 	unsigned char
 		counter = 0,
 		currentLine = 1;
-	FILE *fileStream;
+	int file;
 
-	fileStream = fopen(filename, "rb");
+	file = open(filename, O_RDONLY);
 	saveScreen();
 
-	if(fileStream != NULL)
+	if(file != -1)
 	{
 		clrscr();
 
 		memset(word, line[0] = '\0', sizeof word);
 		do
 		{
-			r = fread(fileBuffer, 1, BUFFERSIZE, fileStream);
+			r = read(file, fileBuffer, BUFFERSIZE);
 
 			for(i=0; i<r; i++)
 			{
@@ -128,7 +130,7 @@ void __fastcall viewFile(
 						if(waitForEnterEsc() == CH_ESC)
 						{
 							retrieveScreen();
-							fclose(fileStream);
+							close(file);
 							return;
 						}
 						else
@@ -152,5 +154,5 @@ void __fastcall viewFile(
 
 	retrieveScreen();
 
-	fclose(fileStream);
+	close(file);
 }

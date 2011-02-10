@@ -45,6 +45,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <time.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 #include "constants.h"
 #include "globalInput.h"
@@ -70,7 +71,7 @@ void  writeHelpPanel(void)
 struct panel_drive *tempPanel = NULL;
 void copyFiles(void)
 {
-	FILE *sourceFile = NULL, *targetFile = NULL;
+	int sourceFile = -1, targetFile = -1;
 	unsigned numSelectors = (selectedPanel->length + 7) / 8u;
 	static unsigned char sourcePath[256], targetPath[256];
 	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0;
@@ -137,29 +138,27 @@ void copyFiles(void)
 
 				writeStatusBarf("Copying file %s.....", currentNode->name);
 				sprintf(sourcePath, "%s/%s", selectedPanel->path, currentNode->name);
-				sourceFile = NULL;
-				sourceFile = fopen(sourcePath, "rb");
-				if(ferror(sourceFile) == 0)
+				sourceFile = open(sourcePath, O_RDONLY);
+				if(sourceFile != -1)
 				{
 					sprintf(targetPath, "%s/%s", targetPanel->path, currentNode->name);
-					targetFile = NULL;
 					_filetype = currentNode->type;
 					_auxtype = currentNode->aux_type;
-					targetFile = fopen(targetPath, "wb");
-					if(targetFile != NULL && ferror(targetFile) == 0)
+					targetFile = open(targetPath, O_WRONLY | O_CREAT | O_TRUNC);
+					if(targetFile != -1)
 					{
 						bytesCopied = 0;
 						while(true)
 						{
-							bytes = fread(fileBuffer, 1, sizeof(fileBuffer), sourceFile);
+							bytes = read(sourceFile, fileBuffer, sizeof(fileBuffer));
 
 							if(kbhit())
 							{
 								r = cgetc();
 								if(r == CH_ESC)
 								{
-									fclose(sourceFile);
-									fclose(targetFile);
+									close(sourceFile);
+									close(targetFile);
 
 									reloadPanels();
 
@@ -171,7 +170,7 @@ void copyFiles(void)
 
 							if(bytes > 0)
 							{
-								r = fwrite(fileBuffer, 1, bytes, targetFile);
+								r = write(targetFile, fileBuffer, bytes);
 								
 								if(r == -1)
 								{
@@ -183,8 +182,6 @@ void copyFiles(void)
 								}
 								else
 								{
-									fflush(targetFile);
-
 									bytesCopied += bytes;
 									totalBytes += bytes;
 								}
@@ -217,8 +214,8 @@ void copyFiles(void)
 				}
 				writeStatusBarf("%-17s - %8u bytes copied",
 					currentNode->name, bytesCopied);
-				fclose(sourceFile);
-				fclose(targetFile);
+				close(sourceFile);
+				close(targetFile);
 			}
 		}
 	}
