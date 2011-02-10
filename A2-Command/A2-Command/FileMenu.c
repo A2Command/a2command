@@ -446,11 +446,3 @@ void quit(void)
 
 	retrieveScreen();
 }
-
-void __fastcall__ launchSystemFile(const unsigned char* path)
-{
-}
-
-void __fastcall__ launchBinaryFile(const unsigned char* path)
-{
-}

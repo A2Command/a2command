@@ -40,6 +40,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <conio.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "constants.h"
 #include "drives.h"
@@ -60,28 +61,24 @@ void  readKeyboard(void)
 
 	switch((int)key)
 	{
-	case HK_VIEW_FILE:
+	case CH_ENTER:
 		currentNode = getSelectedNode(selectedPanel);
-		if(currentNode != NULL && !isDirectory(selectedPanel) 
-			&& currentNode->type != 0xFF
-			&& currentNode->type != 0x06)
-		{
-			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
-			viewFile(buffer);
-		}
-		else if(isDirectory(selectedPanel))
+		if(isDirectory(selectedPanel))
 		{
 			enterDirectory(selectedPanel);
 		}
-		else if(currentNode->type == 0xFF)
+		else if(currentNode != NULL)
 		{
 			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
-			launchSystemFile(buffer);
-		}
-		else if(currentNode->type == 0x06)
-		{
-			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
-			launchBinaryFile(buffer);
+			if(currentNode->type == 0x06
+				|| currentNode->type == 0xFF)
+			{
+				exec(buffer, NULL);
+                        }
+			else
+			{
+				viewFile(buffer);
+			}
 		}
 		break;
 	case KEY_F4:
