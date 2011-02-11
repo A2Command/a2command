@@ -326,7 +326,7 @@ void __fastcall  writeCurrentFilename(
 				currentDirNode->name != NULL &&
 				strlen(currentDirNode->name) > 0)
 			{
-				writeStatusBarf("Idx: %3u Sz: %8ld Nm: %s",
+				writeStatusBarf("Index: %3u  Size: %8ld  Name: %s",
 					currentDirNode->index,
 					currentDirNode->size,
 					currentDirNode->name);
