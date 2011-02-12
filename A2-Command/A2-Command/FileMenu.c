@@ -267,7 +267,7 @@ void renameFile(void)
 			writeStatusBarf("Old name: %s", selectedNode->name);
 
 			dialogResult = drawInputDialog(
-				2, 15,
+				2, 17,
 				dialogMessage,
 				"Rename File",
 				filename);
@@ -308,7 +308,7 @@ void makeDirectory(void)
 			saveScreen();
 
 			dialogResult = drawInputDialog(
-				2, 15,
+				2, 17,
 				dialogMessage,
 				"New Directory",
 				filename);
