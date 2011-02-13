@@ -45,6 +45,7 @@ A2Disk: all
 #	$(JAVA) -jar $(AC) -cc65 $(DISK) $(TITLE) bin       < $(T)/$(PROGRAM)
 #	$(JAVA) -jar $(AC) -cc65 cffa.po $(TITLE) bin	    < $(T)/$(PROGRAM)
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < $(T)/$(PROGRAM)
+#	$(JAVA) -jar $(AC) -p cffa.po $(TITLE).system sys 0 < $(T)/$(PROGRAM)
 
 $(T):
 	mkdir $(T)
