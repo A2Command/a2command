@@ -510,6 +510,7 @@ unsigned char __fastcall  getDiskImageType(
 	{
 		if(strstr(name, ".do") > 0
 			|| strstr(name, ".dsk") > 0
+			|| strstr(name, ".bin") > 0
 		)
 		{
 			result = 2;
