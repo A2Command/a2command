@@ -42,5 +42,7 @@ extern unsigned char size_x;
 extern unsigned char size_y;
 extern unsigned char buffer[129];
 
+extern unsigned char *quit_message[1];
+
 void initialize(void);
 #endif

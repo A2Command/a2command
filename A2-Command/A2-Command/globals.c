@@ -47,6 +47,11 @@ unsigned char size_x;
 unsigned char size_y;
 unsigned char buffer[129];
 
+unsigned char *quit_message[1] =
+{
+	"Quit A2-Command?"
+};
+	
 // Obtains the screen size and sets up global
 // strings as necessary.
 void initialize(void)

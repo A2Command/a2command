@@ -45,6 +45,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "constants.h"
 #include "drives.h"
 #include "globals.h"
+#include "globalInput.h"
 #include "input.h"
 #include "menus.h"
 #include "screen.h"
@@ -55,7 +56,8 @@ void  readKeyboard(void)
 {
 	struct dir_node *currentNode;
 	unsigned char key;
-	//static unsigned char buffer[129];
+	bool decision = false;
+	static unsigned char localbuffer[129];
 
 	key = cgetc();
 
@@ -69,15 +71,22 @@ void  readKeyboard(void)
 		}
 		else if(currentNode != NULL)
 		{
-			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
+			sprintf(localbuffer, "%s/%s", selectedPanel->path, currentNode->name);
 			if(currentNode->type == 0x06
 				|| currentNode->type == 0xFF)
 			{
-				exec(buffer, NULL);
-                        }
+				saveScreen();
+				decision = writeYesNo("Confirm", quit_message, 1);
+				retrieveScreen();
+
+				if(decision == true)
+				{
+					exec(localbuffer, NULL);
+				}
+			}
 			else
 			{
-				viewFile(buffer);
+				viewFile(localbuffer);
 			}
 		}
 		break;

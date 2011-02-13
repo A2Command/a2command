@@ -56,12 +56,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "screen.h"
 #include "Viewer.h"
 
-unsigned char *quit_message[1] =
-{
-	"Quit A2-Command?"
-};
-	
-
 void  writeHelpPanel(void)
 {
 	//writeStatusBar("See http://a2command.codeplex.com/documentation");

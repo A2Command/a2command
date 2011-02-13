@@ -156,6 +156,10 @@ unsigned long __fastcall__ getDriveSize(unsigned char driveNumber)
 unsigned char filePath[MAX_PATH_LENGTH];
 void __fastcall__ writeDiskImage(void)
 {
+	static unsigned char* message[] =
+	{
+		{ "Are you ready?" }
+	};
 	unsigned int i, j, r;
 	dhandle_t targetDrive;
 	int sourceFile;
@@ -173,95 +177,122 @@ void __fastcall__ writeDiskImage(void)
 
 	if(imageType)
 	{
-		sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
-
-		targetDriveSize = getDriveSize(targetPanel->drive->drive);
-
-		if(selectedNode->size == targetDriveSize)
+		saveScreen();
+		if(writeYesNo("Write Disk Image", message, 1))
 		{
-			sourceFile = open(filePath, O_RDONLY);
+			retrieveScreen();
+			sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
 
-			if(sourceFile == -1)
+			targetDriveSize = getDriveSize(targetPanel->drive->drive);
+
+			if(selectedNode->size <= targetDriveSize)
 			{
-				waitForEnterEscf("Could not open %s", filePath);
-			}
+				sourceFile = open(filePath, O_RDONLY);
 
-			targetDrive = dio_open(targetPanel->drive->drive);
-
-			sectorSize = dio_query_sectsize(targetDrive);
-
-			sectorCount = dio_query_sectcount(targetDrive);
-
-			writeStatusBarf("Begin writing....");
-			if(imageType == 1)
-			{
-				for(i=0; i<sectorCount; ++i)
+				if(sourceFile == -1)
 				{
-					r = 0;
-					r = read(sourceFile, fileBuffer, sectorSize);
-					if(r == 1)
+					waitForEnterEscf("Could not open %s", filePath);
+					dio_close(targetDrive);
+					return;
+				}
+
+				targetDrive = dio_open(targetPanel->drive->drive);
+
+				sectorSize = dio_query_sectsize(targetDrive);
+
+				sectorCount = dio_query_sectcount(targetDrive);
+
+				writeStatusBarf("Begin writing....");
+				if(imageType == 1)
+				{
+					for(i=0; i<sectorCount; ++i)
 					{
-						r = dio_write(targetDrive, i, fileBuffer);
-						writeStatusBarf("Wrote block %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
-					}
-					else
-					{
-						waitForEnterEscf("Could not read source file. r=%ld", r);
+						r = 0;
+						r = read(sourceFile, fileBuffer, sectorSize);
+						if(r == sectorSize)
+						{
+							r = dio_write(targetDrive, i, fileBuffer);
+							writeStatusBarf("Wrote block %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
+						}
+						else
+						{
+							waitForEnterEscf("Could not read source file. r=%ld", r);
+							break;
+						}
 					}
 				}
+				else
+				{
+					for(i=0; i<sectorCount/8; ++i)
+					{
+						r  = read(sourceFile, fileBuffer +  512, 256);
+						r  = read(sourceFile, fileBuffer + 1024, 256);
+						for(j=6; j>0; --j)
+						{
+							r  = read(sourceFile, fileBuffer + 256, 256);
+							r  = read(sourceFile, fileBuffer,       256);
+							if(r == 256)
+							{
+								r = dio_write(targetDrive, i * 8 + j, fileBuffer);
+							}
+							else
+							{
+								waitForEnterEscf("Could not write sector %d (error: %d)", i*8+j, r);
+								i=sectorCount;
+								break;
+							}
+						}
+						if(i<sectorCount)
+						{
+							r  = read(sourceFile, fileBuffer +  768, 256);
+							r  = read(sourceFile, fileBuffer + 1280, 256);
+							if(r == 256)
+							{
+								r  = dio_write(targetDrive, i * 8,     fileBuffer +  512);
+								r |= dio_write(targetDrive, i * 8 + 7, fileBuffer + 1024);
+							}
+							else
+							{
+								waitForEnterEscf("Could not write sector %d (error: %d)", i*8+j, r);
+								i=sectorCount;
+								break;
+							}
+							writeStatusBarf("Wrote track %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / (sectorCount/8));
+						}
+					}
+				}
+		
+				dio_close(targetDrive);
+				close(sourceFile);
+
+				if(rootdir(targetPanel->drive->drive, targetPanel->path) == -1)
+				{
+					strcpy(targetPanel->path, "");
+				}
+
+				selectedPanel = targetPanel;	
+				rereadSelectedPanel();
+				writeSelectorPosition(selectedPanel, '>');
+
+				writeStatusBarf("Writing completed.");
 			}
 			else
 			{
-				for(i=0; i<sectorCount/8; ++i)
-				{
-					r  = read(sourceFile, fileBuffer +  512, 256);
-					r &= read(sourceFile, fileBuffer + 1024, 256);
-					for(j=6; j>0; --j)
-					{
-						r  = read(sourceFile, fileBuffer + 256, 256);
-						r &= read(sourceFile, fileBuffer,       256);
-						if(r == 1)
-						{
-							r = dio_write(targetDrive, i * 8 + j, fileBuffer);
-						}
-					}
-					r  = read(sourceFile, fileBuffer +  768, 256);
-					r &= read(sourceFile, fileBuffer + 1280, 256);
-					if(r == 1)
-					{
-						r  = dio_write(targetDrive, i * 8,     fileBuffer +  512);
-						r |= dio_write(targetDrive, i * 8 + 7, fileBuffer + 1024);
-					}
-					writeStatusBarf("Wrote track %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / (sectorCount/8));
-				}
+				dio_close(targetDrive);
+				close(sourceFile);
+
+				writeStatusBarf("The target drive is not large enough for this image. (drive: %ld, image: %ld)", 
+					targetDriveSize, selectedNode->size);
 			}
-		
-			dio_close(targetDrive);
-			close(sourceFile);
-
-			if(rootdir(targetPanel->drive->drive, targetPanel->path) == -1)
-			{
-				strcpy(targetPanel->path, "");
-			}
-
-			selectedPanel = targetPanel;	
-			rereadSelectedPanel();
-			writeSelectorPosition(selectedPanel, '>');
-
-			writeStatusBarf("Writing completed.");
 		}
 		else
 		{
-			dio_close(targetDrive);
-			close(sourceFile);
-
-			writeStatusBarf("Disk image size does not match target drive. (drive: %ld, image: %ld)", 
-				targetDriveSize, selectedNode->size);
+			retrieveScreen();
 		}
 	}
 	else
 	{
-		writeStatusBarf("%s is not a disk image.", selectedNode->name);
+		writeStatusBarf("%s is not a known disk image.", selectedNode->name);
 	}
 }
 
@@ -294,6 +325,12 @@ void __fastcall__ createDiskImage(void)
 
 		targetFile = open(filePath, O_WRONLY | O_CREAT | O_TRUNC);
 
+		if(targetFile == -1)
+		{
+			writeStatusBarf("Could not open %s for write.", newName);
+			return;
+		}
+
 		sourceDrive = dio_open(selectedPanel->drive->drive);
 
 		sectorSize = dio_query_sectsize(sourceDrive);
@@ -302,7 +339,8 @@ void __fastcall__ createDiskImage(void)
 
 		writeStatusBarf("Begin creation...");
 
-		if(strstr(filePath, ".po") || strstr(filePath, ".hdv"))
+		if(strstr(filePath, ".po") || strstr(filePath, ".hdv") ||
+			strstr(filePath, ".PO") || strstr(filePath, ".HDV") )
 		{
 			for(i=0; i<sectorCount; ++i)
 			{
@@ -310,6 +348,11 @@ void __fastcall__ createDiskImage(void)
 				if(r == 0)
 				{
 					r = write(targetFile, fileBuffer, sectorSize);
+					if(r != sectorSize)
+					{
+						waitForEnterEscf("Failed to write sector to target file. r: %d", r);
+						break;
+					}
 					writeStatusBarf("Created block %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);
 				}
 			}
