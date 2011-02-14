@@ -37,6 +37,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdarg.h>
 #include <stdbool.h>
 #include <conio.h>
+#include <string.h>
 
 #include "constants.h"
 #include "globals.h"
@@ -69,4 +70,33 @@ unsigned char waitForEnterEscf(const char* format, ...)
 	va_end(ap);
 
 	return waitForEnterEsc();
+}
+
+unsigned char* trimString(unsigned char *source)
+{
+	unsigned char i = 0, bufferPosition = 0;
+	unsigned char trimBuffer[81];
+	bool atStart = true;
+
+	// Trim Right
+	while(strlen(source) > 0 && source[strlen(source) - 1] == ' ') source[strlen(source)-1] = '\0';
+
+	// Trim left
+	for(i = 0; i<strlen(source); ++i)
+	{
+		if(!atStart)
+		{
+			trimBuffer[bufferPosition++] = source[i];
+		}
+		else if(source[i] != ' ')
+		{
+			atStart = false;
+			trimBuffer[bufferPosition++] = source[i];
+		}
+	}
+	trimBuffer[bufferPosition] = '\0';
+
+	strcpy(source, trimBuffer);
+
+	return source;
 }

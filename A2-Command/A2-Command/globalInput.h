@@ -41,5 +41,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 unsigned char waitForEnterEsc(void);
 unsigned char waitForEnterEscf(const char* format, ...);
 
+unsigned char* trimString(unsigned char *source);
 
 #endif

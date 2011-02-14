@@ -57,7 +57,7 @@ unsigned char* _drives;
 
 void __fastcall__ selectDrive(struct panel_drive *panel)
 {
-	static unsigned char i, key, current;
+	static unsigned char i, key, current, x = 5, y = 2;
 	//static unsigned char buffer[68];
 	static unsigned char temp[80];
 
@@ -65,9 +65,9 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 	_drives = drivelist();
 
 	saveScreen();
-	drawBox(5, 5, size_x - 10, size_y - 10, COLOR_WHITE, 0);
+	drawBox(x, y, size_x - 10, size_y - 5, COLOR_WHITE, 0);
 
-	cputsxy(7, 7, "Select directory for panel.");
+	cputsxy(7, y + 2, "Select directory for panel.");
 
 	for(i=0; i<_driveCount; ++i)
 	{
@@ -77,10 +77,10 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 		}
 
                 sprintf(temp, "Slot %u Drive %u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
-		cputsxy(8, (9+_driveCount) - i - 1, temp); 
+		cputsxy(8, (y + 4 +_driveCount) - i - 1, temp); 
 	}
 
-	cputcxy(7, 9, '>');
+	cputcxy(7, y + 4, '>');
 
 	key = 0;
 	current = 0;
@@ -93,13 +93,13 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 		case CH_CURS_DOWN:
 			if(current < _driveCount - 1)
 			{
-				cputcxy(7, 9 + current, ' ');
-				cputcxy(7, 9 + (++current), '>');
+				cputcxy(7, y + 4 + current, ' ');
+				cputcxy(7, y + 4 + (++current), '>');
 			}
 			else
 			{
-				cputcxy(7, 9 + current, ' ');
-				cputcxy(7, 9, '>');
+				cputcxy(7, y + 4 + current, ' ');
+				cputcxy(7, y + 4, '>');
 				current = 0;
 			}
 			break;
@@ -107,14 +107,14 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 		case CH_CURS_UP:
 			if(current > 0)
 			{
-				cputcxy(7, 9 + current, ' ');
-				cputcxy(7, 9 + (--current), '>');
+				cputcxy(7, y + 4 + current, ' ');
+				cputcxy(7, y + 4 + (--current), '>');
 			}
 			else
 			{
 				current = _driveCount - 1;
-				cputcxy(7, 9, ' ');
-				cputcxy(7, 9 + current, '>');
+				cputcxy(7, y + 4, ' ');
+				cputcxy(7, y + 4 + current, '>');
 			}
 			break;
 		}

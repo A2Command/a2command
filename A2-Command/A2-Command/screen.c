@@ -314,7 +314,7 @@ enum results __fastcall drawInputDialog(
 	unsigned char *input;
 	input = calloc(length+1, sizeof(unsigned char));
 	h = lineCount + 6;
-	w = length + 4;
+	w = length + 6;
 	//for(i=0; i<lineCount; ++i);
 	//{
 	//	if(strlen(message[i]) > w) 
@@ -368,7 +368,7 @@ enum results __fastcall drawInputDialog(
 			key == 8
 			&& count > 0)
 		{
-			input[count] = '\0';
+			input[count-1] = '\0';
 			gotoxy(x+2+count, i+2+y);
 			cputc(' ');
 			--count;
@@ -379,6 +379,7 @@ enum results __fastcall drawInputDialog(
 		key = cgetc();
 	}
 
+	trimString(input);
 	strcpy(resultText, input);
 
 	switch((int)key)

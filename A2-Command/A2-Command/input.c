@@ -128,6 +128,25 @@ void  readKeyboard(void)
 		}
 		break;
 
+	case KEY_TAB:
+		if(selectedPanel == &leftPanelDrive
+			&& strlen(rightPanelDrive.path) > 0)
+		{
+			selectedPanel = &rightPanelDrive;
+			writeSelectorPosition(&leftPanelDrive, ' ');
+			writeSelectorPosition(&rightPanelDrive, '>');
+			writeCurrentFilename(selectedPanel);
+		}
+		else if(selectedPanel == &rightPanelDrive
+			&& strlen(leftPanelDrive.path) > 0)
+		{
+			selectedPanel = &leftPanelDrive;
+			writeSelectorPosition(&leftPanelDrive, '>');
+			writeSelectorPosition(&rightPanelDrive, ' ');
+			writeCurrentFilename(selectedPanel);
+		}
+		break;
+
 	case KEY_SH_PLUS:
 		enterDirectory(selectedPanel);
 		break;

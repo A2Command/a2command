@@ -130,86 +130,94 @@ void copyFiles(void)
 					}
 				}
 
-				writeStatusBarf("Copying file %s.....", currentNode->name);
-				sprintf(sourcePath, "%s/%s", selectedPanel->path, currentNode->name);
-				sourceFile = open(sourcePath, O_RDONLY);
-				if(sourceFile != -1)
+				if(currentNode->type != 0x0F)
 				{
-					sprintf(targetPath, "%s/%s", targetPanel->path, currentNode->name);
-					_filetype = currentNode->type;
-					_auxtype = currentNode->aux_type;
-					targetFile = open(targetPath, O_WRONLY | O_CREAT | O_TRUNC);
-					if(targetFile != -1)
+					writeStatusBarf("Copying file %s.....", currentNode->name);
+					sprintf(sourcePath, "%s/%s", selectedPanel->path, currentNode->name);
+					sourceFile = open(sourcePath, O_RDONLY);
+					if(sourceFile != -1)
 					{
-						bytesCopied = 0;
-						while(true)
+						sprintf(targetPath, "%s/%s", targetPanel->path, currentNode->name);
+						_filetype = currentNode->type;
+						_auxtype = currentNode->aux_type;
+						targetFile = open(targetPath, O_WRONLY | O_CREAT | O_TRUNC);
+						if(targetFile != -1)
 						{
-							bytes = read(sourceFile, fileBuffer, sizeof(fileBuffer));
-
-							if(kbhit())
+							bytesCopied = 0;
+							while(true)
 							{
-								r = cgetc();
-								if(r == CH_ESC)
+								bytes = read(sourceFile, fileBuffer, sizeof(fileBuffer));
+
+								if(kbhit())
 								{
-									close(sourceFile);
-									close(targetFile);
+									r = cgetc();
+									if(r == CH_ESC)
+									{
+										close(sourceFile);
+										close(targetFile);
 
-									reloadPanels();
+										reloadPanels();
 
-									writeStatusBar("Aborted copy.");
-									return;
+										writeStatusBar("Aborted copy.");
+										return;
+									}
+
 								}
 
-							}
-
-							if(bytes > 0)
-							{
-								r = write(targetFile, fileBuffer, bytes);
-								
-								if(r == -1)
+								if(bytes > 0)
 								{
-									writeStatusBarf("Problem (%d) writing %s", 
-										_oserror, 
-										currentNode->name); 
-									waitForEnterEsc();
+									r = write(targetFile, fileBuffer, bytes);
+								
+									if(r == -1)
+									{
+										writeStatusBarf("Problem (%d) writing %s", 
+											_oserror, 
+											currentNode->name); 
+										waitForEnterEsc();
+										break;
+									}
+									else
+									{
+										bytesCopied += bytes;
+										totalBytes += bytes;
+									}
+								}
+
+								////timeSpent = (time(NULL) - timeStart);
+								//timeSpent = (clock() - timeStart)/CLOCKS_PER_SEC;
+								//writeStatusBarf("%u:%02u e.t. %d B/s",
+								//	(unsigned)timeSpent/60u,
+								//	(unsigned)timeSpent%60u,
+								//	(unsigned)((totalBytes +=
+								//		(unsigned long)bytes)/timeSpent));
+
+								writeStatusBarf("%-17s - %8u bytes copied",
+									currentNode->name, bytesCopied);
+
+								if(bytes < sizeof(fileBuffer))
+								{
 									break;
 								}
-								else
-								{
-									bytesCopied += bytes;
-									totalBytes += bytes;
-								}
 							}
-
-							////timeSpent = (time(NULL) - timeStart);
-							//timeSpent = (clock() - timeStart)/CLOCKS_PER_SEC;
-							//writeStatusBarf("%u:%02u e.t. %d B/s",
-							//	(unsigned)timeSpent/60u,
-							//	(unsigned)timeSpent%60u,
-							//	(unsigned)((totalBytes +=
-							//		(unsigned long)bytes)/timeSpent));
-
-							writeStatusBarf("%-17s - %8u bytes copied",
-								currentNode->name, bytesCopied);
-
-							if(bytes < sizeof(fileBuffer))
-							{
-								break;
-							}
+							RELOAD = true;
 						}
-						RELOAD = true;
 					}
+					else
+					{
+						writeStatusBarf("Cannot open %s for read (%d)", 
+							currentNode->name, r); 
+						waitForEnterEsc();
+					}
+
+					writeStatusBarf("%-17s - %8u bytes copied",
+						currentNode->name, bytesCopied);
+					close(sourceFile);
+					close(targetFile);
 				}
 				else
 				{
-					writeStatusBarf("Cannot open %s for read (%d)", 
-						currentNode->name, r); 
-					waitForEnterEsc();
+					writeStatusBarf("Skipping directory %s", currentNode->name);
 				}
-				writeStatusBarf("%-17s - %8u bytes copied",
-					currentNode->name, bytesCopied);
-				close(sourceFile);
-				close(targetFile);
 			}
 		}
 	}
@@ -261,7 +269,7 @@ void renameFile(void)
 			writeStatusBarf("Old name: %s", selectedNode->name);
 
 			dialogResult = drawInputDialog(
-				2, 17,
+				2, 15,
 				dialogMessage,
 				"Rename File",
 				filename);
@@ -302,7 +310,7 @@ void makeDirectory(void)
 			saveScreen();
 
 			dialogResult = drawInputDialog(
-				2, 17,
+				2, 15,
 				dialogMessage,
 				"New Directory",
 				filename);

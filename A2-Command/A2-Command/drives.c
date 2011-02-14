@@ -143,6 +143,9 @@ int __fastcall  getDirectory(
 		if(dir != NULL)
 		{
 			writeStatusBar("Reading directory...");
+						
+			selectAllFiles(drive, false);
+
 			counter = 0;
 			read = 0;
 			currentDE = readdir(dir);
