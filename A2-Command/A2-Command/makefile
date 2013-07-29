@@ -1,8 +1,8 @@
 # Program declarations
-CC := cc65.exe
-CA := ca65.exe
-LD := ld65.exe
-CL := cl65.exe
+CC := cc65
+CA := ca65
+LD := ld65
+CL := cl65
 T := apple2enh
 JAVA := java
 AC := AppleCommander-1.3.5.jar

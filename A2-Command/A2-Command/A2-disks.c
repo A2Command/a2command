@@ -43,6 +43,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <device.h>
 
 #include "A2-disks.h"
 #include "screen.h"
@@ -53,31 +54,29 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "menus.h"
 
 unsigned char _driveCount;
-unsigned char* _drives;
+unsigned char _devices[9];
 
 void __fastcall__ selectDrive(struct panel_drive *panel)
 {
-	static unsigned char i, key, current, x = 5, y = 2;
-	//static unsigned char buffer[68];
+	static unsigned char dev, key, current, x = 5, y = 2;
 	static unsigned char temp[80];
-
-	_driveCount = drivecount();
-	_drives = drivelist();
 
 	saveScreen();
 	drawBox(x, y, size_x - 10, size_y - 5, COLOR_WHITE, 0);
 
 	cputsxy(7, y + 2, "Select directory for panel.");
 
-	for(i=0; i<_driveCount; ++i)
+    _driveCount = 0;
+    for(dev = getfirstdevice(); dev != INVALID_DEVICE; dev = getnextdevice(dev))
 	{
-		if(rootdir(_drives[i], buffer))
+		if(!getdevicedir(dev, buffer, sizeof(buffer)))
 		{
 			strcpy(buffer, _stroserror(_oserror));
 		}
 
-                sprintf(temp, "Slot %u Drive %u - %s", (_drives[i]>>4)&7, (_drives[i]>>7)+1, buffer);
-		cputsxy(8, (y + 4 +_driveCount) - i - 1, temp); 
+        sprintf(temp, "Slot %u Drive %u - %s", dev & 7, (dev>>3)+1, buffer);
+		cputsxy(8, y + 4 + _driveCount, temp);
+        _devices[_driveCount++] = dev;
 	}
 
 	cputcxy(7, y + 4, '>');
@@ -124,9 +123,9 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 
 	if(key == CH_ENTER)
 	{
-		panel->drive = &drives[_driveCount - current - 1u];
-		panel->drive->drive = _drives[_driveCount - current - 1u];		
-		if(rootdir(panel->drive->drive, panel->path) == -1)
+		panel->drive = &drives[current];
+		panel->drive->drive = _devices[current];
+		if(!getdevicedir(panel->drive->drive, panel->path, sizeof(panel->path)))
 		{
 			strcpy(panel->path, "");
 		}
@@ -140,9 +139,9 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 unsigned long __fastcall__ getDriveSize(unsigned char driveNumber)
 {
 	static dhandle_t drive;
-	static sectsize_t sectorSize;
-	static sectnum_t sectorCount;
-	static unsigned long driveSize;	
+	static unsigned int sectorSize;
+	static unsigned int sectorCount;
+	static unsigned long driveSize;
 		
 	drive = dio_open(driveNumber);
 	sectorSize = dio_query_sectsize(drive);
@@ -265,7 +264,7 @@ void __fastcall__ writeDiskImage(void)
 				dio_close(targetDrive);
 				close(sourceFile);
 
-				if(rootdir(targetPanel->drive->drive, targetPanel->path) == -1)
+				if(!getdevicedir(targetPanel->drive->drive, targetPanel->path, sizeof(targetPanel->path)))
 				{
 					strcpy(targetPanel->path, "");
 				}
@@ -437,10 +436,10 @@ void __fastcall__ copyDisk(void)
 			}
 
 			writeStatusBarf("Copied S%uD%u to S%uD%u",
-				(selectedPanel->drive->drive >> 4) & 7,
-				(selectedPanel->drive->drive >> 7) + 1,
-				(targetPanel->drive->drive >> 4) & 7,
-				(targetPanel->drive->drive >> 7) + 1);
+				(selectedPanel->drive->drive) & 7,
+				(selectedPanel->drive->drive >> 3) + 1,
+				(targetPanel->drive->drive) & 7,
+				(targetPanel->drive->drive >> 3) + 1);
 		}
 		else
 		{
@@ -450,7 +449,7 @@ void __fastcall__ copyDisk(void)
 		dio_close(sourceDrive);
 		dio_close(targetDrive);
 
-		if(rootdir(targetPanel->drive->drive, targetPanel->path) == -1)
+		if(!getdevicedir(targetPanel->drive->drive, targetPanel->path, sizeof(targetPanel->path)))
 		{
 			strcpy(targetPanel->path, "");
 		}

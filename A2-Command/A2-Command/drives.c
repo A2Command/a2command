@@ -245,8 +245,8 @@ void __fastcall  displayDirectory(
 		drive->path, NULL, NULL);
 
 	sprintf(temp, "[S%uD%u]", 
-		(drive->drive->drive >> 4) & 7, 
-		(drive->drive->drive >> 7) + 1);
+		(drive->drive->drive) & 7,
+		(drive->drive->drive >> 3) + 1);
 	cputsxy(x + 3, 22, temp);
 	start = drive->displayStartAt;
 
