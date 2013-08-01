@@ -100,21 +100,21 @@ void __fastcall viewFile(
 				}
 				else
 				{
-					if ((word[counter] = character) == ' ')
-					{
-						strcat(line, word);
-						memset(word, counter = 0, sizeof word);
-					}
-					else if (strlen(line) + (++counter) >= size_x)
-					{
-						printLine = true;
-
-						if (line[0] == '\0')
-						{
-							strcat(line, word);
-							memset(word, counter = 0, sizeof word);
-						}
-					}
+                    if ((word[counter++] = character) == ' ')
+                    {
+                        strcat(line, word);
+                        memset(word, counter = 0, sizeof word);
+                    }
+                    if (strlen(line) + counter >= size_x)
+                    {
+                        printLine = true;
+                        
+                        if (line[0] == '\0')
+                        {
+                            strcat(line, word);
+                            memset(word, counter = 0, sizeof word);
+                        }
+                    }
 				}
 
 				if(printLine)

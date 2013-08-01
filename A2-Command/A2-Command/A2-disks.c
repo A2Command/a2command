@@ -313,7 +313,7 @@ void __fastcall__ createDiskImage(void)
 
 	newName[0] = '\0';
 	r = drawInputDialog(
-		2, 17,
+		2, 15,
 		message, "Make Image",
 		newName);
 	retrieveScreen();
@@ -321,7 +321,8 @@ void __fastcall__ createDiskImage(void)
 	if((unsigned char)r == OK_RESULT)
 	{
 		sprintf(filePath, "%s/%s", targetPanel->path, newName);
-
+        _filetype = 0x06;
+        _auxtype = 0x00;
 		targetFile = open(filePath, O_WRONLY | O_CREAT | O_TRUNC);
 
 		if(targetFile == -1)

@@ -66,7 +66,7 @@ struct panel_drive *tempPanel = NULL;
 void copyFiles(void)
 {
 	int sourceFile = -1, targetFile = -1;
-	unsigned numSelectors = (selectedPanel->length + 7) / 8u;
+	unsigned k, l;
 	static unsigned char sourcePath[256], targetPath[256];
 	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0;
 	unsigned int index = 0;
@@ -93,10 +93,18 @@ void copyFiles(void)
 		retrieveScreen();
 		return;
 	}
-
-	for(i=0; i<numSelectors; ++i)
-	{
-		if(selectedPanel->selectedEntries[i] != 0x00) multipleSelected = true;
+    
+    l = selectedPanel->length;
+    for(k=0; k<l; ++k)
+    {
+        i = k / 8;
+        j = k % 8;
+        
+        if ((selectedPanel->selectedEntries[i] & (1 << j)) != 0x00)
+        {
+            multipleSelected = true;
+            break;
+        }
 	}
 	if(!multipleSelected)
 	{
@@ -378,11 +386,11 @@ void deleteFiles(void)
 				isBatch = true;
 
 				sprintf(oldName, "%s/%s", selectedPanel->path, currentDE->d_name);
-				writeStatusBarf("Deleting %-17s",currentDE->d_name, i, j, l);
+				writeStatusBarf("Deleting %-17s",currentDE->d_name);
 					
 				if (remove(oldName) < 0)
 				{
-					waitForEnterEscf("Error %u removing %s.", _oserror, currentDE->d_name, i, j, l);
+					waitForEnterEscf("%s removing %s.", _stroserror(_oserror), currentDE->d_name);
 				}
 
 				if(kbhit() && cgetc() == CH_ESC)
@@ -411,7 +419,10 @@ void deleteFiles(void)
 
 				sprintf(oldName, "%s/%s", selectedPanel->path, selectedNode->name);
 				writeStatusBarf("Deleting %s.", selectedNode->name);
-				remove(oldName);
+                if (remove(oldName) < 0)
+				{
+					waitForEnterEscf("%s removing %s.", _stroserror(_oserror), selectedNode->name);
+				}
 				rereadSelectedPanel();
 				writeSelectorPosition(selectedPanel, '>');
 				writeCurrentFilename(selectedPanel);
