@@ -46,7 +46,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAX_PATH_LENGTH 256
 
 extern unsigned char _driveCount;
-extern unsigned char _devices[9];
+extern unsigned char _devices[14];
 extern unsigned char _fileTypes[256][4];
 
 void __fastcall__ selectDrive(struct panel_drive *panel);

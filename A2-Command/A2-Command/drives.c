@@ -60,19 +60,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 unsigned char commandPath[256];
 unsigned char fileBuffer[COPY_BUFFER_SIZE];
 
-struct drive_status drives[9] =
-{
-	{ 0 },	// 0
-	{ 0 },	// 1
-	{ 0 },	// 2
-	{ 0 },	// 3
-	{ 0 },	// 4
-	{ 0 },	// 5
-	{ 0 },	// 6
-	{ 0 },	// 7
-	{ 0 }	// 8
-};
-
 unsigned areDrivesInitialized = false;
 struct panel_drive leftPanelDrive; 
 struct panel_drive rightPanelDrive;
@@ -245,8 +232,8 @@ void __fastcall  displayDirectory(
 		drive->path, NULL, NULL);
 
 	sprintf(temp, "[S%uD%u]", 
-		(drive->drive->drive) & 7,
-		(drive->drive->drive >> 3) + 1);
+		(drive->drive) & 7,
+		(drive->drive >> 3) + 1);
 	cputsxy(x + 3, 22, temp);
 	start = drive->displayStartAt;
 

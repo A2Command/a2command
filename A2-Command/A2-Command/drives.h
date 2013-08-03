@@ -48,19 +48,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* STRUCTS */
 
-/* Drive Status
- *-----------------------------
- *- Payton Byrd
- *-----------------------------
- * Used to store the drive number
- * and drive init message for 
- * each device.
- */
-struct drive_status
-{
-	unsigned char drive;
-};
-
 /* Directory Node
  *-----------------------------
  *- Payton Byrd
@@ -110,7 +97,7 @@ struct dir_node
 struct panel_drive
 {
 	unsigned char* selectedEntries;
-	struct drive_status *drive;
+	unsigned char drive;
 	unsigned char path[65];
 	struct dir_node slidingWindow[SLIDING_WINDOW_SIZE + 1];
 	int length;
@@ -122,7 +109,6 @@ struct panel_drive
 
 /* GLOBAL VARIABLES */
 extern unsigned areDrivesInitialized;		// Has the drives been intialized?
-extern struct drive_status drives[9];		// The collection of drive statuses
 extern struct panel_drive leftPanelDrive;	// The left panel
 extern struct panel_drive rightPanelDrive;	// The right panel
 extern struct panel_drive *selectedPanel;	// The current panel
