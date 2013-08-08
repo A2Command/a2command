@@ -58,7 +58,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 struct dir_node
 {
-	unsigned char name[17];
+	unsigned char name[16];
 	unsigned char type;
 	unsigned int aux_type;
 	unsigned int blocks;

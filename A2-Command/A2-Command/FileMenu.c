@@ -144,6 +144,8 @@ void copyFiles(void)
 						sprintf(targetPath, "%s/%s", targetPanel->path, currentNode->name);
 						_filetype = currentNode->type;
 						_auxtype = currentNode->aux_type;
+                        _datetime.createtime = currentNode->time;
+                        _datetime.createdate = currentNode->date;
 						targetFile = open(targetPath, O_WRONLY | O_CREAT | O_TRUNC);
 						if(targetFile != -1)
 						{
@@ -195,7 +197,7 @@ void copyFiles(void)
 								//	(unsigned)((totalBytes +=
 								//		(unsigned long)bytes)/timeSpent));
 
-								writeStatusBarf("%-17s - %8u bytes copied",
+								writeStatusBarf("%-15s - %8u bytes copied",
 									currentNode->name, bytesCopied);
 
 								if(bytes < sizeof(fileBuffer))
@@ -213,7 +215,7 @@ void copyFiles(void)
 						waitForEnterEsc();
 					}
 
-					writeStatusBarf("%-17s - %8u bytes copied",
+					writeStatusBarf("%-15s - %8u bytes copied",
 						currentNode->name, bytesCopied);
 					close(sourceFile);
 					close(targetFile);
@@ -300,7 +302,6 @@ void renameFile(void)
 void makeDirectory(void)
 {
 	enum results dialogResult;
-	struct dir_node *selectedNode = NULL;
 	unsigned char command[65];
 	unsigned char filename[16];
 	unsigned char* dialogMessage[] =
@@ -382,7 +383,7 @@ void deleteFiles(void)
 				isBatch = true;
 
 				sprintf(oldName, "%s/%s", selectedPanel->path, currentDE->d_name);
-				writeStatusBarf("Deleting %-17s",currentDE->d_name);
+				writeStatusBarf("Deleting %-15s",currentDE->d_name);
 					
 				if (remove(oldName) < 0)
 				{

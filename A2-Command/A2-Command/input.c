@@ -39,6 +39,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <ctype.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -57,9 +58,8 @@ void  readKeyboard(void)
 	struct dir_node *currentNode;
 	unsigned char key;
 	bool decision = false;
-	static unsigned char localbuffer[129];
 
-	key = cgetc();
+	key = toupper(cgetc());
 
 	switch((int)key)
 	{
@@ -71,7 +71,7 @@ void  readKeyboard(void)
 		}
 		else if(currentNode != NULL)
 		{
-			sprintf(localbuffer, "%s/%s", selectedPanel->path, currentNode->name);
+			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
 			if(currentNode->type == 0x06
 				|| currentNode->type == 0xFF)
 			{
@@ -81,12 +81,12 @@ void  readKeyboard(void)
 
 				if(decision == true)
 				{
-					exec(localbuffer, NULL);
+					exec(buffer, NULL);
 				}
 			}
 			else
 			{
-				viewFile(localbuffer);
+				viewFile(buffer);
 			}
 		}
 		break;

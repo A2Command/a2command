@@ -302,11 +302,22 @@ void __fastcall__ createDiskImage(void)
 		{ "the disk image" }
 	};
 	static unsigned int i, j, r;
-	static unsigned char newName[17];
+	static unsigned char newName[16];
 	static dhandle_t sourceDrive;
 	static int targetFile;
 	static unsigned int sectorSize;
 	static unsigned long sectorCount;
+    // Setting the time and date to zero allows ProDOS to set
+    // the current value if a clock is present
+	static struct {
+        unsigned day  :5;
+        unsigned mon  :4;
+        unsigned year :7;
+    } date = {0, 0, 0};
+    static struct {
+        unsigned char min;
+        unsigned char hour;
+    } time = {0, 0};
 	
 	targetPanel = (selectedPanel == &leftPanelDrive ? &rightPanelDrive : &leftPanelDrive);
 
@@ -322,6 +333,8 @@ void __fastcall__ createDiskImage(void)
 		sprintf(filePath, "%s/%s", targetPanel->path, newName);
         _filetype = 0x06;
         _auxtype = 0x00;
+        _datetime.createdate = date;
+        _datetime.createtime = time;
 		targetFile = open(filePath, O_WRONLY | O_CREAT | O_TRUNC);
 
 		if(targetFile == -1)

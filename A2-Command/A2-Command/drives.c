@@ -124,7 +124,6 @@ int __fastcall  getDirectory(
 	}
 	else
 	{
-		strcpy(fileBuffer, drive->path);
 		dir = opendir(drive->path);
 
 		if(dir != NULL)
@@ -193,8 +192,6 @@ int __fastcall  getDirectory(
 			}
 			waitForEnterEscf(commandPath);
 		}
-
-		strcpy(drive->path, fileBuffer);
 	}
 
 	return counter;
@@ -215,7 +212,7 @@ void __fastcall  displayDirectory(
 {
 	unsigned char w = 19, x = 0, y = 0;
 	unsigned char 
-		i = 0, start=0, ii = 0, mod = 0, bit = 0, r = 0;
+		i = 0, start=0;
 	unsigned char temp[9];
 	struct dir_node *currentNode;
 
@@ -260,18 +257,8 @@ void __fastcall  displayDirectory(
 			}
 		}
 
-		ii =  (currentNode->index) / 8;
-		mod =  (currentNode->index) % 8;
-		bit = 1 << mod;
-		r = drive->selectedEntries[ii] & bit;
-		if(r != 0)
-		{
-			revers(true);
-		}
-		else
-		{
-			revers(false);
-		}		
+        revers(drive->selectedEntries[(currentNode->index) / 8u]
+               & (unsigned char)(1 << ((currentNode->index) % 8u)));
 
 		y = i - start + 2;
 
@@ -488,7 +475,7 @@ unsigned char __fastcall  getDiskImageType(
 	struct panel_drive *panel)
 {
 	static unsigned result = false;
-	static unsigned char name[17];
+	static unsigned char name[16];
 	static struct dir_node *currentDirNode = NULL;
 
 	currentDirNode = getSelectedNode(panel);
