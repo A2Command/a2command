@@ -58,6 +58,7 @@ void  readKeyboard(void)
 	struct dir_node *currentNode;
 	unsigned char key;
 	bool decision = false;
+	static unsigned char localbuffer[129];
 
 	key = toupper(cgetc());
 
@@ -71,7 +72,7 @@ void  readKeyboard(void)
 		}
 		else if(currentNode != NULL)
 		{
-			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
+			sprintf(localbuffer, "%s/%s", selectedPanel->path, currentNode->name);
 			if(currentNode->type == 0x06
 				|| currentNode->type == 0xFF)
 			{
@@ -81,12 +82,12 @@ void  readKeyboard(void)
 
 				if(decision == true)
 				{
-					exec(buffer, NULL);
+					exec(localbuffer, NULL);
 				}
 			}
 			else
 			{
-				viewFile(buffer);
+				viewFile(localbuffer);
 			}
 		}
 		break;
