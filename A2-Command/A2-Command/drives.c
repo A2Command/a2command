@@ -57,7 +57,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __fastcall __fastcall
 #endif
 
-unsigned char commandPath[256];
+unsigned char commandPath[MAX_PATH_LENGTH];
 unsigned char fileBuffer[COPY_BUFFER_SIZE];
 
 unsigned areDrivesInitialized = false;
@@ -124,6 +124,7 @@ int __fastcall  getDirectory(
 	}
 	else
 	{
+        strcpy(buffer, drive->path);
 		dir = opendir(drive->path);
 
 		if(dir != NULL)
@@ -133,38 +134,32 @@ int __fastcall  getDirectory(
 			selectAllFiles(drive, false);
 
 			counter = 0;
-			read = 0;
 			currentDE = readdir(dir);
 			if(strlen(currentDE->d_name) > 0)
 			{
 				for(i = 0; i<SLIDING_WINDOW_SIZE; ++i)
 				{
-					strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, "");
+					strcpy(drive->slidingWindow[i].name, "");
 				}
 
 				while(currentDE != NULL)
 				{
-					if(counter >= slidingWindowStartAt &&
-						read <= SLIDING_WINDOW_SIZE)
-					{
-						++read;
-						i = counter;
-						if(i - slidingWindowStartAt >= 0 && 
-							i - slidingWindowStartAt <= SLIDING_WINDOW_SIZE)
-						{
-							strcpy(drive->slidingWindow[i - slidingWindowStartAt].name, currentDE->d_name);
-							drive->slidingWindow[i - slidingWindowStartAt].size = currentDE->d_size;
-							drive->slidingWindow[i - slidingWindowStartAt].blocks = currentDE->d_blocks;
-							drive->slidingWindow[i - slidingWindowStartAt].type = currentDE->d_type;
-							drive->slidingWindow[i - slidingWindowStartAt].aux_type = currentDE->d_auxtype;
-							drive->slidingWindow[i - slidingWindowStartAt].index = counter;
-							drive->slidingWindow[i - slidingWindowStartAt].date.day = currentDE->d_cdate.day;
-							drive->slidingWindow[i - slidingWindowStartAt].date.mon = currentDE->d_cdate.mon;
-							drive->slidingWindow[i - slidingWindowStartAt].date.year = currentDE->d_cdate.year;
-							drive->slidingWindow[i - slidingWindowStartAt].time.hour = currentDE->d_ctime.hour;
-							drive->slidingWindow[i - slidingWindowStartAt].time.min = currentDE->d_ctime.min;
-						}
-					}
+                    i = counter - slidingWindowStartAt;
+                    if(i >= 0 &&
+                       i <= SLIDING_WINDOW_SIZE)
+                    {
+                        strcpy(drive->slidingWindow[i].name, currentDE->d_name);
+                        drive->slidingWindow[i].size = currentDE->d_size;
+                        drive->slidingWindow[i].blocks = currentDE->d_blocks;
+                        drive->slidingWindow[i].type = currentDE->d_type;
+                        drive->slidingWindow[i].aux_type = currentDE->d_auxtype;
+                        drive->slidingWindow[i].index = counter;
+                        drive->slidingWindow[i].date.day = currentDE->d_cdate.day;
+                        drive->slidingWindow[i].date.mon = currentDE->d_cdate.mon;
+                        drive->slidingWindow[i].date.year = currentDE->d_cdate.year;
+                        drive->slidingWindow[i].time.hour = currentDE->d_ctime.hour;
+                        drive->slidingWindow[i].time.min = currentDE->d_ctime.min;
+                    }
 					++counter;
 					currentDE = readdir(dir);
 				}
@@ -192,6 +187,7 @@ int __fastcall  getDirectory(
 			}
 			waitForEnterEscf(commandPath);
 		}
+        strcpy(drive->path, buffer);
 	}
 
 	return counter;

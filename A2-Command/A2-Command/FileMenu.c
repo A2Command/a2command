@@ -67,7 +67,7 @@ void copyFiles(void)
 {
 	int sourceFile = -1, targetFile = -1;
 	unsigned numSelectors = selectedPanel->length / 8;
-	static unsigned char sourcePath[256], targetPath[256];
+	static unsigned char sourcePath[MAX_PATH_LENGTH], targetPath[MAX_PATH_LENGTH];
 	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0;
 	unsigned int index = 0;
 	size_t bytes;
@@ -253,7 +253,7 @@ void reloadPanels(void)
 	writeCurrentFilename(selectedPanel);
 }
 
-unsigned char oldName[256], newName[256];
+unsigned char oldName[MAX_PATH_LENGTH], newName[MAX_PATH_LENGTH];
 void renameFile(void)
 {
 	enum results dialogResult;

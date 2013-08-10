@@ -38,9 +38,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _GLOBALS_H
 #define _GLOBALS_H
 
+//According to the ProDOS Technical Reference Manual: 2.1.1 - Pathnames
+#define MAX_PATH_LENGTH 129
+
 extern unsigned char size_x;
 extern unsigned char size_y;
-extern unsigned char buffer[129];
+extern unsigned char buffer[MAX_PATH_LENGTH];
 
 extern unsigned char *quit_message[1];
 

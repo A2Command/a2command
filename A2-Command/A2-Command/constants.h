@@ -46,12 +46,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define KEY_AT				'@'	// @
 
 #define KEY_F1				'1'
-#define KEY_F3				'3'
-#define KEY_F5				'5'
-#define KEY_F7				'7'
 #define KEY_F2				'2'
+#define KEY_F3				'3'
 #define KEY_F4				'4'
+#define KEY_F5				'5'
 #define KEY_F6				'6'
+#define KEY_F7				'7'
 #define KEY_F8				'8'
 #define KEY_SH_PLUS			'9'
 #define KEY_SH_MINUS		'0'

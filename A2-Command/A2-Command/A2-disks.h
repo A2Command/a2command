@@ -43,7 +43,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "drives.h"
-#define MAX_PATH_LENGTH 256
 
 extern unsigned char _driveCount;
 extern unsigned char _devices[14];

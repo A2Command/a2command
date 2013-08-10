@@ -54,6 +54,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 unsigned char SCREEN_BUFFER[2][24][40];
+static char linebuffer[81];
 
 // Prepares the screen 
 void setupScreen(void)
@@ -195,8 +196,8 @@ void __fastcall writePanel(
 			titleBuffer[w-4]='\0';
 		}
 
-		sprintf(buffer, "[%s]", titleBuffer);
-		cputsxy(x+2, y,buffer);
+		sprintf(linebuffer, "[%s]", titleBuffer);
+		cputsxy(x+2, y,linebuffer);
 	}
 
 	revers(false);
@@ -204,17 +205,17 @@ void __fastcall writePanel(
 	okLeft = x + w - 2;
 	if(ok != NULL)
 	{
-		sprintf(buffer, "[%s]", ok);
-		okLeft -= strlen(buffer);
-		cputsxy(okLeft, y + h - 1, buffer);
+		sprintf(linebuffer, "[%s]", ok);
+		okLeft -= strlen(linebuffer);
+		cputsxy(okLeft, y + h - 1, linebuffer);
 	}
 
 	cancelLeft = okLeft - 2;
 	if(cancel != NULL)
 	{
-		sprintf(buffer, "[%s]", cancel);
-		cancelLeft -= strlen(buffer);
-		cputsxy(cancelLeft, y + h - 1,buffer);
+		sprintf(linebuffer, "[%s]", cancel);
+		cancelLeft -= strlen(linebuffer);
+		cputsxy(cancelLeft, y + h - 1,linebuffer);
 	}
 }
 
@@ -406,10 +407,8 @@ bool __fastcall writeYesNo(
 
 void vwriteStatusBarf(const char format[], va_list ap)
 {
-	//char buffer[81];
-
-	vsprintf(buffer, format, ap);
-	writeStatusBar(buffer);
+	vsprintf(linebuffer, format, ap);
+	writeStatusBar(linebuffer);
 }
 
 void writeStatusBarf(const char format[], ...)
