@@ -115,6 +115,7 @@ int __fastcall  getDirectory(
 	{
 		drive->slidingWindow[i].size = 0u;
 		drive->slidingWindow[i].type = 0;
+		strcpy(drive->slidingWindow[i].name, "");
 	}
 
 	if(strlen(drive->path) == 0)
@@ -124,42 +125,34 @@ int __fastcall  getDirectory(
 	}
 	else
 	{
-        strcpy(buffer, drive->path);
 		dir = opendir(drive->path);
 
 		if(dir != NULL)
 		{
 			writeStatusBar("Reading directory...");
-						
-			selectAllFiles(drive, false);
 
 			counter = 0;
 			currentDE = readdir(dir);
 			if(strlen(currentDE->d_name) > 0)
 			{
-				for(i = 0; i<SLIDING_WINDOW_SIZE; ++i)
-				{
-					strcpy(drive->slidingWindow[i].name, "");
-				}
-
 				while(currentDE != NULL)
 				{
-                    i = counter - slidingWindowStartAt;
-                    if(i >= 0 &&
-                       i <= SLIDING_WINDOW_SIZE)
-                    {
-                        strcpy(drive->slidingWindow[i].name, currentDE->d_name);
-                        drive->slidingWindow[i].size = currentDE->d_size;
-                        drive->slidingWindow[i].blocks = currentDE->d_blocks;
-                        drive->slidingWindow[i].type = currentDE->d_type;
-                        drive->slidingWindow[i].aux_type = currentDE->d_auxtype;
-                        drive->slidingWindow[i].index = counter;
-                        drive->slidingWindow[i].date.day = currentDE->d_cdate.day;
-                        drive->slidingWindow[i].date.mon = currentDE->d_cdate.mon;
-                        drive->slidingWindow[i].date.year = currentDE->d_cdate.year;
-                        drive->slidingWindow[i].time.hour = currentDE->d_ctime.hour;
-                        drive->slidingWindow[i].time.min = currentDE->d_ctime.min;
-                    }
+					i = counter - slidingWindowStartAt;
+					if(i >= 0 &&
+					   i < SLIDING_WINDOW_SIZE)
+					{
+						strcpy(drive->slidingWindow[i].name, currentDE->d_name);
+						drive->slidingWindow[i].size = currentDE->d_size;
+						drive->slidingWindow[i].blocks = currentDE->d_blocks;
+						drive->slidingWindow[i].type = currentDE->d_type;
+						drive->slidingWindow[i].aux_type = currentDE->d_auxtype;
+						drive->slidingWindow[i].index = counter;
+						drive->slidingWindow[i].date.day = currentDE->d_cdate.day;
+						drive->slidingWindow[i].date.mon = currentDE->d_cdate.mon;
+						drive->slidingWindow[i].date.year = currentDE->d_cdate.year;
+						drive->slidingWindow[i].time.hour = currentDE->d_ctime.hour;
+						drive->slidingWindow[i].time.min = currentDE->d_ctime.min;
+					}
 					++counter;
 					currentDE = readdir(dir);
 				}
@@ -187,7 +180,6 @@ int __fastcall  getDirectory(
 			}
 			waitForEnterEscf(commandPath);
 		}
-        strcpy(drive->path, buffer);
 	}
 
 	return counter;
@@ -203,12 +195,13 @@ void __fastcall  resetSelectedFiles(
 			sizeof(unsigned char));
 }
 
+static const unsigned char displayHeight = 20;
+
 void __fastcall  displayDirectory(
 	struct panel_drive *drive)
 {
 	unsigned char w = 19, x = 0, y = 0;
-	unsigned char 
-		i = 0, start=0;
+	unsigned char i, start, end;
 	unsigned char temp[9];
 	struct dir_node *currentNode;
 
@@ -229,28 +222,23 @@ void __fastcall  displayDirectory(
 		(drive->drive >> 3) + 1);
 	cputsxy(x + 3, 22, temp);
 	start = drive->displayStartAt;
-
-	for(i=start; i<start + 20 && i < drive->length; i++)
+	end = start + displayHeight < drive->length ? start + displayHeight: drive->length;
+	for(i = start; i < end; i++)
 	{
 		currentNode = getSpecificNode(drive, i);
 		if(currentNode == NULL ||
 			currentNode->name == NULL)
 		{
-			if(i == drive->length - 1) break;
-			if(i >= start && drive->slidingWindowStartAt <= start)
+			if(i != start)
 			{
 				// we are at bottom and scrollable
-				drive->slidingWindowStartAt += 5;
-				getDirectory(drive, drive->slidingWindowStartAt);
-				currentNode = getSpecificNode(drive, i);
+				getDirectory(drive, drive->slidingWindowStartAt + 5);
 			}
 			else
 			{
-				if(drive->slidingWindowStartAt > 5) drive->slidingWindowStartAt = i - 5;
-				else drive->slidingWindowStartAt = 0;
-				getDirectory(drive, drive->slidingWindowStartAt);
-				currentNode = getSpecificNode(drive, i);
+				getDirectory(drive, i - 5);
 			}
+			currentNode = getSpecificNode(drive, i);
 		}
 
         revers(drive->selectedEntries[(currentNode->index) / 8u]
@@ -323,24 +311,15 @@ void __fastcall  writeCurrentFilename(
 void __fastcall  moveSelectorUp(
 	struct panel_drive *panel)
 {
-	static unsigned char diff;
-	static unsigned firstPage;
-
 	writeSelectorPosition(panel, ' ');
-	firstPage = panel->displayStartAt == 0;
-	diff = panel->currentIndex - panel->displayStartAt;
 
-	if(!firstPage && diff == 1)
+	if (panel->currentIndex > 0)
 	{
-		--(panel->displayStartAt);
-		--(panel->currentIndex);
-		displayDirectory(panel);
-		writeSelectorPosition(panel, '>');
-		writeCurrentFilename(panel);
-	}
-	else if(diff > 0)
-	{
-		--(panel->currentIndex);
+		if (--(panel->currentIndex) < panel->displayStartAt)
+		{
+			--(panel->displayStartAt);
+			displayDirectory(panel);
+		}
 	}
 	
 	writeSelectorPosition(panel, '>');
@@ -350,46 +329,23 @@ void __fastcall  moveSelectorUp(
 void __fastcall  moveSelectorDown(
 	struct panel_drive *panel)
 {
-	static const unsigned char offset = 19;
-	static unsigned char diff;
-	static unsigned lastPage;
-
 	writeSelectorPosition(panel, ' ');
 
-	lastPage = panel->displayStartAt + offset + 2 >= panel->length;
-	diff = panel->length - panel->displayStartAt;
-
-	if(!lastPage && diff > offset &&
-		((panel->currentIndex - panel->displayStartAt) == offset))
+	if (panel->currentIndex < panel->length - 1)
 	{
-		++(panel->displayStartAt);
-		++(panel->currentIndex);
-		displayDirectory(panel);
-		writeSelectorPosition(panel, '>');
-		writeCurrentFilename(panel);
-	}
-	else if(lastPage && 
-		(panel->currentIndex - panel->displayStartAt) < offset &&
-		(panel->currentIndex + 1) < panel->length)
-	{
-		++(panel->currentIndex);
-	}
-	else if(!lastPage)
-	{
-		++(panel->currentIndex);
+		if (++(panel->currentIndex) >= panel->displayStartAt + displayHeight)
+		{
+			++(panel->displayStartAt);
+			displayDirectory(panel);
+		}
 	}
 
-	if(panel->currentIndex < 0) panel->currentIndex=0;
 	writeSelectorPosition(panel, '>');
 	writeCurrentFilename(panel);
 }
 
 void selectCurrentFile(void)
 {
-	static unsigned char 
-		index = 0, bit = 0, mod = 0, 
-		r = 0, nbit = 0, v = 0, o = 0;
-
 	static struct dir_node *currentDirNode;
 
 	if(selectedPanel != NULL)
@@ -400,21 +356,9 @@ void selectCurrentFile(void)
 
 			if(currentDirNode != NULL)
 			{	
-				index = (currentDirNode->index) / 8;
-				mod = (currentDirNode->index) % 8;
-				bit = 1 << mod;
-				nbit = (0xFF ^ bit);
-				o = selectedPanel->selectedEntries[index];
-				r = o & bit;
-				if(r != 0)
-				{
-					v = o & nbit;
-					selectedPanel->selectedEntries[index] = v;
-				}
-				else 
-				{
-					selectedPanel->selectedEntries[index] |= bit;
-				}
+				// Toggle the selected entry.
+				selectedPanel->selectedEntries[(currentDirNode->index) / 8u]
+				^= 1 << ((currentDirNode->index) % 8u);
 
 				displayDirectory(selectedPanel);
 				moveSelectorDown(selectedPanel);
@@ -592,11 +536,10 @@ void __fastcall  moveTop(
 {
 	if(panel != NULL)
 	{
-		panel->slidingWindowStartAt = 0;
 		panel->currentIndex = 0;
 		panel->displayStartAt = 0;
 
-		getDirectory(panel, panel->slidingWindowStartAt);
+		getDirectory(panel, 0);
 		displayDirectory(panel);
 		writeSelectorPosition(panel, '>');
 		writeCurrentFilename(panel);
@@ -611,15 +554,13 @@ void __fastcall  movePageUp(
 		if(panel->currentIndex < 20) 
 		{
 			moveTop(panel);
-			return;
 		}
 		else
 		{
 			panel->currentIndex -= 19;
 			panel->displayStartAt = panel->currentIndex;
-			panel->slidingWindowStartAt = panel->currentIndex;
 
-			getDirectory(panel, panel->slidingWindowStartAt);
+			getDirectory(panel, panel->currentIndex);
 			displayDirectory(panel);
 			writeSelectorPosition(panel, '>');
 			writeCurrentFilename(panel);
@@ -633,7 +574,7 @@ void  __fastcall movePageDown(
 	if(panel != NULL)
 	{
 		panel->currentIndex += 19;
-		if(panel->currentIndex > panel->length - 2) 
+		if(panel->currentIndex > panel->length - 1)
 		{
 			moveBottom(panel);
 			return;
@@ -641,9 +582,8 @@ void  __fastcall movePageDown(
 		else
 		{
 			panel->displayStartAt = panel->currentIndex - 19;
-			panel->slidingWindowStartAt = panel->currentIndex - 19;
 
-			getDirectory(panel, panel->slidingWindowStartAt);
+			getDirectory(panel, panel->displayStartAt);
 			displayDirectory(panel);
 			writeSelectorPosition(panel, '>');
 			writeCurrentFilename(panel);
@@ -656,27 +596,15 @@ void __fastcall  moveBottom(
 {
 	if(panel != NULL)
 	{
-		panel->currentIndex = panel->length - 1;
+		if ((panel->currentIndex = panel->length - 1) < 0)
+		{
+			panel->currentIndex = 0;
+		}
+		panel->displayStartAt =
+		(panel->length > displayHeight) ?
+		panel->length - displayHeight : 0;
 
-		if(panel->length > SLIDING_WINDOW_SIZE)
-		{
-			panel->slidingWindowStartAt = panel->length - SLIDING_WINDOW_SIZE;
-		}
-		else
-		{
-			panel->slidingWindowStartAt = 0;
-		}
-
-		if(panel->length > 21)
-		{
-			panel->displayStartAt = panel->length - 20;
-		}
-		else
-		{
-			panel->displayStartAt = 0;
-		}
-
-		getDirectory(panel, panel->slidingWindowStartAt);
+		getDirectory(panel, panel->length - SLIDING_WINDOW_SIZE);
 		displayDirectory(panel);
 		writeSelectorPosition(panel, '>');
 		writeCurrentFilename(panel);

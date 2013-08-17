@@ -128,10 +128,6 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 		{
 			strcpy(panel->path, "");
 		}
-
-		selectedPanel = panel;
-
-		return;
 	}
 }
 
