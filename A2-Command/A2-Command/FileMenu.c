@@ -66,7 +66,7 @@ struct panel_drive *tempPanel = NULL;
 void copyFiles(void)
 {
 	int sourceFile = -1, targetFile = -1;
-	unsigned numSelectors = selectedPanel->length / 8;
+	unsigned numSelectors = selectedPanel->length / 8 + 1;
 	static unsigned char sourcePath[MAX_PATH_LENGTH], targetPath[MAX_PATH_LENGTH];
 	unsigned char i = 0, j = 0, sd = 0, td = 0, bit = 0;
 	unsigned int index = 0;
