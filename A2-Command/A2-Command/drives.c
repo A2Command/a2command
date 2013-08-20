@@ -103,7 +103,7 @@ int __fastcall  getDirectory(
 	struct panel_drive *drive,
 	const int slidingWindowStartAt)
 {
-	unsigned int counter=0, read=0;
+	unsigned int counter=0, blocks=0;
 	unsigned char i;
 	struct dirent *currentDE;
 	DIR *dir = NULL;
@@ -154,10 +154,12 @@ int __fastcall  getDirectory(
 						drive->slidingWindow[i].time.min = currentDE->d_ctime.min;
 					}
 					++counter;
+					blocks += currentDE->d_blocks;
 					currentDE = readdir(dir);
 				}
 
 				drive->length = counter;
+				drive->usedblocks = blocks;
 				if(drive->currentIndex >= drive->length)
 				{
 					drive->currentIndex = drive->length;
@@ -221,6 +223,9 @@ void __fastcall  displayDirectory(
 		(drive->drive) & 7,
 		(drive->drive >> 3) + 1);
 	cputsxy(x + 3, 22, temp);
+	
+	gotox(x + w - 9); cprintf("[%5u]", drive->totalblocks - drive->usedblocks);
+	
 	start = drive->displayStartAt;
 	end = start + displayHeight < drive->length ? start + displayHeight: drive->length;
 	for(i = start; i < end; i++)

@@ -101,6 +101,8 @@ struct panel_drive
 	unsigned char path[65];
 	struct dir_node slidingWindow[SLIDING_WINDOW_SIZE + 1];
 	int length;
+	unsigned totalblocks;
+	unsigned usedblocks;
 	int currentIndex;
 	int displayStartAt;
 	int slidingWindowStartAt;

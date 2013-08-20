@@ -58,7 +58,7 @@ unsigned char _devices[14];
 
 void __fastcall__ selectDrive(struct panel_drive *panel)
 {
-	static unsigned char dev, key, current, x = 5, y = 2;
+	unsigned char dev, key, current, x = 5, y = 2;
 	static unsigned char temp[80];
 
 	saveScreen();
@@ -124,11 +124,24 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 	if(key == CH_ENTER)
 	{
 		panel->drive = _devices[current];
+		panel->totalblocks = getDriveBlocks(panel->drive);
 		if(!getdevicedir(panel->drive, panel->path, sizeof(panel->path)))
 		{
 			strcpy(panel->path, "");
 		}
 	}
+}
+
+unsigned long __fastcall__ getDriveBlocks(unsigned char driveNumber)
+{
+	static dhandle_t drive;
+	static unsigned int sectorCount;
+	
+	drive = dio_open(driveNumber);
+	sectorCount = dio_query_sectcount(drive);
+	dio_close(drive);
+	
+	return sectorCount;
 }
 
 unsigned long __fastcall__ getDriveSize(unsigned char driveNumber)
