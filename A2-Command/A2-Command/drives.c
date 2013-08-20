@@ -145,6 +145,7 @@ int __fastcall  getDirectory(
 						drive->slidingWindow[i].size = currentDE->d_size;
 						drive->slidingWindow[i].blocks = currentDE->d_blocks;
 						drive->slidingWindow[i].type = currentDE->d_type;
+						drive->slidingWindow[i].access = currentDE->d_access;
 						drive->slidingWindow[i].aux_type = currentDE->d_auxtype;
 						drive->slidingWindow[i].index = counter;
 						drive->slidingWindow[i].date.day = currentDE->d_cdate.day;
@@ -251,7 +252,7 @@ void __fastcall  displayDirectory(
 
 		y = i - start + 2;
 
-		sprintf(commandPath, "%5u %-16s %02u-%02u-%02u %3s"
+		sprintf(commandPath, "%5u  %-16s %02u-%02u-%02u %3s"
 			, currentNode->blocks
 			, currentNode->name
 			, currentNode->date.year
@@ -260,6 +261,9 @@ void __fastcall  displayDirectory(
 			, _fileTypes[currentNode->type]
 			);
 		cputsxy(x + 2, y, commandPath);
+		
+		if(!(currentNode->access & 0xC2))
+			cputcxy(x + 8, y, '*');
 		
 		revers(false);
 	}

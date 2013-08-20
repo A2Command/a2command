@@ -60,6 +60,7 @@ struct dir_node
 {
 	unsigned char name[16];
 	unsigned char type;
+	unsigned char access;
 	unsigned int aux_type;
 	unsigned int blocks;
 	unsigned long size;
