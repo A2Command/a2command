@@ -79,7 +79,7 @@ int main(void)
 	setupFileTypes();
 
 	// Prepares the screen for use.
-	setupScreen();
+	clrscr();
 
 	// Have the user select
 	// the drive to start with.

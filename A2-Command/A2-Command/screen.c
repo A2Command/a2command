@@ -56,18 +56,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 unsigned char SCREEN_BUFFER[2][24][40];
 static char linebuffer[81];
 
-// Prepares the screen 
-void setupScreen(void)
-{
-	clrscr();
-
-	//textcolor(color_text_other);
-	//bgcolor(color_background);
-	//bordercolor(color_border);
-
-	return;
-}
-
 void  saveScreen(void)
 {
 	unsigned char i;

@@ -50,8 +50,6 @@ enum buttons { OK = 1, CANCEL = 2, YES = 4, NO = 8 };
 //enum buttonTypes { cancel, ok, other };
 //typedef void *ButtonCallback(enum buttonTypes buttonType);
 
-void setupScreen(void);
-
 void __fastcall writeStatusBar(const char[]);
 void vwriteStatusBarf(const char[], va_list);
 void writeStatusBarf(const char[], ...);

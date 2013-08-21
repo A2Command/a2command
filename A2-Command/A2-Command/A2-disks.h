@@ -43,17 +43,19 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "drives.h"
+#include "globals.h"
 
 extern unsigned char _driveCount;
 extern unsigned char _devices[14];
 extern unsigned char _fileTypes[256][4];
+extern unsigned char filePath[MAX_PATH_LENGTH];
 
 void __fastcall__ selectDrive(struct panel_drive *panel);
 unsigned long __fastcall__ getDriveBlocks(unsigned char driveNumber);
 unsigned long __fastcall__ getDriveSize(unsigned char driveNumber);
-void __fastcall__ writeDiskImage(void);
-void __fastcall__ createDiskImage(void);
-void __fastcall__ copyDisk(void);
+void writeDiskImage(void);
+void createDiskImage(void);
+void copyDisk(void);
 void setupFileTypes(void);
 
 #endif

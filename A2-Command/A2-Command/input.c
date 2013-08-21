@@ -52,6 +52,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "screen.h"
 #include "Viewer.h"
 #include "A2-disks.h"
+#include "Dispatcher.h"
 
 void  readKeyboard(void)
 {
@@ -86,6 +87,7 @@ void  readKeyboard(void)
 			}
 			else
 			{
+				loadOverlay("a2cmd.system.TV");
 				viewFile(buffer);
 			}
 		}
@@ -223,12 +225,15 @@ void  readKeyboard(void)
 		movePageDown(selectedPanel);
 		break;
 	case HK_WRITE_DISK_IMAGE:
+		loadOverlay("a2cmd.system.DI");
 		writeDiskImage();
 		break;
 	case HK_CREATE_DISK_IMAGE:
+		loadOverlay("a2cmd.system.DI");
 		createDiskImage();
 		break;
 	case HK_COPY_DISK:
+		loadOverlay("a2cmd.system.DC");
 		copyDisk();
 		break;
 	default:

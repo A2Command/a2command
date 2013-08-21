@@ -95,7 +95,12 @@
     <NMakeReBuildCommandLine>make A2Disk</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>__APPLE2ENH__</NMakePreprocessorDefinitions>
     <IncludePath>$(CC65_INC);$(CA65_INC);</IncludePath>
-    <NMakeIncludeSearchPath>$(CC65_INC);$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(CC65_INC);</NMakeIncludeSearchPath>
+    <ExecutablePath>$(PATH);</ExecutablePath>
+    <ReferencePath />
+    <LibraryPath />
+    <SourcePath />
+    <ExcludePath />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='C128_Config|Win32'">
     <NMakeBuildCommandLine>make T:=c128</NMakeBuildCommandLine>
@@ -173,6 +178,7 @@
     </BuildLog>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="apple2enh-system.cfg" />
     <None Include="AppleCommander-1.3.5.jar" />
     <None Include="loader.system" />
     <None Include="prodos.po" />
@@ -180,6 +186,9 @@
   <ItemGroup>
     <ClCompile Include="A2-disks.c" />
     <ClCompile Include="A2-Command.c" />
+    <ClCompile Include="DiskCopy.c" />
+    <ClCompile Include="DiskImages.c" />
+    <ClCompile Include="Dispatcher.c" />
     <ClCompile Include="DriveMenu.c" />
     <ClCompile Include="drives.c" />
     <ClCompile Include="FileMenu.c" />
@@ -194,6 +203,7 @@
   <ItemGroup>
     <ClInclude Include="A2-disks.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="Dispatcher.h" />
     <ClInclude Include="drives.h" />
     <ClInclude Include="globalInput.h" />
     <ClInclude Include="globals.h" />

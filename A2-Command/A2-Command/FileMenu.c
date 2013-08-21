@@ -144,8 +144,8 @@ void copyFiles(void)
 						sprintf(targetPath, "%s/%s", targetPanel->path, currentNode->name);
 						_filetype = currentNode->type;
 						_auxtype = currentNode->aux_type;
-                        _datetime.createtime = currentNode->time;
-                        _datetime.createdate = currentNode->date;
+                        //_datetime.createtime = currentNode->time;
+                        //_datetime.createdate = currentNode->date;
 						targetFile = open(targetPath, O_WRONLY | O_CREAT | O_TRUNC);
 						if(targetFile != -1)
 						{

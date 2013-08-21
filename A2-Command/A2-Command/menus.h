@@ -41,8 +41,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "constants.h"
 
 // Menu Globals
-extern unsigned char currentMenuX;
-extern unsigned char currentMenuLine;
 enum menus
 {
 	left, right, file, command, options

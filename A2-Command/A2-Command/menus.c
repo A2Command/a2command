@@ -47,14 +47,14 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "menus.h"
 #include "screen.h"
 
-unsigned char currentMenuX;
-unsigned char currentMenuLine;
+//unsigned char currentMenuX;
+//unsigned char currentMenuLine;
 
 // Writes the menu bar at the top of the screen
 // which is scaled to the current screen size.
 void writeMenuBar(void)
 {
-	unsigned char bottom = 0;
+	static unsigned char bottom = 0;
 	
 	bottom = size_y - 1;
 	
@@ -62,14 +62,14 @@ void writeMenuBar(void)
 	cputsxy(0, bottom, " HELP      QUIT    SELECT   REFRESH   COPY    RENAME    MAKE DIRECTORY    DELETE");
 
 	revers(true);
-	gotoxy(0, bottom); cputc('1');
-	gotoxy(10, bottom); cputc('2');
-	gotoxy(18, bottom); cputc('3');
-	gotoxy(27, bottom); cputc('4');
-	gotoxy(37, bottom); cputc('5');
-	gotoxy(45, bottom); cputc('6');
-	gotoxy(55, bottom); cputc('7');
-	gotoxy(73, bottom); cputc('8');
+	cputcxy(0, bottom, '1');
+	cputcxy(10, bottom, '2');
+	cputcxy(18, bottom, '3');
+	cputcxy(27, bottom, '4');
+	cputcxy(37, bottom, '5');
+	cputcxy(45, bottom, '6');
+	cputcxy(55, bottom, '7');
+	cputcxy(73, bottom, '8');
 
 	revers(false);
 }
