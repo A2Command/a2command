@@ -48,7 +48,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern unsigned char _driveCount;
 extern unsigned char _devices[14];
 extern unsigned char _fileTypes[256][4];
-extern unsigned char filePath[MAX_PATH_LENGTH];
 
 void __fastcall__ selectDrive(struct panel_drive *panel);
 unsigned long __fastcall__ getDriveBlocks(unsigned char driveNumber);

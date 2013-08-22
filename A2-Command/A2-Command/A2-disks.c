@@ -144,7 +144,6 @@ unsigned long __fastcall__ getDriveBlocks(unsigned char driveNumber)
 	return sectorCount;
 }
 
-unsigned char filePath[MAX_PATH_LENGTH];
 
 unsigned char _fileTypes[256][4] = {
 "UNK", "BAD", "PCD", "PTX", "TXT", "PDA", "BIN", "FNT", "FOT", "BA3", "DA3", "WPF", "SOS", ""   , ""   , "DIR",
