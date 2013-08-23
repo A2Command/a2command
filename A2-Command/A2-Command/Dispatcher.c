@@ -17,13 +17,13 @@ bool loadOverlay(char * name)
 	static void *addr;
 	static void *size;
 	static int file;
-	static char * buffer;
+	static char * buf;
 
-	buffer = (char*)malloc(MAX_PATH_LENGTH);
+	buf = (char*)malloc(MAX_PATH_LENGTH);
 	//static char path[MAX_PATH_LENGTH];
 
-	strcpy(buffer, exePath);
-	strcat(buffer, name);
+	strcpy(buf, exePath);
+	strcat(buf, name);
 
 	if(strcmp(name, ".TV") == 0)
 	{
@@ -43,8 +43,8 @@ bool loadOverlay(char * name)
 		size = _DISKIMGS_SIZE__;
 	}
 
-    file = open (buffer, O_RDONLY);
-	free(buffer);
+    file = open (buf, O_RDONLY);
+	free(buf);
     if (file == -1) {
 		waitForEnterEscf("Please insert A2Command disk back to original drive, then try again.");
 		writeStatusBarf("");

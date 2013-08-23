@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <device.h>
+#include "errno.h"
 
 #include "A2-disks.h"
 #include "screen.h"
@@ -220,13 +221,18 @@ void createDiskImage(void)
 		sprintf(buffer, "%s/%s", targetPanel->path, newName);
 		_filetype = 0x06;
 		_auxtype = 0x00;
-		//_datetime.createdate = date;
-		//_datetime.createtime = time;
+		_datetime.createdate = date;
+		_datetime.createtime = time;
 		targetFile = open(buffer, O_WRONLY | O_CREAT | O_TRUNC);
 
 		if(targetFile == -1)
 		{
-			writeStatusBarf("Could not open %s for write.", newName);
+			waitForEnterEscf("Could not open %s for write.", newName);
+
+			if(_osmaperrno(_oserror) == 8)
+			{
+				writeStatusBarf("Disk or directory is full.", );
+			}
 			return;
 		}
 
