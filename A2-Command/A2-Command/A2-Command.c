@@ -36,7 +36,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
 #ifndef __VERSION__
-#define __VERSION__ "1.1"
+#define __VERSION__ "1.2"
 #endif
 
 #include <stdbool.h>
