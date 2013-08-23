@@ -87,8 +87,8 @@ void  readKeyboard(void)
 			}
 			else
 			{
-				loadOverlay("a2cmd.system.TV");
-				viewFile(buffer);
+				if(loadOverlay(".TV"))
+					viewFile(buffer);
 			}
 		}
 		break;
@@ -190,7 +190,8 @@ void  readKeyboard(void)
 		selectAllFiles(selectedPanel, false);
 		break;
 	case KEY_F1:
-		writeHelpPanel();
+		if(loadOverlay(".TV"))
+			writeHelpPanel();
 		break;
 	case KEY_F2:
 		quit();
@@ -225,16 +226,16 @@ void  readKeyboard(void)
 		movePageDown(selectedPanel);
 		break;
 	case HK_WRITE_DISK_IMAGE:
-		loadOverlay("a2cmd.system.DI");
-		writeDiskImage();
+		if(loadOverlay(".DI"))
+			writeDiskImage();
 		break;
 	case HK_CREATE_DISK_IMAGE:
-		loadOverlay("a2cmd.system.DI");
-		createDiskImage();
+		if(loadOverlay(".DI"))
+			createDiskImage();
 		break;
 	case HK_COPY_DISK:
-		loadOverlay("a2cmd.system.DC");
-		copyDisk();
+		if(loadOverlay(".DC"))
+			copyDisk();
 		break;
 	default:
 		//writeStatusBarf("%c", key);

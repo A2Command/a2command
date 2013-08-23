@@ -59,6 +59,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 unsigned char commandPath[MAX_PATH_LENGTH];
 unsigned char fileBuffer[COPY_BUFFER_SIZE];
+unsigned char exePath[MAX_PATH_LENGTH];
 
 unsigned areDrivesInitialized = false;
 struct panel_drive leftPanelDrive; 
@@ -72,6 +73,9 @@ void initializeDrives(void)
 
 	if(!areDrivesInitialized)
 	{
+		memcpy(exePath, (void*)0x281, PEEK(0x280));
+		exePath[PEEK(0x280)] = 0;
+
 		leftPanelDrive.drive = NULL;
 		leftPanelDrive.currentIndex = 0;
 		leftPanelDrive.displayStartAt = 0;

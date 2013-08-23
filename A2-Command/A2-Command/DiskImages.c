@@ -220,8 +220,8 @@ void createDiskImage(void)
 		sprintf(buffer, "%s/%s", targetPanel->path, newName);
 		_filetype = 0x06;
 		_auxtype = 0x00;
-		_datetime.createdate = date;
-		_datetime.createtime = time;
+		//_datetime.createdate = date;
+		//_datetime.createtime = time;
 		targetFile = open(buffer, O_WRONLY | O_CREAT | O_TRUNC);
 
 		if(targetFile == -1)

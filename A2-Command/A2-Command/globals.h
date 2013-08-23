@@ -44,6 +44,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern unsigned char size_x;
 extern unsigned char size_y;
 extern unsigned char buffer[MAX_PATH_LENGTH];
+extern unsigned char exePath[MAX_PATH_LENGTH];
 
 extern unsigned char *quit_message[1];
 

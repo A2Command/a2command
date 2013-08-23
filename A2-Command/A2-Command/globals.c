@@ -47,6 +47,7 @@ unsigned char size_x;
 unsigned char size_y;
 unsigned char buffer[MAX_PATH_LENGTH];
 
+
 unsigned char *quit_message[1] =
 {
 	"Quit A2-Command?"

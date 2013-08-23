@@ -60,6 +60,11 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define BUFFERSIZE (sizeof fileBuffer)
 
+void  writeHelpPanel(void)
+{
+	viewFile("a2cmdhelp.txt");
+}
+
 void __fastcall viewFile(
 	const char *filename)
 {
