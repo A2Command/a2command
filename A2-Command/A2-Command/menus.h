@@ -48,8 +48,8 @@ enum menus
 
 
 // Menu actions
-void __fastcall__ rereadDrivePanel(enum menus menu);
-void __fastcall__ rereadSelectedPanel(void);
+char __fastcall__ rereadDrivePanel(enum menus menu);
+char __fastcall__ rereadSelectedPanel(void);
 void  reloadPanels(void);
 void __fastcall__ writeDriveSelectionPanel(enum menus menu);
 void  displayPanels(void);

@@ -8,7 +8,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <device.h>
-#include "errno.h"
 
 #include "A2-disks.h"
 #include "screen.h"

@@ -57,7 +57,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "input.h";
 
 
-/* CBM-Command Main Function
+/* A2-Command Main Function
  * --------------------------
  * - Payton Byrd 
  * --------------------------

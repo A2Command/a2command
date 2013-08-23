@@ -185,7 +185,7 @@ int __fastcall  getDirectory(
 			{
 				commandPath[76] = '\0';
 			}
-			waitForEnterEscf(commandPath);
+			return -1;
 		}
 	}
 

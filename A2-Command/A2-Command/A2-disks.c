@@ -124,7 +124,6 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 	if(key == CH_ENTER)
 	{
 		panel->drive = _devices[current];
-		panel->totalblocks = getDriveBlocks(panel->drive);
 		if(!getdevicedir(panel->drive, panel->path, sizeof(panel->path)))
 		{
 			strcpy(panel->path, "");

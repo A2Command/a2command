@@ -39,6 +39,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <device.h>
 
 #include "A2-disks.h"
 #include "constants.h"
@@ -48,7 +49,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "menus.h"
 #include "screen.h"
 
-void __fastcall__ rereadDrivePanel(enum menus menu)
+char __fastcall__ rereadDrivePanel(enum menus menu)
 {
 	if(menu == left)
 	{
@@ -59,11 +60,11 @@ void __fastcall__ rereadDrivePanel(enum menus menu)
 		selectedPanel = &rightPanelDrive;
 	}
 
-	rereadSelectedPanel();
+	return rereadSelectedPanel();
 }
 
 
-void __fastcall__ rereadSelectedPanel(void)
+char __fastcall__ rereadSelectedPanel(void)
 {
 	if(selectedPanel == NULL)
 	{
@@ -72,11 +73,23 @@ void __fastcall__ rereadSelectedPanel(void)
 
 	selectedPanel->currentIndex = 0;
 	selectedPanel->displayStartAt = 0;
-
-	getDirectory(selectedPanel, 0);
+	
+	if(getDirectory(selectedPanel, 0) == -1)
+	{
+		if(!getdevicedir(selectedPanel->drive, selectedPanel->path, sizeof(selectedPanel->path)))
+		{
+			strcpy(selectedPanel->path, "");
+		}
+		else
+		{
+			getDirectory(selectedPanel, 0);
+		}
+	}
+	
+	selectedPanel->totalblocks = getDriveBlocks(selectedPanel->drive);	
 	resetSelectedFiles(selectedPanel);
 	displayDirectory(selectedPanel);
-
+	
 	if(selectedPanel == &leftPanelDrive)
 	{
 		writeSelectorPosition(&leftPanelDrive, '>');
@@ -87,8 +100,9 @@ void __fastcall__ rereadSelectedPanel(void)
 		writeSelectorPosition(&leftPanelDrive, ' ');
 		writeSelectorPosition(&rightPanelDrive, '>');
 	}
-
+	
 	writeCurrentFilename(selectedPanel);
+	
 }
 
 void __fastcall__ writeDriveSelectionPanel(enum menus menu)
