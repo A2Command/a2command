@@ -20,7 +20,6 @@ bool loadOverlay(char * name)
 	static char * buf;
 
 	buf = (char*)malloc(MAX_PATH_LENGTH);
-	//static char path[MAX_PATH_LENGTH];
 
 	strcpy(buf, exePath);
 	strcat(buf, name);

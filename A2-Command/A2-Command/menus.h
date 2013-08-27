@@ -43,7 +43,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Menu Globals
 enum menus
 {
-	left, right, file, command, options
+	left, right
 };
 
 
@@ -58,8 +58,6 @@ void  copyFiles(void);
 void  renameFile(void);
 void  makeDirectory(void);
 void  deleteFiles(void);
-void  writeD64(void);
-void  createD64(void);
 void  quit(void);
 
 // Menu drawing

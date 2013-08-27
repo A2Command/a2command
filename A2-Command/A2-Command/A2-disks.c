@@ -56,6 +56,28 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 unsigned char _driveCount;
 unsigned char _devices[14];
 
+void __fastcall__ defaultDrive(struct panel_drive *panel)
+{
+	unsigned char dev;
+	
+	if(!getcwd(panel->path, sizeof(panel->path)))
+	{
+		strcpy(panel->path, "");
+	}
+	
+	for(dev = getfirstdevice(); dev != INVALID_DEVICE; dev = getnextdevice(dev))
+	{
+		if(getdevicedir(dev, buffer, sizeof(buffer)))
+		{
+			if(!strcmp(buffer, panel->path))
+			{
+				panel->drive = dev;
+				break;
+			}
+		}
+	}
+}
+
 void __fastcall__ selectDrive(struct panel_drive *panel)
 {
 	unsigned char dev, key, current, x = 5, y = 2;

@@ -83,7 +83,7 @@ int main(void)
 
 	// Have the user select
 	// the drive to start with.
-	selectDrive(selectedPanel);
+	defaultDrive(selectedPanel);
 
 	// Writes the function key bar
 	// to the screen.
