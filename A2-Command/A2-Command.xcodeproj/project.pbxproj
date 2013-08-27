@@ -1,0 +1,214 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		4FBE6EDA17CBF34400612D48 /* A2-Command.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "A2-Command.c"; path = "A2-Command/A2-Command.c"; sourceTree = "<group>"; };
+		4FBE6EDB17CBF34400612D48 /* A2-disks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "A2-disks.c"; path = "A2-Command/A2-disks.c"; sourceTree = "<group>"; };
+		4FBE6EDC17CBF34400612D48 /* DiskCopy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DiskCopy.c; path = "A2-Command/DiskCopy.c"; sourceTree = "<group>"; };
+		4FBE6EDD17CBF34400612D48 /* DiskImages.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DiskImages.c; path = "A2-Command/DiskImages.c"; sourceTree = "<group>"; };
+		4FBE6EDE17CBF34400612D48 /* Dispatcher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Dispatcher.c; path = "A2-Command/Dispatcher.c"; sourceTree = "<group>"; };
+		4FBE6EDF17CBF34400612D48 /* DriveMenu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DriveMenu.c; path = "A2-Command/DriveMenu.c"; sourceTree = "<group>"; };
+		4FBE6EE017CBF34400612D48 /* drives.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = drives.c; path = "A2-Command/drives.c"; sourceTree = "<group>"; };
+		4FBE6EE117CBF34400612D48 /* FileMenu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = FileMenu.c; path = "A2-Command/FileMenu.c"; sourceTree = "<group>"; };
+		4FBE6EE217CBF34400612D48 /* globalInput.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = globalInput.c; path = "A2-Command/globalInput.c"; sourceTree = "<group>"; };
+		4FBE6EE317CBF34400612D48 /* globals.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = globals.c; path = "A2-Command/globals.c"; sourceTree = "<group>"; };
+		4FBE6EE417CBF34400612D48 /* input.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = input.c; path = "A2-Command/input.c"; sourceTree = "<group>"; };
+		4FBE6EE517CBF34400612D48 /* menus.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = menus.c; path = "A2-Command/menus.c"; sourceTree = "<group>"; };
+		4FBE6EE617CBF34400612D48 /* screen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = screen.c; path = "A2-Command/screen.c"; sourceTree = "<group>"; };
+		4FBE6EE717CBF34400612D48 /* Viewer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Viewer.c; path = "A2-Command/Viewer.c"; sourceTree = "<group>"; };
+		4FBE6EE817CBF37C00612D48 /* A2-disks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "A2-disks.h"; path = "A2-Command/A2-disks.h"; sourceTree = "<group>"; };
+		4FBE6EE917CBF37C00612D48 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = "A2-Command/constants.h"; sourceTree = "<group>"; };
+		4FBE6EEA17CBF37C00612D48 /* Dispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dispatcher.h; path = "A2-Command/Dispatcher.h"; sourceTree = "<group>"; };
+		4FBE6EEB17CBF37C00612D48 /* drives.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = drives.h; path = "A2-Command/drives.h"; sourceTree = "<group>"; };
+		4FBE6EEC17CBF37C00612D48 /* globalInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = globalInput.h; path = "A2-Command/globalInput.h"; sourceTree = "<group>"; };
+		4FBE6EED17CBF37C00612D48 /* globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = globals.h; path = "A2-Command/globals.h"; sourceTree = "<group>"; };
+		4FBE6EEE17CBF37C00612D48 /* input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = input.h; path = "A2-Command/input.h"; sourceTree = "<group>"; };
+		4FBE6EEF17CBF37C00612D48 /* menus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = menus.h; path = "A2-Command/menus.h"; sourceTree = "<group>"; };
+		4FBE6EF017CBF37C00612D48 /* screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = screen.h; path = "A2-Command/screen.h"; sourceTree = "<group>"; };
+		4FBE6EF117CBF37C00612D48 /* Viewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Viewer.h; path = "A2-Command/Viewer.h"; sourceTree = "<group>"; };
+		4FBE6EF217CBF39400612D48 /* makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = makefile; path = "A2-Command/makefile"; sourceTree = "<group>"; };
+		4FBE6EF317CD1DD700612D48 /* apple2enh-system.cfg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "apple2enh-system.cfg"; path = "A2-Command/apple2enh-system.cfg"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		4F7160DE17A19DBA00BCEED5 = {
+			isa = PBXGroup;
+			children = (
+				4FBE6EF317CD1DD700612D48 /* apple2enh-system.cfg */,
+				4FBE6EDA17CBF34400612D48 /* A2-Command.c */,
+				4FBE6EDB17CBF34400612D48 /* A2-disks.c */,
+				4FBE6EE817CBF37C00612D48 /* A2-disks.h */,
+				4FBE6EE917CBF37C00612D48 /* constants.h */,
+				4FBE6EDC17CBF34400612D48 /* DiskCopy.c */,
+				4FBE6EDD17CBF34400612D48 /* DiskImages.c */,
+				4FBE6EDE17CBF34400612D48 /* Dispatcher.c */,
+				4FBE6EEA17CBF37C00612D48 /* Dispatcher.h */,
+				4FBE6EDF17CBF34400612D48 /* DriveMenu.c */,
+				4FBE6EE017CBF34400612D48 /* drives.c */,
+				4FBE6EEB17CBF37C00612D48 /* drives.h */,
+				4FBE6EE117CBF34400612D48 /* FileMenu.c */,
+				4FBE6EE217CBF34400612D48 /* globalInput.c */,
+				4FBE6EEC17CBF37C00612D48 /* globalInput.h */,
+				4FBE6EE317CBF34400612D48 /* globals.c */,
+				4FBE6EED17CBF37C00612D48 /* globals.h */,
+				4FBE6EE417CBF34400612D48 /* input.c */,
+				4FBE6EEE17CBF37C00612D48 /* input.h */,
+				4FBE6EF217CBF39400612D48 /* makefile */,
+				4FBE6EE517CBF34400612D48 /* menus.c */,
+				4FBE6EEF17CBF37C00612D48 /* menus.h */,
+				4FBE6EE617CBF34400612D48 /* screen.c */,
+				4FBE6EF017CBF37C00612D48 /* screen.h */,
+				4FBE6EE717CBF34400612D48 /* Viewer.c */,
+				4FBE6EF117CBF37C00612D48 /* Viewer.h */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		4F7160FC17A2EF1100BCEED5 /* Apple II Disk */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = A2Disk;
+			buildConfigurationList = 4F7160FD17A2EF1100BCEED5 /* Build configuration list for PBXLegacyTarget "Apple II Disk" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = "A2-Command";
+			dependencies = (
+			);
+			name = "Apple II Disk";
+			passBuildSettingsInEnvironment = 0;
+			productName = "Apple IIe";
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		4F7160DF17A19DBB00BCEED5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+			};
+			buildConfigurationList = 4F7160E217A19DBB00BCEED5 /* Build configuration list for PBXProject "A2-Command" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 4F7160DE17A19DBA00BCEED5;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4F7160FC17A2EF1100BCEED5 /* Apple II Disk */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		4F7160E317A19DBB00BCEED5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		4F7160E417A19DBB00BCEED5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		4F7160FE17A2EF1100BCEED5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		4F7160FF17A2EF1100BCEED5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4F7160E217A19DBB00BCEED5 /* Build configuration list for PBXProject "A2-Command" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F7160E317A19DBB00BCEED5 /* Debug */,
+				4F7160E417A19DBB00BCEED5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F7160FD17A2EF1100BCEED5 /* Build configuration list for PBXLegacyTarget "Apple II Disk" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F7160FE17A2EF1100BCEED5 /* Debug */,
+				4F7160FF17A2EF1100BCEED5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4F7160DF17A19DBB00BCEED5 /* Project object */;
+}
