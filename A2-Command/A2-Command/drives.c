@@ -57,9 +57,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define __fastcall __fastcall
 #endif
 
-unsigned char commandPath[MAX_PATH_LENGTH];
 unsigned char fileBuffer[COPY_BUFFER_SIZE];
-unsigned char exePath[MAX_PATH_LENGTH];
 
 unsigned areDrivesInitialized = false;
 struct panel_drive leftPanelDrive; 
@@ -73,9 +71,6 @@ void initializeDrives(void)
 
 	if(!areDrivesInitialized)
 	{
-		memcpy(exePath, (void*)0x281, PEEK(0x280));
-		exePath[PEEK(0x280)] = 0;
-
 		leftPanelDrive.drive = NULL;
 		leftPanelDrive.currentIndex = 0;
 		leftPanelDrive.displayStartAt = 0;
@@ -180,10 +175,10 @@ int __fastcall  getDirectory(
 		}
 		else
 		{
-			sprintf(commandPath, "Could not open %s - %d", drive->path, _oserror);
-			if(strlen(commandPath) > 76)
+			sprintf(filePath, "Could not open %s - %d", drive->path, _oserror);
+			if(strlen(filePath) > 76)
 			{
-				commandPath[76] = '\0';
+				filePath[76] = '\0';
 			}
 			return -1;
 		}
@@ -256,7 +251,7 @@ void __fastcall  displayDirectory(
 
 		y = i - start + 2;
 
-		sprintf(commandPath, "%5u  %-16s %02u-%02u-%02u %3s"
+		sprintf(filePath, "%5u  %-16s %02u-%02u-%02u %3s"
 			, currentNode->blocks
 			, currentNode->name
 			, currentNode->date.year
@@ -264,7 +259,7 @@ void __fastcall  displayDirectory(
 			, currentNode->date.day
 			, _fileTypes[currentNode->type]
 			);
-		cputsxy(x + 2, y, commandPath);
+		cputsxy(x + 2, y, filePath);
 		
 		if(!(currentNode->access & 0xC2))
 			cputcxy(x + 8, y, '*');
@@ -389,11 +384,11 @@ void __fastcall  enterDirectory(
 
 	if(isDirectory(panel))
 	{
-		sprintf(commandPath, "%s/%s", panel->path, node->name);
+		sprintf(filePath, "%s/%s", panel->path, node->name);
 
-		if(strlen(commandPath) < 65)
+		if(strlen(filePath) < 65)
 		{
-			strcpy(panel->path, commandPath);
+			strcpy(panel->path, filePath);
 
 			getDirectory(selectedPanel, 0);
 

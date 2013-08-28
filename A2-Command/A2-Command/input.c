@@ -72,7 +72,7 @@ void  readKeyboard(void)
 		}
 		else if(currentNode != NULL)
 		{
-			sprintf(buffer, "%s/%s", selectedPanel->path, currentNode->name);
+			sprintf(filePath, "%s/%s", selectedPanel->path, currentNode->name);
 			if(currentNode->type == 0x06
 				|| currentNode->type == 0xFF)
 			{
@@ -82,13 +82,13 @@ void  readKeyboard(void)
 
 				if(decision == true)
 				{
-					exec(buffer, NULL);
+					exec(filePath, NULL);
 				}
 			}
 			else
 			{
-				if(loadOverlay(".TV"))
-					viewFile(buffer);
+				if(loadOverlay(1))
+					viewFile(filePath);
 			}
 		}
 		break;
@@ -190,7 +190,7 @@ void  readKeyboard(void)
 		selectAllFiles(selectedPanel, false);
 		break;
 	case KEY_F1:
-		if(loadOverlay(".TV"))
+		if(loadOverlay(1))
 			writeHelpPanel();
 		break;
 	case KEY_F2:
@@ -226,15 +226,15 @@ void  readKeyboard(void)
 		movePageDown(selectedPanel);
 		break;
 	case HK_WRITE_DISK_IMAGE:
-		if(loadOverlay(".DI"))
+		if(loadOverlay(3))
 			writeDiskImage();
 		break;
 	case HK_CREATE_DISK_IMAGE:
-		if(loadOverlay(".DI"))
+		if(loadOverlay(3))
 			createDiskImage();
 		break;
 	case HK_COPY_DISK:
-		if(loadOverlay(".DC"))
+		if(loadOverlay(2))
 			copyDisk();
 		break;
 	default:

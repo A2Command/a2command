@@ -20,7 +20,7 @@
 
 #pragma code-name("DISKIMGS");
 #pragma rodata-name("DISKIMGS");
-#pragma data-name("DIDATA");
+//#pragma data-name("DIDATA");
 
 unsigned long __fastcall__ getDriveSize(unsigned char driveNumber)
 {
@@ -66,17 +66,17 @@ void writeDiskImage(void)
 		if(writeYesNo("Write Disk Image", message, 1))
 		{
 			retrieveScreen();
-			sprintf(buffer, "%s/%s", selectedPanel->path, selectedNode->name); 
+			sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
 
 			targetDriveSize = getDriveSize(targetPanel->drive);
 
 			if(selectedNode->size <= targetDriveSize)
 			{
-				sourceFile = open(buffer, O_RDONLY);
+				sourceFile = open(filePath, O_RDONLY);
 
 				if(sourceFile == -1)
 				{
-					waitForEnterEscf("Could not open %s", buffer);
+					waitForEnterEscf("Could not open %s", filePath);
 					dio_close(targetDrive);
 					return;
 				}
@@ -217,12 +217,12 @@ void createDiskImage(void)
 
 	if((unsigned char)r == OK_RESULT)
 	{
-		sprintf(buffer, "%s/%s", targetPanel->path, newName);
+		sprintf(filePath, "%s/%s", targetPanel->path, newName);
 		_filetype = 0x06;
 		_auxtype = 0x00;
 		_datetime.createdate = date;
 		_datetime.createtime = time;
-		targetFile = open(buffer, O_WRONLY | O_CREAT | O_TRUNC);
+		targetFile = open(filePath, O_WRONLY | O_CREAT | O_TRUNC);
 
 		if(targetFile == -1)
 		{
@@ -243,8 +243,8 @@ void createDiskImage(void)
 
 		writeStatusBarf("Begin creation...");
 
-		if(strstr(buffer, ".po") || strstr(buffer, ".hdv") ||
-			strstr(buffer, ".PO") || strstr(buffer, ".HDV") )
+		if(strstr(filePath, ".po") || strstr(filePath, ".hdv") ||
+			strstr(filePath, ".PO") || strstr(filePath, ".HDV") )
 		{
 			for(i=0; i<sectorCount; ++i)
 			{
@@ -294,7 +294,7 @@ void createDiskImage(void)
 		reloadPanels();
 		writeSelectorPosition(selectedPanel, '>');
 
-		writeStatusBarf("Created %s.", buffer);
+		writeStatusBarf("Created %s.", filePath);
 
 	}
 }

@@ -67,9 +67,9 @@ void __fastcall__ defaultDrive(struct panel_drive *panel)
 	
 	for(dev = getfirstdevice(); dev != INVALID_DEVICE; dev = getnextdevice(dev))
 	{
-		if(getdevicedir(dev, buffer, sizeof(buffer)))
+		if(getdevicedir(dev, filePath, sizeof(filePath)))
 		{
-			if(!strcmp(buffer, panel->path))
+			if(!strcmp(filePath, panel->path))
 			{
 				panel->drive = dev;
 				break;
@@ -91,12 +91,12 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
     _driveCount = 0;
     for(dev = getfirstdevice(); dev != INVALID_DEVICE; dev = getnextdevice(dev))
 	{
-		if(!getdevicedir(dev, buffer, sizeof(buffer)))
+		if(!getdevicedir(dev, filePath, sizeof(filePath)))
 		{
-			strcpy(buffer, _stroserror(_oserror));
+			strcpy(filePath, _stroserror(_oserror));
 		}
 
-        sprintf(temp, "Slot %u Drive %u - %s", dev & 7, (dev>>3)+1, buffer);
+        sprintf(temp, "Slot %u Drive %u - %s", dev & 7, (dev>>3)+1, filePath);
 		cputsxy(8, y + 4 + _driveCount, temp);
         _devices[_driveCount++] = dev;
 	}

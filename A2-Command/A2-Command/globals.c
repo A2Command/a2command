@@ -45,7 +45,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 unsigned char size_x;
 unsigned char size_y;
-unsigned char buffer[MAX_PATH_LENGTH];
+unsigned char filePath[MAX_PATH_LENGTH];
 
 
 unsigned char *quit_message[1] =

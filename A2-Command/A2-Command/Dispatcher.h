@@ -3,6 +3,6 @@
 
 #include <stdbool.h>
 
-bool loadOverlay(char * name);
+bool loadOverlay(unsigned char name);
 
 #endif

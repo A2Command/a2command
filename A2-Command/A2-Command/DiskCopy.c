@@ -20,7 +20,7 @@
 
 #pragma code-name("DISKCOPY");
 #pragma rodata-name("DISKCOPY");
-#pragma data-name("DCDATA");
+//#pragma data-name("DCDATA");
 
 void copyDisk(void)
 {

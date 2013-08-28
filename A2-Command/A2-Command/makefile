@@ -48,9 +48,9 @@ A2Disk: all
 #	$(JAVA) -jar $(AC) -cc65 $(DISK) $(TITLE) bin       < $(T)/$(PROGRAM)
 #	$(JAVA) -jar $(AC) -cc65 cffa.po $(TITLE) bin	    < $(T)/$(PROGRAM)
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < $(T)/$(PROGRAM)
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.TV sys 0 < $(T)/$(PROGRAM).TV
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.DC sys 0 < $(T)/$(PROGRAM).DC
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.DI sys 0 < $(T)/$(PROGRAM).DI
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).TV bin 0 < $(T)/$(PROGRAM).TV
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DC bin 0 < $(T)/$(PROGRAM).DC
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DI bin 0 < $(T)/$(PROGRAM).DI
 #	$(JAVA) -jar $(AC) -p cffa.po $(TITLE).system sys 0 < $(T)/$(PROGRAM)
 
 $(T):

@@ -166,12 +166,8 @@ void __fastcall writePanel(
 	}
 	else
 	{
-		//strncpy(buffer, SPACES, w);
-		//buffer[w] = '\0';
-
 		for(i=0; i<h; ++i)
 		{
-			//cputsxy(x, y+i,buffer);
 			cclearxy(x,y+i,w);
 		}
 	}
