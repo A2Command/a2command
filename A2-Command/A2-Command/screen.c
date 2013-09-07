@@ -123,8 +123,21 @@ void __fastcall drawBox(
 	revers(reverse);
 
 	// draw frame
+#ifdef __APPLE2ENH__	
 	textframexy(x, y, w + 1, h + 1, TEXTFRAME_TALL);
-
+#else
+	for(i=x+w-1; i>x; i--)
+	{
+		gotoxy(i, y); cputc('-');
+		gotoxy(i, y+h); cputc('-');
+	}
+	for(i=y+h-1; i>y; i--)
+	{
+		gotoxy(x, i); cputc('!');
+		if(x+w < size_x)
+			gotoxy(x+w, i); cputc('!');
+	}
+#endif
         // draw body
 	for(i=y+1; i<y+h; ++i)
 	{
@@ -134,12 +147,12 @@ void __fastcall drawBox(
 
 unsigned char __fastcall  getCenterX(unsigned char w)
 {
-	return (size_x / 2) - (w / 2) - 1;
+	return (size_x - w) / 2u /*- 1u*/;
 }
 
 unsigned char __fastcall  getCenterY(unsigned char h)
 {
-	return (size_y / 2) - (h / 2) - 1;
+	return (size_y - h) / 2u /*- 1u*/;
 }
 
 void __fastcall writePanel(

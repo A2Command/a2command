@@ -34,7 +34,12 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
+#ifdef __APPLE2ENH__
 #include <apple2enh.h>
+#else
+#include <apple2.h>
+#endif
+
 #include <conio.h>
 #include <errno.h>
 #include <dirent.h>
@@ -202,7 +207,7 @@ static const unsigned char displayHeight = 20;
 void __fastcall  displayDirectory(
 	struct panel_drive *drive)
 {
-	unsigned char w = 19, x = 0, y = 0;
+	unsigned char w = 39, x = 0, y = 0;
 	unsigned char i, start, end;
 	unsigned char temp[9];
 	struct dir_node *currentNode;
@@ -213,18 +218,22 @@ void __fastcall  displayDirectory(
 		getDirectory(drive, 0);
 	}
 
-	if(size_x > 40) w=39;
+#ifdef __APPLE2ENH__
 	if(drive->position == right) x=w + 1;
+#else
+	w=20;
+	if(drive->position == right) x=w;
+#endif
 	
-	writePanel(true, false, COLOR_WHITE, x, 1, 21, w, 
-		drive->path, NULL, NULL);
-
-	sprintf(temp, "[S%uD%u]", 
+	writePanel(true, false, COLOR_WHITE, x, 1, 21, w,
+			   drive->path, NULL, NULL);
+	
+	sprintf(temp, "[S%uD%u]",
 		(drive->drive) & 7,
 		(drive->drive >> 3) + 1);
 	cputsxy(x + 3, 22, temp);
 	
-	gotox(x + w - 9); cprintf("[%5u]", drive->totalblocks - drive->usedblocks);
+	//gotox(x + w - 9); cprintf("[%5u]", drive->totalblocks - drive->usedblocks);
 	
 	start = drive->displayStartAt;
 	end = start + displayHeight < drive->length ? start + displayHeight: drive->length;
@@ -250,7 +259,7 @@ void __fastcall  displayDirectory(
                & (unsigned char)(1 << ((currentNode->index) % 8u)));
 
 		y = i - start + 2;
-
+#ifdef __APPLE2ENH__
 		sprintf(filePath, "%5u  %-16s %02u-%02u-%02u %3s"
 			, currentNode->blocks
 			, currentNode->name
@@ -263,19 +272,37 @@ void __fastcall  displayDirectory(
 		
 		if(!(currentNode->access & 0xC2))
 			cputcxy(x + 8, y, '*');
+#else
+		sprintf(filePath, "%-14.14s %3s"
+				, currentNode->name
+				, _fileTypes[currentNode->type]);
+		cputsxy(x + 2, y, filePath);
 		
+		if(!(currentNode->access & 0xC2))
+			cputcxy(x + 1, y, '*');
+#endif
 		revers(false);
 	}
 }
 
 void __fastcall  writeSelectorPosition(
 	struct panel_drive *panel,
-	const unsigned char character)
+	unsigned char character)
 {
+#ifdef __APPLE2ENH__
 	gotoxy(
-		(panel == &leftPanelDrive ? 1 : size_x / 2 + 1),
+		   (panel == &leftPanelDrive ? 1 : size_x / 2 + 1),
+		   (panel->currentIndex - panel->displayStartAt) + 2);
+#else
+	gotoxy(
+		(panel == &leftPanelDrive ? 0 : size_x / 2),
 		(panel->currentIndex - panel->displayStartAt) + 2);
 
+	if(character == ' ')
+	{
+		character = '!';
+	}
+#endif
 	revers(false);
 	cputc(character);
 }
@@ -295,10 +322,19 @@ void __fastcall  writeCurrentFilename(
 				currentDirNode->name != NULL &&
 				strlen(currentDirNode->name) > 0)
 			{
+#ifdef __APPLE2ENH__				
 				writeStatusBarf("Index: %3u  Size: %8ld  Name: %s",
-					currentDirNode->index,
-					currentDirNode->size,
-					currentDirNode->name);
+								currentDirNode->index,
+								currentDirNode->size,
+								currentDirNode->name);
+#else
+				writeStatusBarf("%02u-%02u-%02u  %6ld Bytes  %s",
+								currentDirNode->date.year,
+								currentDirNode->date.mon,
+								currentDirNode->date.day,
+								currentDirNode->size,
+								currentDirNode->name);
+#endif
 			}
 			else
 			{

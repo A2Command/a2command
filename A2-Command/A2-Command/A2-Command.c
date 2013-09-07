@@ -36,7 +36,13 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
 
 #ifndef __VERSION__
-#define __VERSION__ "1.2"
+#define __VERSION__ "1.1.1"
+#endif
+
+#ifdef __APPLE2ENH__
+#include <apple2enh.h>
+#else
+#include <apple2.h>
 #endif
 
 #include <stdbool.h>
@@ -45,7 +51,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <conio.h>
 #include <peekpoke.h>
-#include <apple2enh.h>
 
 #include "A2-disks.h"
 #include "constants.h"
@@ -95,9 +100,12 @@ int main(void)
 	rereadSelectedPanel();
 
 	writeStatusBar(
+#ifdef __APPLE2ENH__
 		"A2Command version " __VERSION__ ", built: "
 		__DATE__ " " __TIME__);
-
+#else
+		"A2Command version " __VERSION__);
+#endif
 	// Main Loop
 	while(true)
 	{

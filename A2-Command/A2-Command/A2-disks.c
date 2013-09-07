@@ -34,7 +34,12 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************/
+#ifdef __APPLE2ENH__
 #include <apple2enh.h>
+#else
+#include <apple2.h>
+#endif
+
 #include <conio.h>
 #include <dio.h>
 #include <stdlib.h>
@@ -95,8 +100,11 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 		{
 			strcpy(filePath, _stroserror(_oserror));
 		}
-
+#ifdef __APPLE2ENH__
         sprintf(temp, "Slot %u Drive %u - %s", dev & 7, (dev>>3)+1, filePath);
+#else
+		sprintf(temp, "S%uD%u - %.20s", dev & 7, (dev>>3)+1, filePath);
+#endif		
 		cputsxy(8, y + 4 + _driveCount, temp);
         _devices[_driveCount++] = dev;
 	}
@@ -111,7 +119,11 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 
 		switch(key)
 		{
+#ifdef __APPLE2ENH__
 		case CH_CURS_DOWN:
+#else
+		case CH_CURS_RIGHT:
+#endif
 			if(current < _driveCount - 1)
 			{
 				cputcxy(7, y + 4 + current, ' ');
@@ -125,7 +137,11 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 			}
 			break;
 
-		case CH_CURS_UP:
+#ifdef __APPLE2ENH__
+			case CH_CURS_UP:
+#else
+			case CH_CURS_LEFT:
+#endif
 			if(current > 0)
 			{
 				cputcxy(7, y + 4 + current, ' ');

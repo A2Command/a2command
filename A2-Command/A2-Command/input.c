@@ -102,13 +102,21 @@ void  readKeyboard(void)
 	case HK_SELECT:
 		selectCurrentFile();
 		break;
-	case CH_CURS_UP:
+#ifdef __APPLE2ENH__
+		case CH_CURS_UP:
+#else
+		case CH_CURS_LEFT:
+#endif
 		moveSelectorUp(selectedPanel);
 		break;
-	case CH_CURS_DOWN:
+#ifdef __APPLE2ENH__
+		case CH_CURS_DOWN:
+#else
+		case CH_CURS_RIGHT:
+#endif
 		moveSelectorDown(selectedPanel);
 		break;
-
+#ifdef __APPLE2ENH__
 	case CH_CURS_LEFT:
 		if(selectedPanel == &rightPanelDrive
 			&& strlen(leftPanelDrive.path) > 0)
@@ -129,7 +137,7 @@ void  readKeyboard(void)
 			writeCurrentFilename(selectedPanel);
 		}
 		break;
-
+#endif
 	case KEY_TAB:
 		if(selectedPanel == &leftPanelDrive
 			&& strlen(rightPanelDrive.path) > 0)

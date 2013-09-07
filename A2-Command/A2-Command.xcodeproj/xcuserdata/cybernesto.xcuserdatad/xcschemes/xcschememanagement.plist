@@ -9,10 +9,30 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>Apple ][+.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>JACE.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>4F33C5A317AAB864005493F0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4F71582517D3ECB500D3386C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4F71583717D8F93000D3386C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

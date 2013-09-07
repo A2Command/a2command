@@ -81,7 +81,6 @@ void copyFiles(void)
 		)
 	{
 		saveScreen();
-		//writeStatusBar("Cannot copy to the same path on the same drive.");
 		writeStatusBar("Cannot copy to the same path.");
 		waitForEnterEsc();
 		retrieveScreen();
@@ -98,7 +97,11 @@ void copyFiles(void)
 	}
 	if(!multipleSelected)
 	{
+#ifdef __APPLE2ENH__
         writeStatusBar("No files selected, selecting current file.");
+#else
+		writeStatusBar("Selecting current file.");
+#endif
 		selectCurrentFile();
 		writeSelectorPosition(selectedPanel, '>');
 	}
@@ -204,8 +207,12 @@ void copyFiles(void)
 					}
 					else
 					{
-						writeStatusBarf("Cannot open %s for read (%d)", 
-							currentNode->name, r); 
+#ifdef __APPLE2ENH__
+						writeStatusBarf("Cannot open %s for read (%d)",
+#else
+						writeStatusBarf("Cannot open %s (%d)",
+#endif
+							currentNode->name, r);
 						waitForEnterEsc();
 					}
 
@@ -381,7 +388,11 @@ void deleteFiles(void)
 					
 				if (remove(oldName) < 0)
 				{
+#ifdef __APPLE2ENH__					
 					waitForEnterEscf("%s removing %s.", _stroserror(_oserror), currentDE->d_name);
+#else
+					waitForEnterEscf("Error removing %s.", currentDE->d_name);
+#endif
 				}
 
 				if(kbhit() && cgetc() == CH_ESC)
@@ -412,7 +423,11 @@ void deleteFiles(void)
 				writeStatusBarf("Deleting %s.", selectedNode->name);
                 if (remove(oldName) < 0)
 				{
+#ifdef __APPLE2ENH__
 					waitForEnterEscf("%s removing %s.", _stroserror(_oserror), selectedNode->name);
+#else
+					waitForEnterEscf("Error removing %s.", selectedNode->name);
+#endif
 				}
 				rereadSelectedPanel();
 				writeSelectorPosition(selectedPanel, '>');

@@ -38,7 +38,11 @@ bool loadOverlay(unsigned char name)
 	}
 
     if (file == -1) {
+#ifdef __APPLE2ENH__		
 		waitForEnterEscf("Please insert A2Command disk back to original drive, then try again.");
+#else
+		waitForEnterEscf("Please insert A2Command disk.");
+#endif
 		writeStatusBarf("");
         return false;
     }

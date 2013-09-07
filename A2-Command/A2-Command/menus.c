@@ -47,30 +47,34 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "menus.h"
 #include "screen.h"
 
-//unsigned char currentMenuX;
-//unsigned char currentMenuLine;
+#ifdef __APPLE2ENH__
+unsigned char menuEntries[8][9] = {"HELP", "QUIT", "SELECT", "REFRESH", "COPY", "RENAME", "MAKEDIR", "DELETE"};
+#else
+unsigned char menuEntries[8][4] = {"HLP", "END", "SEL", "REF", "CPY", "REN", "MDR", "DEL"};
+#endif
 
 // Writes the menu bar at the top of the screen
 // which is scaled to the current screen size.
 void writeMenuBar(void)
 {
-	static unsigned char bottom = 0;
+	static unsigned char bottom = 0, i, x;
 	
 	bottom = size_y - 1;
 	
-	cclearxy(0, bottom, size_x);
-	cputsxy(0, bottom, " HELP      QUIT    SELECT   REFRESH   COPY    RENAME    MAKE DIRECTORY    DELETE");
-
-	revers(true);
-	cputcxy(0, bottom, '1');
-	cputcxy(10, bottom, '2');
-	cputcxy(18, bottom, '3');
-	cputcxy(27, bottom, '4');
-	cputcxy(37, bottom, '5');
-	cputcxy(45, bottom, '6');
-	cputcxy(55, bottom, '7');
-	cputcxy(73, bottom, '8');
-
+	cclearxy(0, bottom, size_x);	
+	
+    for(i = 0; i < 8; i++){
+#ifdef __APPLE2ENH__
+        x = i*10;
+#else
+		x = i*5;
+#endif
+        revers(true);
+        gotoxy(x, bottom); cputc('1' + i);
+        revers(false);
+        cputsxy(x + 1, bottom, menuEntries[i]);
+    }
+	
 	revers(false);
 }
 

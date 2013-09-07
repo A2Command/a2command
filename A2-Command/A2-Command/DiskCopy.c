@@ -1,4 +1,9 @@
+#ifdef __APPLE2ENH__
 #include <apple2enh.h>
+#else
+#include <apple2.h>
+#endif
+
 #include <conio.h>
 #include <dio.h>
 #include <stdlib.h>
@@ -57,7 +62,11 @@ void copyDisk(void)
 				dio_write(targetDrive, counter, fileBuffer);
 			
 				writeStatusBarf(
-					"Copied %ld blocks, %ld remaining. (%ld%% complete)", 
+#ifdef __APPLE2ENH__								
+					"Copied %ld blocks, %ld remaining. (%ld%% complete)",
+#else
+					"Copied %ld/%ld blocks. (%ld%%)",
+#endif
 					counter + 1, 
 					sectorCount - counter + 1,
 					(unsigned long)(counter * (unsigned long)100) / sectorCount);
@@ -71,7 +80,11 @@ void copyDisk(void)
 		}
 		else
 		{
+#ifdef __APPLE2ENH__			
 			writeStatusBarf("Cannot copy, drives are not the same size.");
+#else
+			writeStatusBarf("Error: drives are not the same size.");
+#endif
 		}
 
 		dio_close(sourceDrive);

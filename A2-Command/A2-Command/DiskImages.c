@@ -1,4 +1,9 @@
+#ifdef __APPLE2ENH__
 #include <apple2enh.h>
+#else
+#include <apple2.h>
+#endif
+
 #include <conio.h>
 #include <dio.h>
 #include <stdlib.h>
@@ -165,8 +170,11 @@ void writeDiskImage(void)
 			{
 				dio_close(targetDrive);
 				close(sourceFile);
-
-				writeStatusBarf("The target drive is not large enough for this image. (drive: %ld, image: %ld)", 
+#ifdef __APPLE2ENH__
+				writeStatusBarf("Target drive is not large enough for image. (drive: %ld, image: %ld)",
+#else
+				writeStatusBarf("Target too small. (d: %ld, i: %ld)",
+#endif
 					targetDriveSize, selectedNode->size);
 			}
 		}
@@ -177,7 +185,11 @@ void writeDiskImage(void)
 	}
 	else
 	{
+#ifdef __APPLE2ENH__		
 		writeStatusBarf("%s is not a known disk image.", selectedNode->name);
+#else
+		writeStatusBarf("Unknown disk image %s.", selectedNode->name);
+#endif
 	}
 }
 
@@ -226,8 +238,11 @@ void createDiskImage(void)
 
 		if(targetFile == -1)
 		{
+#ifdef __APPLE2ENH__			
 			waitForEnterEscf("Could not open %s for write.", newName);
-
+#else
+			waitForEnterEscf("Could not open %s.", newName);
+#endif
 			if(_osmaperrno(_oserror) == 8)
 			{
 				writeStatusBarf("Disk or directory is full.", );
@@ -254,7 +269,11 @@ void createDiskImage(void)
 					r = write(targetFile, fileBuffer, sectorSize);
 					if(r != sectorSize)
 					{
+#ifdef __APPLE2ENH__
 						waitForEnterEscf("Failed to write sector to target file. r: %d", r);
+#else
+						waitForEnterEscf("Failed to write sector. r: %d", r);
+#endif
 						break;
 					}
 					writeStatusBarf("Created block %u (%ld%% complete).", i, (unsigned long)(i * (unsigned long)100) / sectorCount);

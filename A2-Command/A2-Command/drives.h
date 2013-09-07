@@ -131,7 +131,7 @@ void  __fastcall displayDirectory(
 
 void  __fastcall writeSelectorPosition(
 	struct panel_drive *panel,
-	const unsigned char character);
+	unsigned char character);
 
 void __fastcall  moveSelectorUp(
 	struct panel_drive *panel);

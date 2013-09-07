@@ -113,7 +113,7 @@ void __fastcall viewFile(
                         strcat(line, word);
                         memset(word, counter = 0, sizeof word);
                     }
-                    if (strlen(line) + counter >= size_x)
+                    if (strlen(line) + counter > size_x)
                     {
                         printLine = true;
                         

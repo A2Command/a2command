@@ -57,7 +57,9 @@ unsigned char *quit_message[1] =
 // strings as necessary.
 void initialize(void)
 {
+#ifdef __APPLE2ENH__
 	videomode(VIDEOMODE_80COL);
+#endif
 
 	screensize(&size_x, &size_y);
 }

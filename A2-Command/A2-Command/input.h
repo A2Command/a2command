@@ -39,10 +39,19 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _INPUT_H
 
 // Global Hotkeys
-#define HK_REREAD_LEFT		'E'	// CTRL-E
+#ifdef __APPLE2ENH__
 #define HK_REREAD_RIGHT		KEY_ALT_E	// C=-E
-#define HK_DRIVE_LEFT		'D'	// CTRL-D
 #define HK_DRIVE_RIGHT		KEY_ALT_D	// C=-D
+#define HK_TO_TOP			'{'		// ^
+#define HK_TO_BOTTOM		'}'		// SHIFT-^
+#else
+#define HK_REREAD_RIGHT		KEY_CTRL_E	// C=-E
+#define HK_DRIVE_RIGHT		KEY_CTRL_D	// C=-D
+#define HK_TO_TOP			'('		// ^
+#define HK_TO_BOTTOM		')'		// SHIFT-^
+#endif
+#define HK_REREAD_LEFT		'E'	// CTRL-E
+#define HK_DRIVE_LEFT		'D'	// CTRL-D
 #define HK_SELECT_ALL		'A'	// CTRL-A
 #define HK_DESELECT_ALL		'S'	// CTRL-S
 #define HK_QUIT				'Q'	// CTRL-U
@@ -50,8 +59,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define HK_RENAME			'R'	// CTRL-R
 #define HK_DELETE			'L'	// CTRL-L
 #define HK_MAKE_DIRECTORY	'M'	// CTRL-K
-#define HK_TO_TOP			'{'		// ^
-#define HK_TO_BOTTOM		'}'		// SHIFT-^
 #define HK_PAGE_UP			'['
 #define HK_PAGE_DOWN		']'
 #define HK_SELECT			32
