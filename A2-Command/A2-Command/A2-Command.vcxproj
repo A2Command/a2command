@@ -192,6 +192,7 @@
     <ClCompile Include="DriveMenu.c" />
     <ClCompile Include="drives.c" />
     <ClCompile Include="FileMenu.c" />
+    <ClCompile Include="FileOperations.c" />
     <ClCompile Include="globalInput.c" />
     <ClCompile Include="globals.c" />
     <ClCompile Include="input.c" />

@@ -25,7 +25,8 @@ SOURCES	= \
 	Viewer.c \
     DiskImages.c \
     DiskCopy.c \
-    Dispatcher.c
+    Dispatcher.c \
+    FileOPerations.c
 
 PROGRAM	=a2cmd
 
@@ -52,6 +53,7 @@ A2Disk: all
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).TV bin 0 < $(T)/$(PROGRAM).TV
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DC bin 0 < $(T)/$(PROGRAM).DC
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DI bin 0 < $(T)/$(PROGRAM).DI
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).FO bin 0 < $(T)/$(PROGRAM).FO
 
 A2PlusDisk: T := apple2
 A2PlusDisk: LIBS :=$(T).lib
@@ -62,6 +64,7 @@ A2PlusDisk: A2Plus
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).TV bin 0 < $(T)/$(PROGRAM).TV
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DC bin 0 < $(T)/$(PROGRAM).DC
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DI bin 0 < $(T)/$(PROGRAM).DI
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).FO bin 0 < $(T)/$(PROGRAM).FO
 
 $(T):
 	mkdir $(T)

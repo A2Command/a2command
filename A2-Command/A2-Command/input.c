@@ -205,21 +205,25 @@ void  readKeyboard(void)
 		quit();
 		break;
 	case KEY_F5:
-		copyFiles();
+		if(loadOverlay(4))
+			copyFiles();
 		break;
 	case HK_RENAME:
 	case KEY_F6:
-		renameFile();
+		if(loadOverlay(4))
+			renameFile();
 		break;
 	case HK_DELETE:
 	case KEY_F8:
-		deleteFiles();
+		if(loadOverlay(4))
+			deleteFiles();
 		break;
 	//case KEY_AT:
 	//	inputCommand();
 	//	break;
 	case KEY_F7:
-		makeDirectory();
+		if(loadOverlay(4))
+			makeDirectory();
 		break;
 	case HK_TO_TOP:
 		moveTop(selectedPanel);

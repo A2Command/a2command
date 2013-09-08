@@ -66,6 +66,9 @@
     <ClCompile Include="Dispatcher.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FileOperations.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h">
