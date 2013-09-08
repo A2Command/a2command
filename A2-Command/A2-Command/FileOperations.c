@@ -57,7 +57,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Viewer.h"
 
 #pragma code-name("FILEOPS");
-#pragma data-name("FODATA");
+#pragma rodata-name("FILEOPS");
+//#pragma data-name("FODATA");
 
 void copyFiles(void)
 {
@@ -336,6 +337,12 @@ void makeDirectory(void)
 	}
 }
 
+#ifdef __APPLE2ENH__
+#define AREYOUSURE "Are you sure?"
+#else
+#define AREYOUSURE "ARE YOU SURE?"
+#endif
+
 void deleteFiles(void)
 {
 	struct dir_node *selectedNode;
@@ -344,7 +351,7 @@ void deleteFiles(void)
 	bool dialogResult, isBatch = false;
 	static unsigned char* dialogMessage[] =
 	{
-		{ "Are you sure?" }
+		{ AREYOUSURE }
 	};
 	struct dirent *currentDE;
 	DIR *dir = NULL;
