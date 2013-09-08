@@ -42,6 +42,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "drives.h"
 #include "globals.h"
 #include "screen.h"
+#include "Dispatcher.h"
 
 unsigned char size_x;
 unsigned char size_y;
@@ -62,4 +63,6 @@ void initialize(void)
 #endif
 
 	screensize(&size_x, &size_y);
+
+	loadOverlay(1);
 }
