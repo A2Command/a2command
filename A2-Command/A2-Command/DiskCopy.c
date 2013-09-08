@@ -64,12 +64,15 @@ void copyDisk(void)
 				writeStatusBarf(
 #ifdef __APPLE2ENH__								
 					"Copied %ld blocks, %ld remaining. (%ld%% complete)",
-#else
-					"Copied %ld/%ld blocks. (%ld%%)",
-#endif
-					counter + 1, 
+					counter + 1,
 					sectorCount - counter + 1,
 					(unsigned long)(counter * (unsigned long)100) / sectorCount);
+#else
+					"Copied %ld blocks. (%ld%%)",
+					counter + 1,
+					(unsigned long)(counter * (unsigned long)100) / sectorCount);
+#endif
+
 			}
 
 			writeStatusBarf("Copied S%uD%u to S%uD%u",

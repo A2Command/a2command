@@ -313,7 +313,7 @@ void createDiskImage(void)
 		reloadPanels();
 		writeSelectorPosition(selectedPanel, '>');
 
-		writeStatusBarf("Created %s.", filePath);
+		writeStatusBarf("Created %s.", newName);
 
 	}
 }
