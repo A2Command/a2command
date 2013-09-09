@@ -49,6 +49,7 @@ extern void _TEXTVIEW_LOAD__[], _TEXTVIEW_SIZE__[];
 extern void _DISKCOPY_LOAD__[], _DISKCOPY_SIZE__[];
 extern void _DISKIMGS_LOAD__[], _DISKIMGS_SIZE__[];
 extern void _FILEOPS_LOAD__[], _FILEOPS_SIZE__[];
+extern void _HEXEDIT_LOAD__[], _HEXEDIT_SIZE__[];
 
 #ifdef __APPLE2ENH__
 #define PROGNAME "A2CMD"
@@ -87,7 +88,11 @@ bool loadOverlay(unsigned char name)
 				size = _FILEOPS_SIZE__;
 				file = open (PROGNAME ".FO", O_RDONLY);
 				break;
-
+			case 5:
+				addr = _HEXEDIT_LOAD__;
+				size = _HEXEDIT_SIZE__;
+				file = open (PROGNAME ".HE", O_RDONLY);
+				break;
 		}
 
 		if (file == -1) {

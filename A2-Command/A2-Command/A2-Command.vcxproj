@@ -89,10 +89,10 @@
     <NMakeIncludeSearchPath>$(CC65_INC);$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='A2|Win32'">
-    <NMakeBuildCommandLine>make clean A2Disk</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>make both</NMakeBuildCommandLine>
     <NMakeOutput />
     <NMakeCleanCommandLine>make clean </NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>make A2Disk</NMakeReBuildCommandLine>
+    <NMakeReBuildCommandLine>make both</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>__APPLE2ENH__</NMakePreprocessorDefinitions>
     <IncludePath>$(CC65_INC);$(CA65_INC);</IncludePath>
     <NMakeIncludeSearchPath>$(CC65_INC);</NMakeIncludeSearchPath>
@@ -195,6 +195,7 @@
     <ClCompile Include="FileOperations.c" />
     <ClCompile Include="globalInput.c" />
     <ClCompile Include="globals.c" />
+    <ClCompile Include="HexEditor.c" />
     <ClCompile Include="input.c" />
     <ClCompile Include="makefile" />
     <ClCompile Include="menus.c" />
@@ -208,6 +209,7 @@
     <ClInclude Include="drives.h" />
     <ClInclude Include="globalInput.h" />
     <ClInclude Include="globals.h" />
+    <ClInclude Include="HexEditor.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="menus.h" />
     <ClInclude Include="screen.h" />

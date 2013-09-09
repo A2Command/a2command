@@ -53,6 +53,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Viewer.h"
 #include "A2-disks.h"
 #include "Dispatcher.h"
+#include "HexEditor.h"
 
 void  readKeyboard(void)
 {
@@ -64,6 +65,17 @@ void  readKeyboard(void)
 
 	switch((int)key)
 	{
+	case HK_HEX_EDIT:
+		if(loadOverlay(5))
+		{
+			hexEditCurrentFile(selectedPanel);
+
+			clrscr();
+			writeMenuBar();
+			reloadPanels();
+		}
+		break;
+
 	case CH_ENTER:
 		currentNode = getSelectedNode(selectedPanel);
 		if(isDirectory(selectedPanel))
