@@ -47,6 +47,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dirent.h>
 #include <fcntl.h>
 
+#include "HexEditor.h"
 #include "constants.h"
 #include "globalInput.h"
 #include "globals.h"
@@ -59,8 +60,6 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma code-name("HEXEDIT");
 #pragma rodata-name("HEXEDIT");
 
-void processLine(char *readBuffer, off_t at, int bytesRead, char y);
-void display(int bytesPerLine, char *filename, off_t startAt);
 
 void hexEditCurrentFile(struct panel_drive *panel)
 {
@@ -83,8 +82,8 @@ void hexEditCurrentFile(struct panel_drive *panel)
 #define DN CH_CURS_DOWN
 #else
 	bytesPerLine = 8;
-#define UP 'Q'
-#define DN 'Z'
+#define UP 'I'
+#define DN 'M'
 #endif
 
 	display(bytesPerLine, fullPath, offset);
@@ -163,8 +162,8 @@ void display(int bytesPerLine, char *fileName, off_t startAt)
 #else
 	cputsxy(0, size_y - 1, "Q Up  Z Down  [ PgUP  ] PgDn  G Goto");
 	revers(1);
-	cputsxy(0, size_y - 1, "Q");
-	cputsxy(6, size_y - 1, "Z");
+	cputsxy(0, size_y - 1, "I");
+	cputsxy(6, size_y - 1, "M");
 	cputsxy(14, size_y - 1, "[");
 	cputsxy(22, size_y - 1, "]");
 	cputsxy(30, size_y - 1, "G");
