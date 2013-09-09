@@ -106,6 +106,8 @@ bool loadOverlay(unsigned char name)
 		}
 		read (file, addr, (unsigned) size);
 		close (file);
+
+		lastOverlay = name;
 	}
 	return true;
 }
