@@ -209,8 +209,8 @@ void processLine(char *readBuffer, off_t at, int bytesRead, char y)
 	char i, c;
 	int athi, atlo;
 	gotoxy(0, y);
-	athi = (int)(at & 0xFFFF0000)>>16;
-	atlo = (int)at & 0xFFFF;
+	athi = (int)((at & 0xFFFF0000)>>16);
+	atlo = (int)(at & 0xFFFF);
 
 #ifdef __APPLE2ENH__
 	cprintf("%04X%04X", athi, atlo);
@@ -224,7 +224,7 @@ void processLine(char *readBuffer, off_t at, int bytesRead, char y)
 		c = readBuffer[i];
 		cprintf("%02X ", c);
 
-		if(i == 8) cputc(' ');
+		if(i == 7) cputc(' ');
 	}
 	
 #ifdef __APPLE2ENH__
@@ -241,6 +241,6 @@ void processLine(char *readBuffer, off_t at, int bytesRead, char y)
 		else
 			cputc('.');
 
-		if(i == 8) cputc(' ');
+		if(i == 7) cputc(' ');
 	}
 }
