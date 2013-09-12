@@ -64,7 +64,9 @@ SOURCES	= \
     DiskCopy.c \
     Dispatcher.c \
     FileOPerations.c \
-    HexEditor.c
+    HexEditor.c \
+	BasicViewer.c 
+
 
 PROGRAM	=a2cmd
 PROGRAMPLUS = a2cmdp
@@ -94,6 +96,7 @@ A2Disk: all
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DI bin 0 < $(T)/$(PROGRAM).DI
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).FO bin 0 < $(T)/$(PROGRAM).FO
 	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).HE bin 0 < $(T)/$(PROGRAM).HE
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).BV bin 0 < $(T)/$(PROGRAM).BV
 
 A2PlusDisk: T := apple2
 A2PlusDisk: LIBS :=$(T).lib
@@ -107,6 +110,7 @@ A2PlusDisk: A2Plus
 	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).DI bin 0 < $(T)/$(PROGRAMPLUS).DI
 	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).FO bin 0 < $(T)/$(PROGRAMPLUS).FO
 	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).HE bin 0 < $(T)/$(PROGRAMPLUS).HE
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).BV bin 0 < $(T)/$(PROGRAMPLUS).BV
 
 $(T):
 	mkdir $(T)

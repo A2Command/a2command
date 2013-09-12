@@ -72,6 +72,9 @@
     <ClCompile Include="HexEditor.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BasicViewer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h">
@@ -105,6 +108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="HexEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicViewer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

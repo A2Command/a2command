@@ -186,6 +186,7 @@
   <ItemGroup>
     <ClCompile Include="A2-disks.c" />
     <ClCompile Include="A2-Command.c" />
+    <ClCompile Include="BasicViewer.c" />
     <ClCompile Include="DiskCopy.c" />
     <ClCompile Include="DiskImages.c" />
     <ClCompile Include="Dispatcher.c" />
@@ -204,6 +205,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="A2-disks.h" />
+    <ClInclude Include="BasicViewer.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="Dispatcher.h" />
     <ClInclude Include="drives.h" />

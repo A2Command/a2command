@@ -54,6 +54,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "A2-disks.h"
 #include "Dispatcher.h"
 #include "HexEditor.h"
+#include "BasicViewer.h"
 
 void  readKeyboard(void)
 {
@@ -65,6 +66,16 @@ void  readKeyboard(void)
 
 	switch((int)key)
 	{
+	case HK_BASIC_VIEWER:
+		if(loadOverlay(6))
+		{
+			viewFileAsBASIC(selectedPanel);
+
+			clrscr();
+			writeMenuBar();
+			reloadPanels();
+		}
+		break;
 	case HK_HEX_EDIT:
 		if(loadOverlay(5))
 		{
