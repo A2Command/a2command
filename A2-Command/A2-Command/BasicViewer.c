@@ -60,9 +60,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma code-name("BASICVW");
 #pragma rodata-name("BASICVW");
 
-// Need to attribute this token list
-// waiting for kelvinux to respond about
-// What real name to list here.
+// Token list by Kelvin Sherlock
 const char *tokens[]={
 /*80*/	" END ",
 	" FOR ",
