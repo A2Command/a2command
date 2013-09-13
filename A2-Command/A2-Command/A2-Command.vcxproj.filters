@@ -19,6 +19,7 @@
     <None Include="loader.system" />
     <None Include="prodos.po" />
     <None Include="apple2enh-system.cfg" />
+    <None Include="prodos111.po" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile">

@@ -60,6 +60,9 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma code-name("HEXEDIT");
 #pragma rodata-name("HEXEDIT");
 
+void processLine(char *readBuffer, off_t at, int bytesRead, char y);
+void display(int bytesPerLine, char *filename, off_t startAt);
+
 
 void hexEditCurrentFile(struct panel_drive *panel)
 {

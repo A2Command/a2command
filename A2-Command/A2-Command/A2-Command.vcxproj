@@ -182,6 +182,7 @@
     <None Include="AppleCommander-1.3.5.jar" />
     <None Include="loader.system" />
     <None Include="prodos.po" />
+    <None Include="prodos111.po" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="A2-disks.c" />

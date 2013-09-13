@@ -108,6 +108,17 @@ void  readKeyboard(void)
 					exec(filePath, NULL);
 				}
 			}
+			else if(currentNode->type == 0xFC)
+			{
+				if(loadOverlay(6))
+				{
+					viewFileAsBASIC(selectedPanel);
+
+					clrscr();
+					writeMenuBar();
+					reloadPanels();
+				}
+			}
 			else
 			{
 				if(loadOverlay(1))
