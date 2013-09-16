@@ -42,4 +42,5 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void viewFileAsBASIC(struct panel_drive * panel);
 
+unsigned int display(char *fileName, unsigned int lineNumber, unsigned int *previousLineNumber, unsigned int *lastLineNumber);
 #endif

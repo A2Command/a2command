@@ -141,7 +141,7 @@ void hexEditCurrentFile(struct panel_drive *panel)
 void display(int bytesPerLine, char *fileName, off_t startAt)
 {
 	int file = -1;
-	char x, y;
+	char y;
 	int bytesRead;
 	off_t t;
 
@@ -163,12 +163,12 @@ void display(int bytesPerLine, char *fileName, off_t startAt)
 	cputsxy(62, size_y - 1, "ESC");
 	revers(0);
 #else
-	cputsxy(0, size_y - 1, "Q Up  Z Down  [ PgUP  ] PgDn  G Goto");
+	cputsxy(0, size_y - 1, "Q Up  Z Down  < PgUP  > PgDn  G Goto");
 	revers(1);
 	cputsxy(0, size_y - 1, "I");
 	cputsxy(6, size_y - 1, "M");
-	cputsxy(14, size_y - 1, "[");
-	cputsxy(22, size_y - 1, "]");
+	cputsxy(14, size_y - 1, "<");
+	cputsxy(22, size_y - 1, ">");
 	cputsxy(30, size_y - 1, "G");
 	revers(0);
 #endif

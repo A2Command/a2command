@@ -183,7 +183,7 @@ void  readKeyboard(void)
 		}
 		break;
 #endif
-	case KEY_TAB:
+	case HK_SWITCH_PANEL:
 		if(selectedPanel == &leftPanelDrive
 			&& strlen(rightPanelDrive.path) > 0)
 		{

@@ -9,6 +9,9 @@
 /* Begin PBXFileReference section */
 		4F38502017DE3701009B03D4 /* HexEditor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HexEditor.c; path = "A2-Command/HexEditor.c"; sourceTree = "<group>"; };
 		4F38502117DE3701009B03D4 /* HexEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HexEditor.h; path = "A2-Command/HexEditor.h"; sourceTree = "<group>"; };
+		4FB9045517E3887300A867DE /* BasicViewer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = BasicViewer.c; path = "A2-Command/BasicViewer.c"; sourceTree = "<group>"; };
+		4FB9045617E3887300A867DE /* BasicViewer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BasicViewer.h; path = "A2-Command/BasicViewer.h"; sourceTree = "<group>"; };
+		4FB9045717E3887300A867DE /* FileOperations.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = FileOperations.c; path = "A2-Command/FileOperations.c"; sourceTree = "<group>"; };
 		4FBE6EDA17CBF34400612D48 /* A2-Command.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "A2-Command.c"; path = "A2-Command/A2-Command.c"; sourceTree = "<group>"; };
 		4FBE6EDB17CBF34400612D48 /* A2-disks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "A2-disks.c"; path = "A2-Command/A2-disks.c"; sourceTree = "<group>"; };
 		4FBE6EDC17CBF34400612D48 /* DiskCopy.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = DiskCopy.c; path = "A2-Command/DiskCopy.c"; sourceTree = "<group>"; };
@@ -41,6 +44,9 @@
 		4F7160DE17A19DBA00BCEED5 = {
 			isa = PBXGroup;
 			children = (
+				4FB9045517E3887300A867DE /* BasicViewer.c */,
+				4FB9045617E3887300A867DE /* BasicViewer.h */,
+				4FB9045717E3887300A867DE /* FileOperations.c */,
 				4F38502017DE3701009B03D4 /* HexEditor.c */,
 				4F38502117DE3701009B03D4 /* HexEditor.h */,
 				4FBE6EF317CD1DD700612D48 /* apple2enh-system.cfg */,

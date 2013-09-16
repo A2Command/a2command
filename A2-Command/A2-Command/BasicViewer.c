@@ -191,9 +191,8 @@ const char *tokens[]={
 	" ?? ",
 };       
 
-
-
-unsigned int display(char *fileName, unsigned int lineNumber, unsigned int *previousLineNumber, unsigned int *lastLineNumber);
+unsigned int firstLineOfPage[16];
+unsigned char index = 0;
 
 void viewFileAsBASIC(struct panel_drive * panel)
 {
@@ -223,17 +222,24 @@ void viewFileAsBASIC(struct panel_drive * panel)
 		key = cgetc();
 		switch(key)
 		{
-		case UP:
-			lineNumber = display(fullPath, previousLineNumber, &previousLineNumber, &lastLineNumber);
-			break;
-
-		case DN:
-			lineNumber = display(fullPath, lineNumber + 1, &previousLineNumber, &lastLineNumber);
-			break;
-
-		case HK_PAGE_DOWN:
-			lineNumber = display(fullPath, lastLineNumber, &previousLineNumber, &lastLineNumber);
-			break;
+			case UP:
+				lineNumber = display(fullPath, previousLineNumber, &previousLineNumber, &lastLineNumber);
+				break;
+				
+			case DN:
+				lineNumber = display(fullPath, lineNumber + 1, &previousLineNumber, &lastLineNumber);
+				break;
+				
+			case HK_PAGE_UP:
+				index = index > 0 ? --index : 0;
+				lineNumber = display(fullPath, firstLineOfPage[index], &previousLineNumber, &lastLineNumber);
+				break;
+				
+			case HK_PAGE_DOWN:
+				firstLineOfPage[index] = lineNumber;
+				index = index < 15 ? ++index : 15;
+				lineNumber = display(fullPath, lastLineNumber, &previousLineNumber, &lastLineNumber);
+				break;
 		}
 	}
 
@@ -250,19 +256,22 @@ unsigned int display(char *fileName, unsigned int lineNumber, unsigned int *prev
 
 	clrscr();
 #ifdef __APPLE2ENH__
-	cputsxy(0, size_y - 1, "UP Up Line     DN Down Line                ] PgDn             ESC Back");
+	cputsxy(0, size_y - 1, "UP Up Line     DN Down Line        [ PgUp      ] PgDn         ESC Back");
 	revers(1);
 	cputsxy(0, size_y - 1, "UP");
 	cputsxy(15, size_y - 1, "DN");
-	cputsxy(43, size_y - 1, "]");
+	cputsxy(35, size_y - 1, "[");
+	cputsxy(47, size_y - 1, "]");
 	cputsxy(62, size_y - 1, "ESC");
 	revers(0);
 #else
-	cputsxy(0, size_y - 1, "Q Up  Z Down          ] PgDn  ");
+	cputsxy(0, size_y - 1, "I Up  M Down  < PgUp  > PgDn  ESC Back");
 	revers(1);
 	cputsxy(0, size_y - 1, "I");
 	cputsxy(6, size_y - 1, "M");
-	cputsxy(22, size_y - 1, "]");
+	cputsxy(14, size_y - 1, "<");
+	cputsxy(22, size_y - 1, ">");
+	cputsxy(30, size_y - 1, "ESC");
 	revers(0);
 #endif
 
@@ -276,7 +285,7 @@ unsigned int display(char *fileName, unsigned int lineNumber, unsigned int *prev
 			{
 				read(file, &current, 2);	// Current line number
 				*lastLineNumber = current;
-
+				
 				memset(fileBuffer, 0, sizeof(fileBuffer));
 
 				do
