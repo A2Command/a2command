@@ -180,6 +180,8 @@
   <ItemGroup>
     <None Include="apple2enh-system.cfg" />
     <None Include="AppleCommander-1.3.5.jar" />
+    <None Include="HyperFormat-ca65.s" />
+    <None Include="HyperFormat.s" />
     <None Include="loader.system" />
     <None Include="prodos.po" />
     <None Include="prodos111.po" />
@@ -195,6 +197,7 @@
     <ClCompile Include="drives.c" />
     <ClCompile Include="FileMenu.c" />
     <ClCompile Include="FileOperations.c" />
+    <ClCompile Include="Formatter.c" />
     <ClCompile Include="globalInput.c" />
     <ClCompile Include="globals.c" />
     <ClCompile Include="HexEditor.c" />
@@ -210,6 +213,7 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="Dispatcher.h" />
     <ClInclude Include="drives.h" />
+    <ClInclude Include="Formatter.h" />
     <ClInclude Include="globalInput.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="HexEditor.h" />

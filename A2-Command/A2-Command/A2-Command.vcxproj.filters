@@ -20,6 +20,8 @@
     <None Include="prodos.po" />
     <None Include="apple2enh-system.cfg" />
     <None Include="prodos111.po" />
+    <None Include="HyperFormat-ca65.s" />
+    <None Include="HyperFormat.s" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile">
@@ -76,6 +78,9 @@
     <ClCompile Include="BasicViewer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Formatter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="constants.h">
@@ -112,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BasicViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Formatter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

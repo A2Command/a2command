@@ -51,11 +51,12 @@ extern void _DISKIMGS_LOAD__[], _DISKIMGS_SIZE__[];
 extern void _FILEOPS_LOAD__[], _FILEOPS_SIZE__[];
 extern void _HEXEDIT_LOAD__[], _HEXEDIT_SIZE__[];
 extern void _BASICVW_LOAD__[], _BASICVW_SIZE__[];
+extern void _FORMAT_LOAD__[], _FORMAT_SIZE__[];
 
 #ifdef __APPLE2ENH__
-#define PROGNAME "A2CMD"
+#define PROGNAME "A2CMD.SYSTEM"
 #else
-#define PROGNAME "A2CMDP"
+#define PROGNAME "A2CMP.SYSTEM"
 #endif
 
 bool loadOverlay(unsigned char name)
@@ -98,6 +99,11 @@ bool loadOverlay(unsigned char name)
 				addr = _BASICVW_LOAD__;
 				size = _BASICVW_SIZE__;
 				file = open (PROGNAME ".BV", O_RDONLY);
+				break;			
+			case 7:
+				addr = _FORMAT_LOAD__;
+				size = _FORMAT_SIZE__;
+				file = open (PROGNAME ".FM", O_RDONLY);
 				break;
 		}
 

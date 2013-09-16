@@ -65,11 +65,13 @@ SOURCES	= \
     Dispatcher.c \
     FileOPerations.c \
     HexEditor.c \
-	BasicViewer.c 
+	BasicViewer.c \
+	HyperFormat-CA65.s \
+	Formatter.c
 
 
 PROGRAM	=a2cmd
-PROGRAMPLUS = a2cmdp
+PROGRAMPLUS = a2cmp
 
 TITLE	=$(PROGRAM)
 
@@ -117,10 +119,10 @@ $(T):
 
 # Build our program
 $(PROGRAM): $(SOURCES) $(ASMFILES) | $(T)
-	$(CL) -O -t $(T) -C apple2enh-system.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAM) $(SOURCES) $(ASMFILES) $(LIBS)
+	$(CL) -O -t $(T) -C apple2enh-system.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAM).system $(SOURCES) $(ASMFILES) $(LIBS)
 
 $(PROGRAMPLUS): $(SOURCES) $(ASMFILES) | $(T)
-	$(CL) -O -t $(T) -C apple2enh-system.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAMPLUS) $(SOURCES) $(ASMFILES) $(LIBS)
+	$(CL) -O -t $(T) -C apple2enh-system.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAMPLUS).system $(SOURCES) $(ASMFILES) $(LIBS)
 
 miniclean:
 	$(RM) $(SOURCES:.c=.o) $(SOURCES:.c=.s)

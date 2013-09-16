@@ -55,6 +55,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Dispatcher.h"
 #include "HexEditor.h"
 #include "BasicViewer.h"
+#include "Formatter.h"
 
 void  readKeyboard(void)
 {
@@ -66,6 +67,16 @@ void  readKeyboard(void)
 
 	switch((int)key)
 	{
+	case HK_FORMATTER:
+		if(loadOverlay(7))
+		{
+			formatDisk(selectedPanel);
+
+			clrscr();
+			writeMenuBar();
+			reloadPanels();
+		}
+		break;
 	case HK_BASIC_VIEWER:
 		if(loadOverlay(6))
 		{
