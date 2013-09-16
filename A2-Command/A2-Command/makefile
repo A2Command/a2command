@@ -92,13 +92,14 @@ A2JACE: A2Disk
 
 A2Disk: all
 	cp $(MASTER_DISK) $(DISK)
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < $(T)/$(PROGRAM)
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).TV bin 0 < $(T)/$(PROGRAM).TV
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DC bin 0 < $(T)/$(PROGRAM).DC
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).DI bin 0 < $(T)/$(PROGRAM).DI
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).FO bin 0 < $(T)/$(PROGRAM).FO
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).HE bin 0 < $(T)/$(PROGRAM).HE
-	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).BV bin 0 < $(T)/$(PROGRAM).BV
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system sys 0 < $(T)/$(PROGRAM).system
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.TV bin 0 < $(T)/$(PROGRAM).system.TV
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.DC bin 0 < $(T)/$(PROGRAM).system.DC
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.DI bin 0 < $(T)/$(PROGRAM).system.DI
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.FO bin 0 < $(T)/$(PROGRAM).system.FO
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.HE bin 0 < $(T)/$(PROGRAM).system.HE
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.BV bin 0 < $(T)/$(PROGRAM).system.BV
+	$(JAVA) -jar $(AC) -p $(DISK) $(TITLE).system.FM bin 0 < $(T)/$(PROGRAM).system.FM
 
 A2PlusDisk: T := apple2
 A2PlusDisk: LIBS :=$(T).lib
@@ -106,13 +107,14 @@ A2PlusDisk: MASTER_DISK := prodos111.po
 A2PlusDisk: DISK := a2cmdplus.po
 A2PlusDisk: A2Plus
 	cp $(MASTER_DISK) $(DISK)
-	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system sys 0 < $(T)/$(PROGRAMPLUS)
-	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).TV bin 0 < $(T)/$(PROGRAMPLUS).TV
-	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).DC bin 0 < $(T)/$(PROGRAMPLUS).DC
-	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).DI bin 0 < $(T)/$(PROGRAMPLUS).DI
-	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).FO bin 0 < $(T)/$(PROGRAMPLUS).FO
-	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).HE bin 0 < $(T)/$(PROGRAMPLUS).HE
-	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).BV bin 0 < $(T)/$(PROGRAMPLUS).BV
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system sys 0 < $(T)/$(PROGRAMPLUS).system
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system.TV bin 0 < $(T)/$(PROGRAMPLUS).system.TV
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system.DC bin 0 < $(T)/$(PROGRAMPLUS).system.DC
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system.DI bin 0 < $(T)/$(PROGRAMPLUS).system.DI
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system.FO bin 0 < $(T)/$(PROGRAMPLUS).system.FO
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system.HE bin 0 < $(T)/$(PROGRAMPLUS).system.HE
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system.BV bin 0 < $(T)/$(PROGRAMPLUS).system.BV
+	$(JAVA) -jar $(AC) -p $(DISK) $(PROGRAMPLUS).system.FM bin 0 < $(T)/$(PROGRAMPLUS).system.FM
 
 $(T):
 	mkdir $(T)
