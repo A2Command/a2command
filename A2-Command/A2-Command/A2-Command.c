@@ -60,6 +60,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "menus.h";
 #include "screen.h";
 #include "input.h";
+#include "Dispatcher.h"
 
 
 /* A2-Command Main Function
@@ -79,6 +80,7 @@ int main(void)
 	// Initializes the disk drives
 	// which sets up structures for
 	// the disk panels.
+	//loadOverlay(8);
 	initializeDrives();
 
 	setupFileTypes();

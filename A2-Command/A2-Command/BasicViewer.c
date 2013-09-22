@@ -59,6 +59,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma code-name("BASICVW");
 #pragma rodata-name("BASICVW");
+//#pragma data-name("BVDATA");
+//#pragma bss-name("BVBSS");
 
 // Token list by Kelvin Sherlock
 const char *tokens[]={
@@ -202,8 +204,12 @@ void viewFileAsBASIC(struct panel_drive * panel)
 	unsigned int previousLineNumber = 0;
 	char key;
 
-	sprintf(fullPath, "%s/%s", panel->path,
-		panel->slidingWindow[panel->currentIndex - panel->slidingWindowStartAt].name);
+	//sprintf(fullPath, "%s/%s", panel->path,
+	//	panel->slidingWindow[panel->currentIndex - panel->slidingWindowStartAt].name);
+
+	strcpy(fullPath, panel->path);
+	strcat(fullPath, "/");
+	strcat(fullPath, panel->slidingWindow[panel->currentIndex - panel->slidingWindowStartAt].name);
 
 #ifdef __APPLE2ENH__
 #define UP CH_CURS_UP

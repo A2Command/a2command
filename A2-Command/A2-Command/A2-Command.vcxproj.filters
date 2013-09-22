@@ -20,8 +20,8 @@
     <None Include="prodos.po" />
     <None Include="apple2enh-system.cfg" />
     <None Include="prodos111.po" />
-    <None Include="HyperFormat-ca65.s" />
-    <None Include="HyperFormat.s" />
+    <None Include="asm\HyperFormat-ca65.s" />
+    <None Include="asm\HyperFormat.s" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile">
@@ -79,6 +79,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Formatter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InitDrives.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

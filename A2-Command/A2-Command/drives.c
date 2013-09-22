@@ -70,38 +70,6 @@ struct panel_drive rightPanelDrive;
 struct panel_drive *selectedPanel;
 struct panel_drive *targetPanel;
 
-void initializeDrives(void)
-{
-	static unsigned char i = 0;
-
-	if(!areDrivesInitialized)
-	{
-		leftPanelDrive.drive = NULL;
-		leftPanelDrive.currentIndex = 0;
-		leftPanelDrive.displayStartAt = 0;
-		leftPanelDrive.position = left;
-		
-		for(i=0; i<SLIDING_WINDOW_SIZE; ++i)
-		{
-			leftPanelDrive.slidingWindow[i].size = 0u;
-			leftPanelDrive.slidingWindow[i].type = 0;
-		}
-
-		rightPanelDrive.drive = NULL;
-		rightPanelDrive.currentIndex = 0;
-		rightPanelDrive.displayStartAt = 0;
-		rightPanelDrive.position = right;
-		
-		for(i=0; i<SLIDING_WINDOW_SIZE; ++i)
-		{
-			rightPanelDrive.slidingWindow[i].size = 0u;
-			rightPanelDrive.slidingWindow[i].type = 0;
-		}
-
-		areDrivesInitialized = true;
-		selectedPanel = &leftPanelDrive;
-	}
-}
 
 int __fastcall  getDirectory(
 	struct panel_drive *drive,
@@ -228,9 +196,10 @@ void __fastcall  displayDirectory(
 	writePanel(true, false, COLOR_WHITE, x, 1, 21, w,
 			   drive->path, NULL, NULL);
 	
-	sprintf(temp, "[S%uD%u]",
+	sprintf(temp, "[S%uD%u:%u]",
 		(drive->drive) & 7,
-		(drive->drive >> 3) + 1);
+		(drive->drive >> 3) + 1,
+		drive->drive);
 	cputsxy(x + 3, 22, temp);
 	
 	//gotox(x + w - 9); cprintf("[%5u]", drive->totalblocks - drive->usedblocks);
@@ -312,10 +281,10 @@ void __fastcall  writeCurrentFilename(
 {
 	struct dir_node *currentDirNode;
 
-	if(panel != NULL)
-	{
-		if(panel->drive != NULL)
-		{
+	//if(panel != NULL)
+	//{
+	//	if(panel->drive != NULL)
+	//	{
 			currentDirNode = getSelectedNode(panel);
 
 			if(currentDirNode != NULL &&
@@ -340,16 +309,16 @@ void __fastcall  writeCurrentFilename(
 			{
 				writeStatusBar("No file.");
 			}
-		}
-		else
-		{
-			writeStatusBar("No drive.");
-		}
-	}
-	else
-	{
-		writeStatusBar("No panel.");
-	}
+		//}
+	//	else
+	//	{
+	//		writeStatusBar("No drive.");
+	//	}
+	//}
+	//else
+	//{
+	//	writeStatusBar("No panel.");
+	//}
 }
 
 void __fastcall  moveSelectorUp(
@@ -455,42 +424,6 @@ void __fastcall  leaveDirectory(
 	}
 }
 
-unsigned char __fastcall  getDiskImageType(
-	struct panel_drive *panel)
-{
-	static unsigned result = false;
-	static unsigned char name[16];
-	static struct dir_node *currentDirNode = NULL;
-
-	currentDirNode = getSelectedNode(panel);
-
-	strcpy(name, currentDirNode->name);
-	strlower(name);
-
-	if(currentDirNode != NULL)
-	{
-		if(strstr(name, ".do") > 0
-			|| strstr(name, ".dsk") > 0
-			|| strstr(name, ".bin") > 0
-		)
-		{
-			result = 2;
-		}
-		else if(strstr(name, ".po") > 0
-			|| strstr(name, ".hdv") > 0
-		)
-		{
-			result = 1;
-		}
-		else
-		{
-			result = 0;
-		}
-	}
-
-	return result;
-}
-
 bool __fastcall isDirectory(
 	struct panel_drive *panel)
 {
@@ -526,10 +459,10 @@ struct dir_node*  __fastcall getSpecificNode(
 {
 	static struct dir_node *currentDirNode = NULL;
 
-	if(panel != NULL)
-	{
-		if(panel->drive != NULL)
-		{
+	//if(panel != NULL)
+	//{
+	//	if(panel->drive != NULL)
+	//	{
 
 			if(index >= panel->slidingWindowStartAt &&
 				index < panel->slidingWindowStartAt + SLIDING_WINDOW_SIZE)
@@ -540,8 +473,8 @@ struct dir_node*  __fastcall getSpecificNode(
 			{
 				return NULL;
 			}
-		}
-	}
+	//	}
+	//}
 
 	return currentDirNode;
 }
@@ -559,7 +492,7 @@ void  __fastcall selectAllFiles(
 {
 	unsigned int i = 0;
 
-	if(panel != NULL)
+	//if(panel != NULL)
 	{
 		for(;i< panel->length / 8 + 1; ++i)
 		{
@@ -578,7 +511,7 @@ void  __fastcall selectAllFiles(
 void __fastcall  moveTop(
 	struct panel_drive *panel)
 {
-	if(panel != NULL)
+	//if(panel != NULL)
 	{
 		panel->currentIndex = 0;
 		panel->displayStartAt = 0;
@@ -593,7 +526,7 @@ void __fastcall  moveTop(
 void __fastcall  movePageUp(
 	struct panel_drive *panel)
 {
-	if(panel != NULL)
+	//if(panel != NULL)
 	{
 		if(panel->currentIndex < 20) 
 		{
@@ -615,7 +548,7 @@ void __fastcall  movePageUp(
 void  __fastcall movePageDown(
 	struct panel_drive *panel)
 {
-	if(panel != NULL)
+	//if(panel != NULL)
 	{
 		panel->currentIndex += 19;
 		if(panel->currentIndex > panel->length - 1)
@@ -638,7 +571,7 @@ void  __fastcall movePageDown(
 void __fastcall  moveBottom(
 	struct panel_drive *panel)
 {
-	if(panel != NULL)
+	//if(panel != NULL)
 	{
 		if ((panel->currentIndex = panel->length - 1) < 0)
 		{

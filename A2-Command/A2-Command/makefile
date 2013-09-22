@@ -66,8 +66,10 @@ SOURCES	= \
     FileOPerations.c \
     HexEditor.c \
 	BasicViewer.c \
-	HyperFormat-CA65.s \
 	Formatter.c
+
+ASMFILES = asm\HyperFormat-ca65.s
+
 
 
 PROGRAM	=a2cmd
@@ -127,7 +129,8 @@ $(PROGRAMPLUS): $(SOURCES) $(ASMFILES) | $(T)
 	$(CL) -O -t $(T) -C apple2enh-system.cfg -m $(T)/$(TITLE).map -o $(T)/$(PROGRAMPLUS).system $(SOURCES) $(ASMFILES) $(LIBS)
 
 miniclean:
-	$(RM) $(SOURCES:.c=.o) $(SOURCES:.c=.s)
+	$(RM) $(SOURCES:.c=.o) 
+    # $(SOURCES:.c=.s)
 
 # Our phony targets for managing the project
 #.PHONY: clean
@@ -139,7 +142,8 @@ clean: miniclean
 A2PlusMiniClean: T := apple2
 A2PlusMiniClean: DISK := a2cmdplus.po
 A2PlusMiniClean:
-	$(RM) $(SOURCES:.c=.o) $(SOURCES:.c=.s)
+	$(RM) $(SOURCES:.c=.o) 
+    # $(SOURCES:.c=.s)
 
 A2PlusClean:  A2PlusMiniClean
 	$(RM) $(T)/$(PROGRAMPLUS).*
@@ -148,3 +152,7 @@ A2PlusClean:  A2PlusMiniClean
 both: A2Disk miniclean A2PlusDisk A2PlusMiniClean
 
 cleanboth: clean A2PlusClean
+
+payton: both
+	cp a2command.po e:\a2command.po
+	cp a2cmdplus.po e:\a2cmdplus.po

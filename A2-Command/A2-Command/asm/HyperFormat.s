@@ -920,7 +920,7 @@ Phase    anop
          ORA   SlotF                    ;OR Slot value to PHASE
          TAX
          LDA   Step1,X                  ;PHASE on...
-         LDA   #$56                     ;20 ms. delay
+         LDA   #20                     ;20 ms. delay
          JSR   WAIT
          LDA   Step0,X                  ;PHASE off...
          RTS

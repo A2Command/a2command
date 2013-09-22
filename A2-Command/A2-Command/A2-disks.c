@@ -100,12 +100,12 @@ void __fastcall__ selectDrive(struct panel_drive *panel)
 		{
 			strcpy(filePath, _stroserror(_oserror));
 		}
+		gotoxy(8, y + 4 + _driveCount);
 #ifdef __APPLE2ENH__
-        sprintf(temp, "Slot %u Drive %u - %s", dev & 7, (dev>>3)+1, filePath);
+        cprintf("Slot %u Drive %u - %s", dev & 7, (dev>>3)+1, filePath);
 #else
-		sprintf(temp, "S%uD%u - %.20s", dev & 7, (dev>>3)+1, filePath);
+		cprintf("S%uD%u - %.20s", dev & 7, (dev>>3)+1, filePath);
 #endif		
-		cputsxy(8, y + 4 + _driveCount, temp);
         _devices[_driveCount++] = dev;
 	}
 
@@ -208,7 +208,8 @@ void setupFileTypes(void)
 	{
 		if(!_fileTypes[i][0])
 		{
-			sprintf(_fileTypes[i], "$%2X", i);
+			_fileTypes[i][0] = "0123456789ABCDEF"[(i & 0xF0) >> 4];
+			_fileTypes[i][1] = "0123456789ABCDEF"[(i & 0x0F)];
 		}
 	}
 }

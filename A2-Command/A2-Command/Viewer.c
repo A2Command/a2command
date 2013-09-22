@@ -56,6 +56,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma code-name("TEXTVIEW");
 #pragma rodata-name("TEXTVIEW");
+//#pragma data-name ("TVDATA");
+//#pragma bss-name ("TVBSS");
 
 #define BUFFERSIZE (sizeof fileBuffer)
 

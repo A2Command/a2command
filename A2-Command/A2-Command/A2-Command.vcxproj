@@ -89,10 +89,10 @@
     <NMakeIncludeSearchPath>$(CC65_INC);$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='A2|Win32'">
-    <NMakeBuildCommandLine>make both</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>make payton</NMakeBuildCommandLine>
     <NMakeOutput />
     <NMakeCleanCommandLine>make clean </NMakeCleanCommandLine>
-    <NMakeReBuildCommandLine>make both</NMakeReBuildCommandLine>
+    <NMakeReBuildCommandLine>make payton</NMakeReBuildCommandLine>
     <NMakePreprocessorDefinitions>__APPLE2ENH__</NMakePreprocessorDefinitions>
     <IncludePath>$(CC65_INC);$(CA65_INC);</IncludePath>
     <NMakeIncludeSearchPath>$(CC65_INC);</NMakeIncludeSearchPath>
@@ -180,8 +180,8 @@
   <ItemGroup>
     <None Include="apple2enh-system.cfg" />
     <None Include="AppleCommander-1.3.5.jar" />
-    <None Include="HyperFormat-ca65.s" />
-    <None Include="HyperFormat.s" />
+    <None Include="asm\HyperFormat-ca65.s" />
+    <None Include="asm\HyperFormat.s" />
     <None Include="loader.system" />
     <None Include="prodos.po" />
     <None Include="prodos111.po" />
@@ -201,6 +201,7 @@
     <ClCompile Include="globalInput.c" />
     <ClCompile Include="globals.c" />
     <ClCompile Include="HexEditor.c" />
+    <ClCompile Include="InitDrives.c" />
     <ClCompile Include="input.c" />
     <ClCompile Include="makefile" />
     <ClCompile Include="menus.c" />

@@ -40,7 +40,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Drive Constants */
 #define SLIDING_WINDOW_SIZE 30		// 30 directory entries are cached
-#define COPY_BUFFER_SIZE	2048	// The data of 4 blocks
+#define COPY_BUFFER_SIZE	1024	// The data of 4 blocks
 
 /* Keyboad Constants */
 #define KEY_AT				'@'	// @

@@ -48,13 +48,19 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "globalInput.h"
 #include "globals.h"
 #include "input.h"
+#include "drives.h"
 
 #ifndef __fastcall
 #define __fastcall __fastcall__
 #endif
 
+
+#ifdef __APPLE2ENH__
 unsigned char SCREEN_BUFFER[2][24][40];
-static char linebuffer[81];
+#else
+unsigned char SCREEN_BUFFER[1][24][40];
+#endif
+//static char fileBuffer[81];
 
 void  saveScreen(void)
 {
@@ -64,12 +70,14 @@ void  saveScreen(void)
 	{
 		gotoy(i);
 		memcpy(SCREEN_BUFFER[0][i], *(char **)0x28, 40);
+#ifdef __APPLE2ENH__
 		if(size_x == 80)
 		{
 			*(char *)0xC055 = 0;
 			memcpy(SCREEN_BUFFER[1][i], *(char **)0x28, 40);
 			*(char *)0xC054 = 0;
 		}
+#endif
 	}
 }
 
@@ -81,12 +89,14 @@ void  retrieveScreen(void)
 	{
 		gotoy(i);
 		memcpy(*(char **)0x28, SCREEN_BUFFER[0][i], 40);
+#ifdef __APPLE2ENH__
 		if(size_x == 80)
 		{
 			*(char *)0xC055 = 0;
 			memcpy(*(char **)0x28, SCREEN_BUFFER[1][i], 40);
 			*(char *)0xC054 = 0;
 		}
+#endif
 	}
 }
 
@@ -166,7 +176,7 @@ void __fastcall writePanel(
 	unsigned char *ok)
 {
 	unsigned int i = 0, okLeft = 0, cancelLeft = 0;
-	unsigned char titleBuffer[80];
+	unsigned char titleBuffer[81];
 
 	saveScreen();
 
@@ -193,26 +203,25 @@ void __fastcall writePanel(
 			titleBuffer[w-4]='\0';
 		}
 
-		sprintf(linebuffer, "[%s]", titleBuffer);
-		cputsxy(x+2, y,linebuffer);
+		gotoxy(x+2, y);
+		cprintf("[%s]", titleBuffer);
 	}
 
 	revers(false);
 
 	okLeft = x + w - 2;
+
 	if(ok != NULL)
 	{
-		sprintf(linebuffer, "[%s]", ok);
-		okLeft -= strlen(linebuffer);
-		cputsxy(okLeft, y + h - 1, linebuffer);
+		okLeft -= 4;
+		cputsxy(okLeft, y + h - 1, "[OK]");
 	}
 
 	cancelLeft = okLeft - 2;
 	if(cancel != NULL)
 	{
-		sprintf(linebuffer, "[%s]", cancel);
-		cancelLeft -= strlen(linebuffer);
-		cputsxy(cancelLeft, y + h - 1,linebuffer);
+		cancelLeft -= 8;
+		cputsxy(cancelLeft, y + h - 1, "[cancel]");
 	}
 }
 
@@ -404,8 +413,8 @@ bool __fastcall writeYesNo(
 
 void vwriteStatusBarf(const char format[], va_list ap)
 {
-	vsprintf(linebuffer, format, ap);
-	writeStatusBar(linebuffer);
+	vsprintf(fileBuffer, format, ap);
+	writeStatusBar(fileBuffer);
 }
 
 void writeStatusBarf(const char format[], ...)

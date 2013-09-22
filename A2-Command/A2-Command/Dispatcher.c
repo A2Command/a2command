@@ -52,6 +52,7 @@ extern void _FILEOPS_LOAD__[], _FILEOPS_SIZE__[];
 extern void _HEXEDIT_LOAD__[], _HEXEDIT_SIZE__[];
 extern void _BASICVW_LOAD__[], _BASICVW_SIZE__[];
 extern void _FORMAT_LOAD__[], _FORMAT_SIZE__[];
+//extern void _INITDRVS_LOAD__[], _INITDRVS_SIZE__[];
 
 #ifdef __APPLE2ENH__
 #define PROGNAME "A2CMD.SYSTEM"
@@ -105,6 +106,11 @@ bool loadOverlay(unsigned char name)
 				size = _FORMAT_SIZE__;
 				file = open (PROGNAME ".FM", O_RDONLY);
 				break;
+			//case 8:
+			//	addr = _INITDRVS_LOAD__;
+			//	size = _INITDRVS_SIZE__;
+			//	file = open (PROGNAME ".ID", O_RDONLY);
+			//	break;
 		}
 
 		if (file == -1) {

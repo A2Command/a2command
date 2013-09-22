@@ -59,6 +59,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma code-name("FILEOPS");
 #pragma rodata-name("FILEOPS");
 //#pragma data-name("FODATA");
+//#pragma bss-name("FOBSS");
 
 void copyFiles(void)
 {

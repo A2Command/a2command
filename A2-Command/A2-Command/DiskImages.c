@@ -62,7 +62,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma code-name("DISKIMGS");
 #pragma rodata-name("DISKIMGS");
-//#pragma data-name("DIDATA");
+////#pragma data-name("DIDATA");
 
 unsigned long __fastcall__ getDriveSize(unsigned char driveNumber)
 {
@@ -108,7 +108,10 @@ void writeDiskImage(void)
 		if(writeYesNo("Write Disk Image", message, 1))
 		{
 			retrieveScreen();
-			sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
+			//sprintf(filePath, "%s/%s", selectedPanel->path, selectedNode->name); 
+			strcpy(filePath, selectedPanel->path);
+			strcat(filePath, "/");
+			strcat(filePath, selectedNode->name);
 
 			targetDriveSize = getDriveSize(targetPanel->drive);
 
@@ -355,3 +358,38 @@ void createDiskImage(void)
 	}
 }
 
+unsigned char __fastcall  getDiskImageType(
+	struct panel_drive *panel)
+{
+	static unsigned result = false;
+	static unsigned char name[16];
+	static struct dir_node *currentDirNode = NULL;
+
+	currentDirNode = getSelectedNode(panel);
+
+	strcpy(name, currentDirNode->name);
+	strlower(name);
+
+	if(currentDirNode != NULL)
+	{
+		if(strstr(name, ".do") > 0
+			|| strstr(name, ".dsk") > 0
+			|| strstr(name, ".bin") > 0
+		)
+		{
+			result = 2;
+		}
+		else if(strstr(name, ".po") > 0
+			|| strstr(name, ".hdv") > 0
+		)
+		{
+			result = 1;
+		}
+		else
+		{
+			result = 0;
+		}
+	}
+
+	return result;
+}

@@ -6,13 +6,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
+#include <unistd.h>
 
 #pragma code-name("FORMAT")
 
 void formatDisk(struct panel_drive *panel)
 {
-	clrscr();
+	cursor(1);
 	FORMATTER();
-	waitForEnterEsc();
-	GETYN();
+	cursor(0);
 }
