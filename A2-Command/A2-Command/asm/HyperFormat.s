@@ -835,7 +835,6 @@ LDone    RTS
 *                                 *
 ***********************************
 Calc     anop
-
          LDA   #$03                     ;Set Buffer to $6803
          LDX   #$68
          STA   Buffer

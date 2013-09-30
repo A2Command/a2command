@@ -37,9 +37,9 @@ HOME     =  $FC58                    ;MONITOR CLEAR SCREEN AND HOME CURSOR
 DEVCNT   =  $BF31                    ;PRODOS DEVICE COUNT
 DEVLIST  =  $BF32                    ;LIST OF DEVICES FOR PRODOS
 DEVADR   =  $BF10                    ;GIVEN SLOT THIS IS THE ADDRESS OF DRIVER
-BUFFER   =  $56                       ;ADDRESS POINTER FOR FORMAT DATA
-STRING   =  $58
-ADDRS     =  $5A
+BUFFER   =  $EB                       ;ADDRESS POINTER FOR FORMAT DATA
+STRING   =  $ED
+ADDRS     =  $06
 CH       =  $24                      ;STORAGE FOR HORIZONTAL CURSOR VALUE
 IN       =  $200                     ;KEYBOARD INPUT BUFFER
 ;WARMDOS  =  $BE00                    ;BASIC WARM-START VECTOR
@@ -63,9 +63,9 @@ DISKRD    =  $C08C                    ;DISK READ  SOFTSWITCH
 DISKWR    =  $C08D                    ;DISK WRITE SOFTSWITCH
 MODERD    =  $C08E                    ;MODE READ  SOFTSWITCH
 MODEWR    =  $C08F                    ;MODE WRITE SOFTSWITCH
-BUFFEROFF1  = $10
-BUFFEROFF2  = $11
-BUFFEROFF3  = $12
+BUFFEROFF1  = $0F
+BUFFEROFF2  = $10
+BUFFEROFF3  = $11
 ;**********************************************************
 ; EQUATES
 ;**********************************************************
@@ -87,143 +87,6 @@ LSHOW:    JSR   COUT                     ;PRINT CHAR, Z FLAG CONTAINS STATUS
          CMP   #$59                     ;CONDITION FLAG
          RTS
 .endproc
-
-;*********************************************
-;*                                           *
-;*  Apple II Family Identification Program   *
-;*                                           *
-;*               Version 2.2                 *
-;*                                           *
-;*               March, 1990                 *
-;*                                           *
-;*  Includes support for the Apple IIe Card  *
-;*  for the Macintosh LC.                    *
-;*                                           *
-;*********************************************
-.proc GETMACHINE
-lc1        = $E000        ;bytes to save for LC
-lc2        = $D000        ;save/restore routine
-lc3        = $D400
-lc4        = $D800
-location   = $06          ;zero page location to use
-idroutine  = $FE1F
-
-    php
-    sei
-    lda lc1
-    sta save
-    lda lc2
-    sta save+1
-    lda lc3
-    sta save+2
-    lda lc4
-    sta save+3
-
-    lda $C081
-    lda $C081
-
-    lda #$00
-    sta machine
-    sta romlevel
-
-IdStart:
-    lda location
-    sta save+4
-    lda location+1
-    sta save+5
-    lda #$FB
-    sta location+1
-    ldx #$00
-loop:
-    lda IDTable,x
-    sta machine
-    lda IDTable+1,x
-    sta romlevel
-    ora machine
-    beq matched
-loop2:
-    inx
-    inx
-    lda IDTable,x
-    beq matched
-    sta location
-
-    ldy #$00
-    lda (location),y
-    cmp IDTable+1,x
-    beq loop2
-
-loop3:
-    inx
-    inx
-    lda IDTable,x
-    bne loop3
-    inx
-    bne loop
-
-matched:
-    nop
-
-idIIgs:
-    sec
-    jsr idroutine
-    bcc idIIgs2
-    jmp IIgsOut
-idIIgs2:
-    lda machine
-    ora #$80
-    sta machine
-IIgsOut:
-    lda machine
-    ldx romlevel
-    cli
-    plp
-    rts
-.endproc
-
-save:       .byte $00, $00, $00, $00, $00, $00
-machine:    .byte $00
-romlevel:   .byte $00
-
-IDTable:   .byte $01, $01      ;Apple ][
-           .byte $B3, $38, 00
-
-           .byte $02, $01      ;Apple ][+
-           .byte $B3, $EA, $1E, $AD, $00
-
-           .byte $03, $01      ;Apple /// (emulation)
-           .byte $B3, $EA, $1E, $8A, $00
-
-           .byte $04, $01      ;Apple IIe (original)
-           .byte $B3, $06, $C0, $EA, $00
-
-;  Note: You must check for the Apple IIe Card BEFORE you
-;  check for the enhanced Apple IIe since the first
-;  two identification bytes are the same.
-
-           .byte $06, $01      ;Apple IIe Card for the Macintosh LC (1st release)
-           .byte $B3, $06, $C0, $E0, $DD, $02, $BE, $00, $00
-
-           .byte $04, $02      ;Apple IIe (enhanced)
-           .byte $B3, $06, $C0, $E0, $00
-
-           .byte $05, $01      ;Apple IIc (original)
-           .byte $B3, $06, $C0, $00, $BF, $FF, $00
-
-           .byte $05, $02      ;Apple IIc (3.5 ROM)
-           .byte $B3, $06, $C0, $00, $BF, $00, $00
-
-           .byte $05, $03      ;Apple IIc (Mem. Exp)
-           .byte $B3, $06, $C0, $00, $BF, $03, $00
-
-           .byte $05, $04      ;Apple IIc (Rev. Mem. Exp.)
-           .byte $B3, $06, $C0, $00, $BF, $04, $00
-
-           .byte $05, $05      ;Apple IIc Plus
-           .byte $B3, $06, $C0, $00, $BF, $05, $00
-
-           .byte $00, $00      ;end of table
-
 
 
 COUT_TEMP: .byte $00
@@ -570,7 +433,7 @@ BEGINFORMAT:
          ;JSR _cgetc
 
 		 JSR   FORMAT                   ;FORMAT THE DISK
-         
+         ;JSR _cgetc
          JSR   CODEWR                   ;FORM BITMAP
 
          LDA   #<VERIF                   ;ASK IF YOU WANT TO VERIFY THE DISK
@@ -583,12 +446,12 @@ BEGINFORMAT:
          JMP   VERIFY                   ;ANSWER WAS YES...
 BIIFORM1: JMP   CATALOG                  ;WRITE DIRECTORY INFORMATION TO THE DISK
 
-CODEWR:   
-         LDA   #<WRITING                   
-		 STA   STRING
-         LDA   #>WRITING
-		 STA   STRING + 1
-         JSR   STROUT
+CODEWR:  NOP 
+         ;LDA   #<WRITING                   
+		 ;STA   STRING
+         ;LDA   #>WRITING
+		 ;STA   STRING + 1
+         ;JSR   STROUT
          LDA   #$81                     ;SET OPCODE TO WRITE
          STA   OPCODE
 ;**********************************
@@ -918,39 +781,10 @@ LPLUS:    ROL   IN+20                    ;SHIFT VALUES IN IN+20, IN+21 ONE BIT L
 ;* FORMAT - FORMAT THE TARGET DISK *
 ;*                                 *
 ;***********************************
-
-;isIIgs: .asciiz "Machine is a IIgs."
-;notIIgs: .asciiz "Machine is not a IIgs."
-;slowmode: .byte $00
-
 FORMAT:  NOP 
          PHP
          SEI
-
-;         jsr GETMACHINE
-;         and #$80
-;         cmp #$80
-;         bne :+                         ; Not a IIgs
-
-;         lda #<isIIgs
-;         sta STRING
-;         lda #>isIIgs
-;         sta STRING + 1
-;         jsr STROUT
-
-;         ; Set 1mhz mode here
-;         lda #$01 
-;         sta slowmode
-
-;         jmp :++        
-;:        
-;         lda #<notIIgs
-;         sta STRING
-;         lda #>notIIgs
-;         sta STRING + 1
-;         jsr STROUT
-
-:        LDA   SLOT                     ;FETCH TARGET DRIVE SLOTNUM VALUE
+         LDA   SLOT                     ;FETCH TARGET DRIVE SLOTNUM VALUE
          PHA                            ;STORE IT ON THE STACK
          AND   #$70                     ;MASK OFF BIT 7 AND THE LOWER 4 BITS
          STA   SLOTF                    ;STORE RESULT IN FORMAT SLOT STORAGE
@@ -996,7 +830,6 @@ LNEXT:    STA   TRKDES                   ;MOVE NEXT TRACK TO FORMAT TO TRKDES
          JMP   WRITE                    ;WRITE ANOTHER TRACK
 DONE:     LDX   SLOTF                    ;TURN THE DRIVE OFF
          LDA   DISKOFF,X
-         CLI
          PLP
          RTS                            ;FORMAT IS FINISHED. RETURN TO CALLING ROUTINE
 DIEDII:   PHA                            ;SAVE MLI ERROR CODE ON THE STACK
@@ -1149,6 +982,10 @@ LINC:     CLC
          INC   BUFFER                   ;ADD 1 TO BUFFER ADDRESS VECTOR
          BNE   LDONE
          INC   BUFFER+1
+         lda BUFFER+1
+         cmp #$BB
+         bne LDONE
+         nop
 LDONE:    RTS
 ;***********************************
 ;*                                 *
@@ -1179,9 +1016,10 @@ ZLOOP:    LDY   #$00                     ;RESET Y OFFSET TO 0
          LDA   BUFFER
          ADC   #$81
          STA   BUFFER
-         LDA   BUFFER+1
-         ADC   #$01
-         STA   BUFFER+1
+         inc BUFFER+1
+         ;LDA   BUFFER+1
+         ;ADC   #$01
+         ;STA   BUFFER+1
          INC   SECTOR                   ;ADD 1 TO SECTOR VALUE
          LDA   SECTOR                   ;IF SECTOR > 16 THEN QUIT
          CMP   #$10
@@ -1241,7 +1079,7 @@ PHASE:   NOP
          ORA   SLOTF                    ;OR SLOT VALUE TO PHASE
          TAX
          LDA   STEP1,X                  ;PHASE ON...
-         LDA   #$56                     ;20 MS. DELAY
+         LDA   #20                     ;20 MS. DELAY
          JSR   WAIT
          LDA   STEP0,X                  ;PHASE OFF...
          RTS
@@ -1592,6 +1430,10 @@ BOOTCODE:
          .byte $50,$38,$E5,$51,$F0,$14,$B0,$04,$E6,$53,$90,$02,$C6,$53,$38,$20,$6D,$09,$A5,$50,$18,$20,$6F,$09
          .byte $D0,$E3,$A0,$7F,$84,$52,$08,$28,$38,$C6,$52,$F0,$CE,$18,$08,$88,$F0,$F5,$BD,$8C,$C0,$10,$FB,$00
          .byte $00,$00,$00,$00,$00,$00,$00,$00
+
+;isIIgs: .asciiz "Machine is a IIgs."
+;notIIgs: .asciiz "Machine is not a IIgs."
+;slowmode: .byte $00
 
 PRBYTE_TEMP: .byte $00
 .proc PRBYTE
