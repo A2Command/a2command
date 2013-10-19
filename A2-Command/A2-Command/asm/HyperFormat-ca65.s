@@ -29,14 +29,14 @@
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
 
-.export _FORMATTER
+.export _FORMATTER, _DRV, _SLOT
 
 .segment "FORMAT"
 
 HOME     =  $FC58                    ;MONITOR CLEAR SCREEN AND HOME CURSOR
 DEVCNT   =  $BF31                    ;PRODOS DEVICE COUNT
 DEVLIST  =  $BF32                    ;LIST OF DEVICES FOR PRODOS
-DEVADR   =  $BF10                    ;GIVEN SLOT THIS IS THE ADDRESS OF DRIVER
+DEVADR   =  $BF10                    ;GIVEN _SLOT THIS IS THE ADDRESS OF DRIVER
 BUFFER   =  $EB                       ;ADDRESS POINTER FOR FORMAT DATA
 STRING   =  $ED
 ADDRS     =  $06
@@ -63,9 +63,9 @@ DISKRD    =  $C08C                    ;DISK READ  SOFTSWITCH
 DISKWR    =  $C08D                    ;DISK WRITE SOFTSWITCH
 MODERD    =  $C08E                    ;MODE READ  SOFTSWITCH
 MODEWR    =  $C08F                    ;MODE WRITE SOFTSWITCH
-BUFFEROFF1  = $0F
-BUFFEROFF2  = $10
-BUFFEROFF3  = $11
+BUFFEROFF1  = $0E
+BUFFEROFF2  = $0F
+BUFFEROFF3  = $10
 ;**********************************************************
 ; EQUATES
 ;**********************************************************
@@ -160,86 +160,21 @@ RDKEY_TEMP: .byte $00
 	rts
 .endproc
 
+
 .proc _FORMATTER
-         TSX
-         STX   STACK
-		 LDA   LAST                     ;STORE CURRENT SLOT/DRIVE # IN SLOT
-         STA   QSLOT                    ;SAVE PRODOS'S LAST DEVICE ACCESSED
-         JSR   MLI
-         .BYTE $42
-         .WORD NETPARMS					;CALL FOR APPLETALK WHICH ISN'T WANTED
-         BCC   NOTERROR
-         CMP   #$01                     ;EVEN THOUGH EVERYONE SAID THAT THIS
-         BEQ   REENTRY                  ; SHOULD HAPPEN I NEVER COULD GET IT.
-         CMP   #$04                     ;GOT THIS BUT DON'T TRY TO CHANGE THE
-         BEQ   REENTRY                  ; PARAMETER COUNT TO 1 OR #$%@&*^()
-NOTERROR: NOP 
-         LDA   NETDEV
-         JSR   HEXDEC
-         LDA   #<APPLETALK               ;PROMPT TO CONTINUE OR NOT
-         STA   STRING
-         LDY   #>APPLETALK              ;BECAUSE APPLETALK IS INSTALLED
-         STY   STRING + 1
-         JSR   STROUT
-         JSR   GETYN
-         BEQ   REENTRY
-         JMP   MEXIT
-REENTRY: NOP 
-		 jsr _clrscr
-         LDA   #<TARGSLT                 ;PROMPT FOR SLOT
-		 STA   STRING
-		 LDA   #>TARGSLT
-		 STA   STRING+1
-         JSR   STROUT
-LSLOT:    JSR   RDKEY                    ;GET A KEYPRESS
-		 ;JSR   COUT
-         CMP   #$30                     ;LESS THAN SLOT #1?
-         BCC   LSLOT
-         CMP   #$38                     ;GREATER THAN SLOT #7?
-         BCS   LSLOT
-         STA   BUFFER                   ;STORE SLOT NUMBER IN BUFFER
-         JSR   COUT                     ;PRINT IT ON THE SCREEN
-         LDA   #<TARGDRV                 ;PROMPT FOR DRIVE
-		 STA   STRING
-         LDA   #>TARGDRV
-		 STA   STRING + 1
-         JSR   STROUT
-LDRIVE:   JSR   RDKEY                    ;GET A KEYPRESS
-         CMP   #$31                     ;DRIVE #1?
-         BEQ   LCONVERT
-         CMP   #$32                     ;DRIVE #2?
-         BNE   LDRIVE
-         
-LCONVERT:STA   DRV
-         STA   BUFFER+1                 ;STORE DRIVE NUMBER IN BUFFER+1
-         JSR   COUT                     ;PRINT IT ON THE SCREEN
-         JSR   DOTWO                    ;PRINT TWO CARRIAGE RETURNS
-         LDA   BUFFER                   ;FETCH THE SLOT NUMBER
-         AND   #$0F                     ;MASK OFF THE UPPER 4 BITS
-         ROL   A                        ;MOVE LOWER 4 BITS TO UPPER 4 BITS
-         ROL   A
-         ROL   A
-         ROL   A
-         STA   SLOT                     ;STORE RESULT IN FORMAT SLOT
-         TAX
-         LDA   BUFFER+1                 ;FETCH THE DRIVE NUMBER
-         CMP   #$31                     ;DOES SLOT NEED CONDITIONING?
-         BEQ   JUMP5                    ;NOPE
-JUMP1:    LDA   SLOT                     ;FETCH FORMAT SLOT
-         ORA   #$80                     ;SET MSB TO INDICATE DRIVE #2
-         STA   SLOT
+		 LDA _SLOT
          TAX
 JUMP5:    LDY   DEVCNT                   ;LOAD HOW MANY DEVICES
 FLOOP:    LDA   DEVLIST,Y                ; SINCE THIS ISN'T A SEQUENTIAL
          STA   LISTSLOT                 ; LIST THEN MUST GO THROUGH EACH ONE
          AND   #$F0                     ; MUST ALSO STORE WHAT IS THERE FOR LATER
-         CMP   SLOT
+         CMP   _SLOT
          BEQ   ITISNUM
          DEY
          BPL   FLOOP
          JMP   NOUNIT                   ;USED TO BE BMI
 ITISNUM: NOP
-         TXA                            ;MAKE THE SLOT THE INDEXED REGISTER
+         TXA                            ;MAKE THE _SLOT THE INDEXED REGISTER
          LSR   A                        ; FOR GETTING DEVICE DRIVE CONTROLLER
          LSR   A
          LSR   A
@@ -296,7 +231,7 @@ YESSMART: NOP
          ROL   A
          ROL   A
          ROL   A
-         STA   SLOT                     ;STORE RESULT IN FORMAT SLOT
+         STA   _SLOT                     ;STORE RESULT IN FORMAT _SLOT
 YESSMART1: NOP
          LDA   ADDRESS+1                   ;CHECK SIGNITURE BYTES IN THE CN PAGE
          STA   BUFFER+1                 ; FOR A SMART DEVICE.
@@ -335,7 +270,7 @@ YESSMART1: NOP
          JSR   SMARTFORM                ;JUMP TOO ROUTINE TO FORMAT SMART DRIVE
          LDA   LISTSLOT
          AND   #$F0
-         STA   SLOT
+         STA   _SLOT
          JSR   CODEWR                   ;JUMP TO ROUTINE TO PRODUCE BIT MAP
          JMP   CATALOG                  ;WRITE DIRECTORY INFORMATION TO THE DISK
 JUMP3:    JMP   AGAIN
@@ -348,7 +283,7 @@ NOUNIT:   LDA   #<UNITNONE                ;PROMPT TO CONTINUE OR NOT BECAUSE
          JSR   STROUT
          JSR   GETYN
          BNE   JUMP4
-         JMP   REENTRY
+         JMP   _FORMATTER
 JUMP4:    JMP   MEXIT
 
 DISKII:  NOP 
@@ -694,14 +629,7 @@ CLOOP:    LDA   BLOCK2,Y
          JSR   CALL2MLI
 
 AGAIN:    NOP
-         LDA   #<NUTHER                  ;DISPLAY 'FORMAT ANOTHER' STRING
-		 STA   STRING
-         LDA   #>NUTHER
-		 STA   STRING + 1
-         JSR   STROUT
-         JSR   GETYN                    ;GET A YES OR NO ANSWER
-         BNE   MEXIT                    ;ANSWER WAS NO...
-         JMP   REENTRY                  ;FORMAT ANOTHER DISK
+        
 MEXIT:   JSR   DOTWO                    ;TWO FINAL CARRIAGE RETURNS...
          LDA   QSLOT
          STA   LAST
@@ -772,7 +700,6 @@ LPLUS:    ROL   IN+20                    ;SHIFT VALUES IN IN+20, IN+21 ONE BIT L
          BNE   LDIVIDE
          ORA   #$B0                     ;CONVERT VALUE TO HIGH ASCII CHARACTER
          STA   IN,Y                     ;STORE IT IN THE INPUT BUFFER
-         STA   NETNUM,Y
          DEY
          BPL DLOOP
          RTS
@@ -784,16 +711,16 @@ LPLUS:    ROL   IN+20                    ;SHIFT VALUES IN IN+20, IN+21 ONE BIT L
 FORMAT:  NOP 
          PHP
          SEI
-         LDA   SLOT                     ;FETCH TARGET DRIVE SLOTNUM VALUE
+         LDA   _SLOT                     ;FETCH TARGET DRIVE SLOTNUM VALUE
          PHA                            ;STORE IT ON THE STACK
          AND   #$70                     ;MASK OFF BIT 7 AND THE LOWER 4 BITS
-         STA   SLOTF                    ;STORE RESULT IN FORMAT SLOT STORAGE
+         STA   SLOTF                    ;STORE RESULT IN FORMAT _SLOT STORAGE
          TAX                            ;ASSUME VALUE OF $60 (DRIVE #1)
          PLA                            ;RETRIEVE VALUE FROM THE STACK
          BPL   LDRIVE1                  ;IF < $80 THE DISK IS IN DRIVE #1
          INX                            ;SET X OFFSET TO $61 (DRIVE #2)
 LDRIVE1:  LDA   SELECT,X                 ;SET SOFTSWITCH FOR PROPER DRIVE
-         LDX   SLOTF                    ;SET X OFFSET TO FORMAT SLOT/DRIVE
+         LDX   SLOTF                    ;SET X OFFSET TO FORMAT _SLOT/DRIVE
          LDA   DISKON,X                 ;TURN THE DRIVE ON
          LDA   MODERD,X                 ;SET MODE SOFTSWITCH TO READ
          LDA   DISKRD,X                 ;READ A BYTE
@@ -827,6 +754,10 @@ MINC:     INC   TRACK                    ;ADD 1 TO TRACK VALUE
          BCS   DONE                     ;FINISHED.  EXIT FORMAT ROUTINE
 LNEXT:    STA   TRKDES                   ;MOVE NEXT TRACK TO FORMAT TO TRKDES
          JSR   SEEK                     ;MOVE HEAD TO THAT TRACK
+		 PHA
+		 LDA #'.'
+		 JSR COUT
+		 PLA
          JMP   WRITE                    ;WRITE ANOTHER TRACK
 DONE:     LDX   SLOTF                    ;TURN THE DRIVE OFF
          LDA   DISKOFF,X
@@ -890,7 +821,7 @@ TRANS:    NOP
          STA   BUFFER
          STX   BUFFER+1
          LDY   #$32                     ;SET Y OFFSET TO 1ST SYNC BYTE (MAX=50)
-         LDX   SLOTF                    ;SET X OFFSET TO FORMAT SLOT/DRIVE
+         LDX   SLOTF                    ;SET X OFFSET TO FORMAT _SLOT/DRIVE
          SEC                            ;(ASSUM THE DISK IS WRITE PROTECTED)
          LDA   DISKWR,X                 ;WRITE SOMETHING TO THE DISK
          LDA   MODERD,X                 ;RESET MODE SOFTSWITCH TO READ
@@ -1076,7 +1007,7 @@ LEXIT:    RTS                            ;RETURN TO CALLING ROUTINE
 ;**********************************
 
 PHASE:   NOP 
-         ORA   SLOTF                    ;OR SLOT VALUE TO PHASE
+         ORA   SLOTF                    ;OR _SLOT VALUE TO PHASE
          TAX
          LDA   STEP1,X                  ;PHASE ON...
          LDA   #20                     ;20 MS. DELAY
@@ -1093,7 +1024,7 @@ RAM3FORM: NOP
          SEI
          LDA   #3                       ;FORMAT REQUEST NUMBER
          STA   $42
-         LDA   SLOT                     ;SLOT OF /RAM
+         LDA   _SLOT                     ;_SLOT OF /RAM
          STA   $43
          LDA   #$00                     ;BUFFER SPACE IF NEEDED LOW BYTE
          STA   $44
@@ -1139,7 +1070,7 @@ SMARTFORM: NOP
          sta SMARTCMD
          lda #$03
          sta SMARTCNT
-         lda DRV
+         lda _DRV
          sec
          sbc #$30
          sta SMARTUNT
@@ -1164,7 +1095,7 @@ SMARTFORM: NOP
          STA   SMARTCMD
          lda #$01
          sta SMARTCNT
-         lda DRV
+         lda _DRV
          sec
          sbc #$30
          sta SMARTUNT
@@ -1206,7 +1137,7 @@ SMARTERR: NOP
 
 GETADDRESSBYSLOT:
         PHA
-         lda SLOT            ; get the slot
+         lda _SLOT            ; get the slot
          and #$70
          ror                ; move it to the right
          ror
@@ -1279,17 +1210,17 @@ OLDERROR: NOP
         NOP
         NOP
         NOP
-DRV:        .BYTE $00
+_DRV:        .BYTE $00
 INFO:     
          .BYTE $02
          .BYTE $00
          .WORD VOLLEN
 PARMS:    .BYTE $03                  ;PARAMETER COUNT = 3
-SLOT:     .BYTE $60                  ;DEFAULT TO S6,D1
+_SLOT:     .BYTE $60                  ;DEFAULT TO S6,D1
 MLIBUF:   .WORD BOOTCODE             ;DEFAULT BUFFER ADDRESS
 MLIBLK:   .WORD $0000                ;DEFAULT BLOCK NUMBER OF 0
-QSLOT:    .BYTE $00                        ;QUIT SLOT NUMBER
-LISTSLOT: .BYTE $00                        ;SAVING THE SLOT TOTAL FROM THE LIST
+QSLOT:    .BYTE $00                        ;QUIT _SLOT NUMBER
+LISTSLOT: .BYTE $00                        ;SAVING THE _SLOT TOTAL FROM THE LIST
 ADDRESS:  .WORD $0000
 NETPARMS: .BYTE $00
          .BYTE  $2F                     ;COMMAND FOR FILISTSESSIONS
@@ -1326,8 +1257,6 @@ FORMATTINGSP: .byte $0D, $0A
 FORMATCOMPLETE: 
             .byte "COMPLETE"
             .byte $0D, $0A, $00
-TARGSLT:  .ASCIIZ "FORMAT DISK IN SLOT "
-TARGDRV: .ASCIIZ " DRIVE "
 VOLNAME: .BYTE $0D, $0A
 		 .BYTE "VOLUME NAME: /"
 BLANK:   .BYTE "BLANK"
@@ -1357,7 +1286,7 @@ NUTHER:   .BYTE $0D, $0A, $0D, $0A
 TOOLARGE: .BYTE $0D, $0A
 			.ASCIIZ "UNIT SIZE IS TO LARGE FOR THIS PROGRAM"
 UNITNONE: .BYTE $0D, $0A
-			.BYTE "NO UNIT IN THAT SLOT AND DRIVE", $0D, $0A
+			.BYTE "NO UNIT IN THAT _SLOT AND DRIVE", $0D, $0A
          .ASCIIZ "FORMAT ANOTHER DISK? (Y/N): "
 ITISRAM3: .BYTE $0D, $0A
 			.BYTE "THIS IS A RAM3 DISK", $0D, $0A
@@ -1368,13 +1297,6 @@ ITSAII:   .BYTE $0D, $0A
 ITISSMART: .BYTE $0D, $0A
 			.BYTE "THIS IS A SMARTPORT DEVICE", $0D, $0A
          .BYTE "CONTINUE WITH FORMAT? (Y/N): ", $00
-APPLETALK: 
-         .BYTE $0D, $0A
-			.ASCIIZ "NUMBER OF APPLETALK DEVICES IS = "
-NETNUM:   .BYTE $00, $00, $00, $0D, $0A
-			.BYTE "APPLETALK IS INSTALLED THIS PROGRAM MAY", $0D, $0A
-         .BYTE "NOT WORK PROPERLY DO YOU WANT TO", $0D, $0A
-         .ASCIIZ "CONTINUE (Y/N)"
 BLOCK2:   .BYTE $00, $00, $03, $00
 VOLLEN:   .BYTE $00                        ;$F0 + LENGTH OF VOLUME NAME
 VOLNAM:   .BYTE $00, $00, $00, $00, $00, $00, $00, $00 
@@ -1402,7 +1324,7 @@ COUNT:    .BYTE $00, $00, $00                        ;GENERAL PURPOSE COUNTER/ST
 POINTER:  .BYTE $00, $00                        ;STORAGE FOR TRACK COUNT (8 BLOCKS/TRACK)
 TRACK:    .BYTE $00, $00                        ;TRACK NUMBER BEING FORMATTED
 SECTOR:   .BYTE $00, $00                        ;CURRENT SECTOR NUMBER (MAX=16)
-SLOTF:    .BYTE $00, $00                        ;SLOT/DRIVE OF DEVICE TO FORMAT
+SLOTF:    .BYTE $00, $00                        ;_SLOT/DRIVE OF DEVICE TO FORMAT
 TRKCUR:   .BYTE $00, $00                        ;CURRENT TRACK POSITION
 TRKDES:   .BYTE $00, $00                        ;DESTINATION TRACK POSITION
 TRKBEG:   .BYTE $00                   ;STARTING TRACK NUMBER

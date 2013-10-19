@@ -6,5 +6,6 @@ void FORMATTER(void);
 char GETYN(void);
 
 extern char SLOT;
+extern char DRV;
 
 #endif
