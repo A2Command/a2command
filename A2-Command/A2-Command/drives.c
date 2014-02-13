@@ -196,13 +196,12 @@ void __fastcall  displayDirectory(
 	writePanel(true, false, COLOR_WHITE, x, 1, 21, w,
 			   drive->path, NULL, NULL);
 	
-	sprintf(temp, "[S%uD%u:%u]",
+	sprintf(temp, "[S%uD%u]",
 		(drive->drive) & 7,
-		(drive->drive >> 3) + 1,
-		drive->drive);
+		(drive->drive >> 3) + 1);
 	cputsxy(x + 3, 22, temp);
 	
-	//gotox(x + w - 9); cprintf("[%5u]", drive->totalblocks - drive->usedblocks);
+	//gotox(x + w - 9); cprintf("[%5u]", get_info(drive->path));
 	
 	start = drive->displayStartAt;
 	end = start + displayHeight < drive->length ? start + displayHeight: drive->length;

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		4F0EF9071851088900255BB9 /* HyperFormat-ca65.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = "HyperFormat-ca65.s"; path = "A2-Command/asm/HyperFormat-ca65.s"; sourceTree = "<group>"; };
+		4F0EF908185108E200255BB9 /* Formatter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Formatter.c; path = "A2-Command/Formatter.c"; sourceTree = "<group>"; };
+		4F0EF909185108E200255BB9 /* Formatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Formatter.h; path = "A2-Command/Formatter.h"; sourceTree = "<group>"; };
 		4F38502017DE3701009B03D4 /* HexEditor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = HexEditor.c; path = "A2-Command/HexEditor.c"; sourceTree = "<group>"; };
 		4F38502117DE3701009B03D4 /* HexEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HexEditor.h; path = "A2-Command/HexEditor.h"; sourceTree = "<group>"; };
 		4FB9045517E3887300A867DE /* BasicViewer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = BasicViewer.c; path = "A2-Command/BasicViewer.c"; sourceTree = "<group>"; };
@@ -44,6 +47,9 @@
 		4F7160DE17A19DBA00BCEED5 = {
 			isa = PBXGroup;
 			children = (
+				4F0EF908185108E200255BB9 /* Formatter.c */,
+				4F0EF909185108E200255BB9 /* Formatter.h */,
+				4F0EF9071851088900255BB9 /* HyperFormat-ca65.s */,
 				4FB9045517E3887300A867DE /* BasicViewer.c */,
 				4FB9045617E3887300A867DE /* BasicViewer.h */,
 				4FB9045717E3887300A867DE /* FileOperations.c */,
@@ -129,7 +135,7 @@
 		4F7160DF17A19DBB00BCEED5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0500;
 			};
 			buildConfigurationList = 4F7160E217A19DBB00BCEED5 /* Build configuration list for PBXProject "A2-Command" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -154,7 +160,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -191,7 +196,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -219,7 +223,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -256,7 +259,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -283,6 +285,7 @@
 		4F7160E317A19DBB00BCEED5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
 		};
@@ -296,7 +299,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -333,7 +335,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CONSTANT_CONVERSION = YES;

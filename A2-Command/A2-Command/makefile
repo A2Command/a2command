@@ -68,7 +68,7 @@ SOURCES	= \
 	BasicViewer.c \
 	Formatter.c
 
-ASMFILES = asm\HyperFormat-ca65.s
+ASMFILES = asm/HyperFormat-ca65.s
 
 
 

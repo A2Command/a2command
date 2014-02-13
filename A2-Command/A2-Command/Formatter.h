@@ -2,10 +2,6 @@
 #define __FORMATTER_H
 
 void formatDisk(struct panel_drive *panel);
-void FORMATTER(void);
-char GETYN(void);
-
-extern char SLOT;
-extern char DRV;
+extern void __fastcall__ FORMATTER(unsigned char DRV, unsigned char * VOLNAME, unsigned char SLOT);
 
 #endif

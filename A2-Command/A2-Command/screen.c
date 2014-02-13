@@ -214,14 +214,14 @@ void __fastcall writePanel(
 	if(ok != NULL)
 	{
 		okLeft -= 4;
-		cputsxy(okLeft, y + h - 1, "[OK]");
+		cputsxy(okLeft, y + h - 1, ok);
 	}
 
 	cancelLeft = okLeft - 2;
 	if(cancel != NULL)
 	{
 		cancelLeft -= 8;
-		cputsxy(cancelLeft, y + h - 1, "[cancel]");
+		cputsxy(cancelLeft, y + h - 1, cancel);
 	}
 }
 
@@ -232,8 +232,8 @@ enum results __fastcall drawDialog(
 	enum buttons button)
 {
 	unsigned char x = 0, y = 0, h = 0, w = 0, i = 0, key = 0, l = 0;
-	unsigned char okButton[4];
-	unsigned char cancelButton[7];
+	unsigned char okButton[6];
+	unsigned char cancelButton[9];
 
 	h = lineCount + 5;
 	w = 33;
@@ -243,22 +243,22 @@ enum results __fastcall drawDialog(
 
 	if(button & OK) 
 	{
-		strcpy(okButton, "OK");
+		strcpy(okButton, "[OK]");
 	}
 
 	if(button & YES)
 	{
-		strcpy(okButton, "Yes");
+		strcpy(okButton, "[Yes]");
 	}
 
 	if(button & CANCEL)
 	{
-		strcpy(cancelButton, "Cancel");
+		strcpy(cancelButton, "[Cancel]");
 	}
 
 	if(button & NO)
 	{
-		strcpy(cancelButton, "No");
+		strcpy(cancelButton, "[No]");
 	}
 
 	writePanel(

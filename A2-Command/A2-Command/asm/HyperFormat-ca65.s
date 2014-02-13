@@ -20,25 +20,22 @@
 ;* By Payton Byrd                  *      Updated on: 22Dec89        *
 ;*                                 *                                 *
 ;*********************************************************************
-	.smart		on
-	.autoimport	on
-	.case		on
 
-    .import __FORMAT_LOAD__, _cputs, _cgetc, _cputc, _itoa, _sleep, _clrscr, _wherex, _wherey, _gotoxy
-	.importzp	sp, sreg, regsave, regbank
-	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
-	.macpack	longbranch
+.import popa, popax
+.importzp ptr1, ptr2
 
-.export _FORMATTER, _DRV, _SLOT
+.import __FORMAT_LOAD__, _cputs
+.export _FORMATTER
 
 .segment "FORMAT"
 
 HOME     =  $FC58                    ;MONITOR CLEAR SCREEN AND HOME CURSOR
 DEVCNT   =  $BF31                    ;PRODOS DEVICE COUNT
 DEVLIST  =  $BF32                    ;LIST OF DEVICES FOR PRODOS
-DEVADR   =  $BF10                    ;GIVEN _SLOT THIS IS THE ADDRESS OF DRIVER
+DEVADR   =  $BF10                    ;GIVEN SLOT THIS IS THE ADDRESS OF DRIVER
 BUFFER   =  $EB                       ;ADDRESS POINTER FOR FORMAT DATA
 STRING   =  $ED
+VOLNAME  =  $EF
 ADDRS     =  $06
 CH       =  $24                      ;STORAGE FOR HORIZONTAL CURSOR VALUE
 IN       =  $200                     ;KEYBOARD INPUT BUFFER
@@ -48,9 +45,9 @@ LAST     =  $BF30                    ;LAST DEVICE ACCESSED BY PRODOS
 ;STROUT   =  $DB3A                    ;APPLESOFT'S STRING PRINTER
 WAIT     =  $FCA8                    ;DELAY ROUTINE
 CLRLN    =  $FC9C                    ;CLEAR LINE ROUTINE
-;RDKEY    =  $FD0C                    ;CHARACTER INPUT ROUTINE  (READ KEYBOARD)
-;PRBYTE   =  $FDDA                    ;PRINT BYTE ROUTINE (HEX VALUE)
-;COUT     =  $FDED                    ;CHARACTER OUTPUT ROUTINE (PRINT TO SCREEN)
+RDKEY    =  $FD0C                    ;CHARACTER INPUT ROUTINE  (READ KEYBOARD)
+PRBYTE   =  $FDDA                    ;PRINT BYTE ROUTINE (HEX VALUE)
+COUT     =  $FDED                    ;CHARACTER OUTPUT ROUTINE (PRINT TO SCREEN)
 STEP0     =  $C080                    ;DRIVE STEPPER MOTOR POSITIONS
 STEP1     =  $C081                    ;  |      |      |       |
 STEP2     =  $C082                    ;  |      |      |       |
@@ -70,75 +67,6 @@ BUFFEROFF3  = $10
 ; EQUATES
 ;**********************************************************
 
-;***************************
-;*                         *
-;* GETYN - GET A YES OR NO *
-;* ANSWER FROM THE USER    *
-;*                         *
-;***************************
-.proc GETYN
-         NOP
-         JSR   RDKEY                    ;GET A KEYPRESS
-         ;AND   #$DF                     ;MASK LOWERCASE
-         CMP   #$59                     ;IS IT A Y?
-         BEQ   LSHOW
-         LDA   #$4E                     ;OTHERWISE DEFAULT TO "NO"
-LSHOW:    JSR   COUT                     ;PRINT CHAR, Z FLAG CONTAINS STATUS
-         CMP   #$59                     ;CONDITION FLAG
-         RTS
-.endproc
-
-
-COUT_TEMP: .byte $00
-.proc COUT
-    sta COUT_TEMP
-	pha             ; 1 A
-    txa
-    pha             ; 2 X
-    tya
-    pha             ; 3 Y
-
-    lda COUT_TEMP
-    pha             ; 4 A
-
-    jsr _wherex
-    cmp #80
-    bne :+
-    jsr _wherey
-    tax
-    inx
-    lda #$00
-    jsr _gotoxy
-
-:	pla             ; 4 A
-    jsr _cputc
-
-    pla             ; 3 Y
-    tay
-    pla             ; 2 X
-    tax
-    pla             ; 1 A
-	rts
-.endproc
-
-RDKEY_TEMP: .byte $00
-
-.proc RDKEY
-    txa
-    pha
-    tya
-    pha
-
-	jsr _cgetc
-    sta RDKEY_TEMP
-
-    pla
-    tay
-    pla
-    tax
-    lda RDKEY_TEMP
-	rts
-.endproc
 
 .proc STROUT
 	pha
@@ -150,7 +78,7 @@ RDKEY_TEMP: .byte $00
 	lda STRING
 	ldx STRING+1
 
-	jsr _cputs
+	;jsr _cputs                        ;Stays here only for debugging purposes
 
     pla
     tay
@@ -161,20 +89,27 @@ RDKEY_TEMP: .byte $00
 .endproc
 
 
-.proc _FORMATTER
-		 LDA _SLOT
+_FORMATTER:
+         STA SLOT
+		 JSR popax
+		 STA VOLNAME
+		 STX VOLNAME+1
+		 JSR popa
+		 STA DRV
+
+         LDA SLOT
          TAX
-JUMP5:    LDY   DEVCNT                   ;LOAD HOW MANY DEVICES
-FLOOP:    LDA   DEVLIST,Y                ; SINCE THIS ISN'T A SEQUENTIAL
+JUMP5:   LDY   DEVCNT                   ;LOAD HOW MANY DEVICES
+FLOOP:   LDA   DEVLIST,Y                ; SINCE THIS ISN'T A SEQUENTIAL
          STA   LISTSLOT                 ; LIST THEN MUST GO THROUGH EACH ONE
          AND   #$F0                     ; MUST ALSO STORE WHAT IS THERE FOR LATER
-         CMP   _SLOT
+         CMP   SLOT
          BEQ   ITISNUM
          DEY
          BPL   FLOOP
          JMP   NOUNIT                   ;USED TO BE BMI
 ITISNUM: NOP
-         TXA                            ;MAKE THE _SLOT THE INDEXED REGISTER
+         TXA                            ;MAKE THE SLOT THE INDEXED REGISTER
          LSR   A                        ; FOR GETTING DEVICE DRIVE CONTROLLER
          LSR   A
          LSR   A
@@ -214,13 +149,11 @@ LOOP8:    LDA   LISTSLOT
          CMP   #$B3
          BEQ   LOOP9
          JMP   NOUNIT
-LOOP9:    LDA   #<ITISRAM3                ;TELL THE PRESON THAT YOU THINK IT IS A
+LOOP9:    LDA   #<ITISRAM3                ;TELL THE PERSON THAT YOU THINK IT IS A
 		 STA STRING
          LDA   #>ITISRAM3               ; /RAM AND IF THEY WANT TO CONTINUE
 		 STA STRING + 1
          JSR   STROUT
-         JSR   GETYN
-         BNE   JUMP2
          JSR   OLDNAME
          JSR   RAM3FORM
 JUMP2:    JMP   AGAIN
@@ -231,9 +164,9 @@ YESSMART: NOP
          ROL   A
          ROL   A
          ROL   A
-         STA   _SLOT                     ;STORE RESULT IN FORMAT _SLOT
+         STA   SLOT                     ;STORE RESULT IN FORMAT SLOT
 YESSMART1: NOP
-         LDA   ADDRESS+1                   ;CHECK SIGNITURE BYTES IN THE CN PAGE
+         LDA   ADDRESS+1                   ;CHECK SIGNATURE BYTES IN THE CN PAGE
          STA   BUFFER+1                 ; FOR A SMART DEVICE.
          LDA   #$00
          STA   BUFFER
@@ -256,21 +189,24 @@ YESSMART1: NOP
          BEQ   NOUNIT                   ; MUST BE A SMART DEVICE.
          LDY   #$07                     ;TEST LAST SIGNITURE BYTE FOR THE
          LDA   (BUFFER),Y               ; PROTOCOL CONVERTER.
+         CMP   #$3C
+         BEQ   YESSMART2                ; Found a hard drive, CFFA, etc.
+         CMP   #$55
+         BEQ   YESSMART2                ; Found a ProFile
          CMP   #$00
          BNE   NOUNIT                   ;IT ISN'T SO ITS NO DEVICE I KNOW.
+YESSMART2:
          LDA   #<ITISSMART               ;TELL THEM YOU THINK IT IS A SMARTPORT
 		 STA   STRING
          LDA   #>ITISSMART              ; DEVICE. AND ASK IF THEY WANT TO FORMAT.
 		 STA   STRING + 1
          JSR   STROUT
-         JSR   GETYN
-         BNE   JUMP3
-         JSR   OLDNAME                  ;SHOW OLD NAME AND ASK IF PROPER DISK
          JSR   LNAME                    ;GET NEW NAME
+         JSR   OLDNAME                  ;SHOW OLD NAME AND ASK IF PROPER DISK
          JSR   SMARTFORM                ;JUMP TOO ROUTINE TO FORMAT SMART DRIVE
          LDA   LISTSLOT
          AND   #$F0
-         STA   _SLOT
+         STA   SLOT
          JSR   CODEWR                   ;JUMP TO ROUTINE TO PRODUCE BIT MAP
          JMP   CATALOG                  ;WRITE DIRECTORY INFORMATION TO THE DISK
 JUMP3:    JMP   AGAIN
@@ -281,10 +217,8 @@ NOUNIT:   LDA   #<UNITNONE                ;PROMPT TO CONTINUE OR NOT BECAUSE
          LDA   #>UNITNONE               ;THERE IS NO UNIT NUMBER LIKE THAT
 		 STA   STRING + 1
          JSR   STROUT
-         JSR   GETYN
-         BNE   JUMP4
-         JMP   _FORMATTER
-JUMP4:    JMP   MEXIT
+         LDA   #$00
+         JMP   MEXIT
 
 DISKII:  NOP 
          LDA   #<ITSAII                  ;TELL THEM YOU THINK IT IS A DISKII
@@ -292,69 +226,25 @@ DISKII:  NOP
          LDA   #>ITSAII
 		 STA   STRING + 1
          JSR   STROUT
-         JSR   GETYN
-         BNE   JUMP3
          LDA   #$18                     ;SET VOLBLKS TO 280 ($118)
          LDX   #$01                     ; JUST SETTING DEFAULT SETTINGS
          LDY   #$00
          STA   VOLBLKS
          STX   VOLBLKS+1
          STY   VOLBLKS+2
-         JSR   OLDNAME                  ;PROMPT FOR PROPER DISK.
          JSR   LNAME                    ;GET NEW NAME
          JMP   BEGINFORMAT                  ;FORMAT DISKII
 
-LNAME:    LDA   #<VOLNAME
-		 STA   STRING
-         LDA   #>VOLNAME
-		 STA   STRING + 1
-         JSR STROUT
-LRDNAME:  LDA   #$0E                     ;RESET CH TO 14
-         STA   CH
-         LDX   #$00
-         BEQ   LINPUT                   ;ALWAYS TAKEN
-LBACKUP:  CPX   #0                       ;HANDLE BACKSPACES
-         BEQ   LRDNAME
-         DEX
-         LDA   #$08                     ;<--
-         JSR   COUT
-LINPUT:   JSR   RDKEY                    ;GET A KEYPRESS
-         CMP   #$08                     ;BACKSPACE?
-         BEQ   LBACKUP
-         CMP   #$7F                     ;DELETE?
-         BEQ   LBACKUP
-         CMP   #$0D                     ;C/R IS END OF INPUT
-         BEQ   LFORMAT
-         CMP   #$2E                     ;(PERIODS ARE OK...)
-         BEQ   LSTORE
-         CMP   #$30                     ;LESS THAN '0'?
-         BCC   LINPUT
-         CMP   #$3A                     ;LESS THAN ':'?
-         BCC   LSTORE                   ;VALID. STORE THE KEYPRESS
-         AND   #$DF                     ;FORCE ANY LOWER CASE TO UPPER CASE
-         CMP   #$40                     ;LESS THAN 'A'?
-         BEQ   LINPUT
-         CMP   #$5B                     ;GREATER THAN 'Z'?
-         BCS   LINPUT
-LSTORE:   JSR   COUT                     ;PRINT KEYPRESS ON THE SCREEN
+LNAME:   LDY   #$00
+WLOOP:   LDA   (VOLNAME),Y                  ;TRANSFER 'BLANK' TO VOLNAM
          AND   #$7F                     ;CLEAR MSB
-         STA   VOLNAM,X                 ;STORE CHARACTER IN VOLNAM
-         INX
-         CPX   #$0E                     ;HAVE 15 CHARACTERS BEEN ENTERED?
-         BCC   LINPUT
-LFORMAT:  TXA                            ;SEE IF DEFAULT VOLUME_NAME WAS TAKEN
-         BNE   LSETLEN
-WLOOP:    LDA   BLANK,X                  ;TRANSFER 'BLANK' TO VOLNAM
-         AND   #$7F                     ;CLEAR MSB
-         STA   VOLNAM,X
-         INX
-         CPX   #$05                     ;END OF TRANSFER?
-         BCC   WLOOP
-         LDA   #$13                     ;RESET CH TO 19
-         STA   CH
+         STA   VOLNAM,Y
+         INY
+         TAX                     ;END OF TRANSFER?
+         BNE   WLOOP
 LSETLEN:  JSR   CLRLN                    ;ERASE THE REST OF THE LINE
          CLC
-         TXA                            ;ADD $F0 TO VOLUME NAME LENGTH
+         TYA                            ;ADD $F0 TO VOLUME NAME LENGTH
          ADC   #$F0                     ;CREATE STORAGE_TYPE, NAME_LENGTH BYTE
          STA   VOLLEN
          RTS
@@ -365,28 +255,17 @@ BEGINFORMAT:
          LDA #>FORMATTING
          STA STRING+1
          JSR STROUT
-         ;JSR _cgetc
 
 		 JSR   FORMAT                   ;FORMAT THE DISK
-         ;JSR _cgetc
          JSR   CODEWR                   ;FORM BITMAP
-
-         LDA   #<VERIF                   ;ASK IF YOU WANT TO VERIFY THE DISK
-		 STA   STRING
-         LDA   #>VERIF
-		 STA   STRING + 1
-         JSR   STROUT
-         JSR   GETYN                    ;GET A YES OR NO ANSWER TO 'VERIFY?'
-         BNE   BIIFORM1
-         JMP   VERIFY                   ;ANSWER WAS YES...
-BIIFORM1: JMP   CATALOG                  ;WRITE DIRECTORY INFORMATION TO THE DISK
+         JMP   CATALOG                  ;WRITE DIRECTORY INFORMATION TO THE DISK
 
 CODEWR:  NOP 
-         ;LDA   #<WRITING                   
-		 ;STA   STRING
-         ;LDA   #>WRITING
-		 ;STA   STRING + 1
-         ;JSR   STROUT
+         LDA   #<WRITING
+		 STA   STRING
+         LDA   #>WRITING
+		 STA   STRING + 1
+         JSR   STROUT
          LDA   #$81                     ;SET OPCODE TO WRITE
          STA   OPCODE
 ;**********************************
@@ -504,86 +383,8 @@ JUMP18:
          LDA   #>FORMATCOMPLETE
 		 STA   STRING + 1
          JSR   STROUT
- 
-        RTS
+         RTS
 
-
-;*************************************
-;*                                   *
-;* VERIFY - VERIFY EACH BLOCK ON THE *
-;* DISK, AND FLAG BAD ONES IN BITMAP *
-;*                                   *
-;*************************************
-VERIFY:  NOP 
-         LDA   #$80                     ;SET OPCODE TO $80 (READ)
-         STA   OPCODE
-         LDA   #$60                     ;CHANGE ERROR TO AN RTS INSTRUCTION
-         STA   ERROR
-         LDA   #$00                     ;RESET MLIBUF TO $1000
-         LDX   #$10
-         STA   MLIBUF
-         STX   MLIBUF+1
-         STA   COUNT                    ;SET COUNT AND POINTER TO 0
-         STA   POINTER
-         STA   LBAD                     ;SET BAD BLOCK COUNTER TO 0
-         STA   MLIBLK                   ;RESET MLIBLK TO 0
-         STA   MLIBLK+1
-LREAD:    JSR   CALLMLI                  ;READ A BLOCK
-         BCS   LERROR                   ;UPDATE BITMAP IF ERROR OCCURS
-LINCBLK:  CLC                            ;ADD 1 TO MLIBLK
-         INC   MLIBLK
-         BNE   LCHECK
-         INC   MLIBLK+1
-LCHECK:   INC   COUNT                    ;ADD 1 TO BITMAP COUNTER
-         LDA   COUNT                    ;IF COUNT > 7 THEN ADD 1 TO POINTER
-         CMP   #$08
-         BCC   MDONE
-         LDA   #$00                     ;RESET COUNT TO 0
-         STA   COUNT
-         INC   POINTER                  ;ADD 1 TO POINTER OFFSET VALUE
-MDONE:    LDX   MLIBLK                   ;SEE IF WE'VE READ 280 BLOCKS YET
-         LDA   MLIBLK+1
-         BEQ   LREAD
-         CPX   #$18                     ;GREATER THAN $118 (280) BLOCKS READ?
-         BEQ   LRESULT                  ;FINISHED. DISPLAY RESULTS OF VERIFY
-         BNE   LREAD                    ;GO GET ANOTHER BLOCK
-LERROR:   LDX   COUNT                    ;USE COUNT AS OFFSET INTO MAPTBL
-         LDA   BITTBL,X                 ;FETCH VALUE FOR BAD BLOCK NUMBER
-         LDY   POINTER                  ;USE POINTER AS OFFSET INTO BUFFER
-         AND   (BUFFER),Y               ;MASK VALUE AGAINST BITMAP VALUE
-         STA   (BUFFER),Y               ;STORE NEW BITMAP VALUE IN BUFFER
-         CLC
-         DEC   VOLBLKS                  ;DECREMENT # OF BLOCKS AVAILABLE
-         BNE   LINCBAD
-         DEC   VOLBLKS+1
-LINCBAD:  INC   LBAD                     ;ADD 1 TO # OF BAD BLOCKS FOUND
-         JMP   LINCBLK                  ;GET THE NEXT BLOCK ON THE DISK
-LRESULT:  LDA   #$EA                     ;CHANGE ERROR BACK TO A NOP INSTRUCTION
-         STA   ERROR
-         LDA   LBAD                     ;FIND OUT IF THERE WERE ANY BAD BLOCKS
-         BEQ   LGOOD
-         JSR   HEXDEC                   ;CONVERT HEX NUMBER INTO DECIMAL
-         LDX   #$00
-BLOOP:    LDA   IN,X                     ;PRINT THE DECIMAL =IVALENT OF LBAD
-         CMP   #$31                     ;DON'T PRINT ZEROS...
-         BCC   MNEXT
-         JSR   COUT
-MNEXT:    INX
-         CPX   #$03                     ;END OF NUMBER?
-         BCC   BLOOP
-         LDA   #<BAD
-		 STA   STRING
-         LDA   #>BAD
-		 STA   STRING + 1
-         JSR   STROUT
-         JMP   CATALOG                  ;WRITE BITMAP AND LINKS TO THE DISK
-LGOOD:    LDA   #<GOOD
-		 STA   STRING
-         LDA   #>GOOD
-		 STA   STRING + 1
-         JSR   STROUT
-         JMP   CATALOG
-LBAD:     .BYTE $00                        ;NUMBER OF BAD BLOCKS FOUND
 ;*************************************
 ;*                                   *
 ;* CATALOG - BUILD A DIRECTORY TRACK *
@@ -630,11 +431,7 @@ CLOOP:    LDA   BLOCK2,Y
 
 AGAIN:    NOP
         
-MEXIT:   JSR   DOTWO                    ;TWO FINAL CARRIAGE RETURNS...
-         LDA   QSLOT
-         STA   LAST
-         LDX   STACK                    ;JUST BECAUSE I AM HUMAN TO AND MIGHT
-         TXS                            ;HAVE MESSED UP ALSO.
+MEXIT:
          RTS
 CALL2MLI: NOP
          JSR   CALLMLI
@@ -648,79 +445,37 @@ CALL2MLI: NOP
 ;*                                   *
 ;*************************************
   
-CALLMLI: NOP
+CALLMLI: CLC
          JSR   MLI                      ;CALL THE PRODOS MACHINE LANGAUGE INTERFACE
 OPCODE:  .BYTE $81                  ;DEFAULT MLI OPCODE = $81 (WRITE)
-         .WORD PARMS
+         .addr PARMS
          BCS   ERROR
          RTS
 ERROR:   NOP                            ;(THIS WILL BE CHANGED TO RTS BY VERIFY)
+         TAX
          PLA
          PLA
          PLA
          PLA
+		 TXA
          JMP   DIED
-;**************************************
-;*                                    *
-;* DOTWO - PRINT TWO CARRIAGE RETURNS *
-;*                                    *
-;**************************************
 
-DOTWO:   NOP 
-         LDA   #$0D                     ;(WE DON'T NEED AN EXPLANATION, DO WE?)
-         JSR   COUT
-		 LDA   #$0A
-         JSR   COUT
-         LDA   #$0D                     ;(WE DON'T NEED AN EXPLANATION, DO WE?)
-         JSR   COUT
-		 LDA   #$0A
-         JSR   COUT
-         RTS
-;***********************************
-;*                                 *
-;* HEXDEC - CONVERT HEX TO DECIMAL *
-;*                                 *
-;***********************************
-
-HEXDEC:  NOP 
-         STA   IN+20                    ;STORE NUMBER IN KEYBOARD INPUT BUFFER
-         LDA   #$00
-         STA   IN+21
-         LDY   #$02                     ;RESULT WILL BE THREE DIGITS LONG
-DLOOP:    LDX   #$11                     ;16 BITS TO PROCESS
-         LDA   #$00
-         CLC
-LDIVIDE:  ROL   A
-         CMP   #$0A                     ;VALUE > OR = TO 10?
-         BCC   LPLUS
-         SBC   #$0A                     ;SUBTRACT 10 FROM THE VALUE
-LPLUS:    ROL   IN+20                    ;SHIFT VALUES IN IN+20, IN+21 ONE BIT LEFT
-         ROL   IN+21
-         DEX
-         BNE   LDIVIDE
-         ORA   #$B0                     ;CONVERT VALUE TO HIGH ASCII CHARACTER
-         STA   IN,Y                     ;STORE IT IN THE INPUT BUFFER
-         DEY
-         BPL DLOOP
-         RTS
 ;***********************************
 ;*                                 *
 ;* FORMAT - FORMAT THE TARGET DISK *
 ;*                                 *
 ;***********************************
-FORMAT:  NOP 
-         PHP
-         SEI
-         LDA   _SLOT                     ;FETCH TARGET DRIVE SLOTNUM VALUE
+FORMAT:
+         LDA   SLOT                     ;FETCH TARGET DRIVE SLOTNUM VALUE
          PHA                            ;STORE IT ON THE STACK
          AND   #$70                     ;MASK OFF BIT 7 AND THE LOWER 4 BITS
-         STA   SLOTF                    ;STORE RESULT IN FORMAT _SLOT STORAGE
+         STA   SLOTF                    ;STORE RESULT IN FORMAT SLOT STORAGE
          TAX                            ;ASSUME VALUE OF $60 (DRIVE #1)
          PLA                            ;RETRIEVE VALUE FROM THE STACK
          BPL   LDRIVE1                  ;IF < $80 THE DISK IS IN DRIVE #1
          INX                            ;SET X OFFSET TO $61 (DRIVE #2)
 LDRIVE1:  LDA   SELECT,X                 ;SET SOFTSWITCH FOR PROPER DRIVE
-         LDX   SLOTF                    ;SET X OFFSET TO FORMAT _SLOT/DRIVE
+         LDX   SLOTF                    ;SET X OFFSET TO FORMAT SLOT/DRIVE
          LDA   DISKON,X                 ;TURN THE DRIVE ON
          LDA   MODERD,X                 ;SET MODE SOFTSWITCH TO READ
          LDA   DISKRD,X                 ;READ A BYTE
@@ -754,18 +509,13 @@ MINC:     INC   TRACK                    ;ADD 1 TO TRACK VALUE
          BCS   DONE                     ;FINISHED.  EXIT FORMAT ROUTINE
 LNEXT:    STA   TRKDES                   ;MOVE NEXT TRACK TO FORMAT TO TRKDES
          JSR   SEEK                     ;MOVE HEAD TO THAT TRACK
-		 PHA
-		 LDA #'.'
-		 JSR COUT
-		 PLA
          JMP   WRITE                    ;WRITE ANOTHER TRACK
 DONE:     LDX   SLOTF                    ;TURN THE DRIVE OFF
          LDA   DISKOFF,X
-         PLP
          RTS                            ;FORMAT IS FINISHED. RETURN TO CALLING ROUTINE
 DIEDII:   PHA                            ;SAVE MLI ERROR CODE ON THE STACK
          JSR   DONE
-         PLA                            ;RETRIEVE ERROR CODE FROM THE STACK
+         PLA                          ;RETRIEVE ERROR CODE FROM THE STACK
          JMP   DIED                     ;PROMPT FOR ANOTHER FORMAT...
 
 ;**************************************
@@ -806,7 +556,11 @@ NODIED:   PHA                            ;SAVE MLI ERROR CODE ON THE STACK
          PLA                            ;RETRIEVE ERROR CODE FROM THE STACK
          JSR   PRBYTE                   ;PRINT THE MLI ERROR CODE
          JMP   AGAIN
-DIEDOUT:  JSR   STROUT
+DIEDOUT:
+         STA   STRING
+		 STY   STRING+1
+		 JSR   STROUT
+		 brk
          JMP   AGAIN                    ;PROMPT FOR ANOTHER FORMAT...
 ;************************************
 ;*                                  *
@@ -821,7 +575,7 @@ TRANS:    NOP
          STA   BUFFER
          STX   BUFFER+1
          LDY   #$32                     ;SET Y OFFSET TO 1ST SYNC BYTE (MAX=50)
-         LDX   SLOTF                    ;SET X OFFSET TO FORMAT _SLOT/DRIVE
+         LDX   SLOTF                    ;SET X OFFSET TO FORMAT SLOT/DRIVE
          SEC                            ;(ASSUM THE DISK IS WRITE PROTECTED)
          LDA   DISKWR,X                 ;WRITE SOMETHING TO THE DISK
          LDA   MODERD,X                 ;RESET MODE SOFTSWITCH TO READ
@@ -867,7 +621,7 @@ LWRPROT:  CLC                            ;DISK IS WRITE PROTECTED! (NERD!)
 ;* IMAGES BETWEEN $6700 AND $8000   *
 ;*                                  *
 ;************************************
-BUILD:   NOP 
+BUILD:   NOP
          LDA   #$10                     ;SET BUFFER TO $6710
          LDX   #(>__FORMAT_LOAD__ + BUFFEROFF1)
          STA   BUFFER
@@ -913,10 +667,6 @@ LINC:     CLC
          INC   BUFFER                   ;ADD 1 TO BUFFER ADDRESS VECTOR
          BNE   LDONE
          INC   BUFFER+1
-         lda BUFFER+1
-         cmp #$BB
-         bne LDONE
-         nop
 LDONE:    RTS
 ;***********************************
 ;*                                 *
@@ -947,10 +697,9 @@ ZLOOP:    LDY   #$00                     ;RESET Y OFFSET TO 0
          LDA   BUFFER
          ADC   #$81
          STA   BUFFER
-         inc BUFFER+1
-         ;LDA   BUFFER+1
-         ;ADC   #$01
-         ;STA   BUFFER+1
+         LDA   BUFFER+1
+         ADC   #$01
+         STA   BUFFER+1
          INC   SECTOR                   ;ADD 1 TO SECTOR VALUE
          LDA   SECTOR                   ;IF SECTOR > 16 THEN QUIT
          CMP   #$10
@@ -988,7 +737,7 @@ LMOVE:    STA   COUNT                    ;STORE TRACK VALUE IN COUNT
          ASL   LINOUT                   ;SHIFT LEFT FOR .TABLE OFFSET
          LDY   LINOUT
 ALOOP:    LDA   LTABLE,Y                 ;FETCH MOTOR PHASE TO TURN ON
-         JSR   PHASE                    ;TURN ON STEPPER MOTOR
+		 JSR   PHASE                    ;TURN ON STEPPER MOTOR
          LDA   LTABLE+1,Y               ;FETCH NEXT PHASE
          JSR   PHASE                    ;TURN ON STEPPER MOTOR
          TYA
@@ -1007,10 +756,13 @@ LEXIT:    RTS                            ;RETURN TO CALLING ROUTINE
 ;**********************************
 
 PHASE:   NOP 
-         ORA   SLOTF                    ;OR _SLOT VALUE TO PHASE
+         ORA   SLOTF                    ;OR SLOT VALUE TO PHASE
          TAX
          LDA   STEP1,X                  ;PHASE ON...
-         LDA   #20                     ;20 MS. DELAY
+		 LDA   $C012                    ;CHECK IF ROM IS ACTIVE
+         BPL   :+
+		 LDA   $C08A                    ;IF IT ISN'T, READ ROM NO WRITE B1
+:	     LDA   #$56                     ;20 MS. DELAY
          JSR   WAIT
          LDA   STEP0,X                  ;PHASE OFF...
          RTS
@@ -1024,7 +776,7 @@ RAM3FORM: NOP
          SEI
          LDA   #3                       ;FORMAT REQUEST NUMBER
          STA   $42
-         LDA   _SLOT                     ;_SLOT OF /RAM
+         LDA   SLOT                     ;SLOT OF /RAM
          STA   $43
          LDA   #$00                     ;BUFFER SPACE IF NEEDED LOW BYTE
          STA   $44
@@ -1070,7 +822,7 @@ SMARTFORM: NOP
          sta SMARTCMD
          lda #$03
          sta SMARTCNT
-         lda _DRV
+         lda DRV
          sec
          sbc #$30
          sta SMARTUNT
@@ -1089,13 +841,11 @@ SMARTFORM: NOP
          LDA __FORMAT_LOAD__ + (BUFFEROFF2 * $100) + 3
          STa   VOLBLKS+2
 
-         ;brk
-
          LDA #$03
          STA   SMARTCMD
          lda #$01
          sta SMARTCNT
-         lda _DRV
+         lda DRV
          sec
          sbc #$30
          sta SMARTUNT
@@ -1137,7 +887,7 @@ SMARTERR: NOP
 
 GETADDRESSBYSLOT:
         PHA
-         lda _SLOT            ; get the slot
+         lda SLOT            ; get the slot
          and #$70
          ror                ; move it to the right
          ror
@@ -1192,14 +942,14 @@ OLDNAME1: STA   VOLLEN
          LDA   #>THEOLD2
 		 STA   STRING + 1
          JSR   STROUT
-         JSR   GETYN
-         BEQ   OLDERROR
+         ;JSR   GETYN
+         ;BEQ   OLDERROR
          PLA
          PLA
          JMP   AGAIN
 OLDERROR: NOP
          RTS
-.endproc
+
 ;*************************
 ;*                       *
 ;* VARIABLE STORAGE AREA *
@@ -1210,17 +960,17 @@ OLDERROR: NOP
         NOP
         NOP
         NOP
-_DRV:        .BYTE $00
+DRV:        .BYTE $00
 INFO:     
          .BYTE $02
          .BYTE $00
          .WORD VOLLEN
 PARMS:    .BYTE $03                  ;PARAMETER COUNT = 3
-_SLOT:     .BYTE $60                  ;DEFAULT TO S6,D1
+SLOT:     .BYTE $60                  ;DEFAULT TO S6,D1
 MLIBUF:   .WORD BOOTCODE             ;DEFAULT BUFFER ADDRESS
 MLIBLK:   .WORD $0000                ;DEFAULT BLOCK NUMBER OF 0
-QSLOT:    .BYTE $00                        ;QUIT _SLOT NUMBER
-LISTSLOT: .BYTE $00                        ;SAVING THE _SLOT TOTAL FROM THE LIST
+QSLOT:    .BYTE $00                        ;QUIT SLOT NUMBER
+LISTSLOT: .BYTE $00                        ;SAVING THE SLOT TOTAL FROM THE LIST
 ADDRESS:  .WORD $0000
 NETPARMS: .BYTE $00
          .BYTE  $2F                     ;COMMAND FOR FILISTSESSIONS
@@ -1257,8 +1007,6 @@ FORMATTINGSP: .byte $0D, $0A
 FORMATCOMPLETE: 
             .byte "COMPLETE"
             .byte $0D, $0A, $00
-VOLNAME: .BYTE $0D, $0A
-		 .BYTE "VOLUME NAME: /"
 BLANK:   .BYTE "BLANK"
          .ASCIIZ "__________"
 VERIF:    .BYTE $0D, $0A, $0D, $0A
@@ -1286,14 +1034,13 @@ NUTHER:   .BYTE $0D, $0A, $0D, $0A
 TOOLARGE: .BYTE $0D, $0A
 			.ASCIIZ "UNIT SIZE IS TO LARGE FOR THIS PROGRAM"
 UNITNONE: .BYTE $0D, $0A
-			.BYTE "NO UNIT IN THAT _SLOT AND DRIVE", $0D, $0A
+			.BYTE "NO UNIT IN THAT SLOT AND DRIVE", $0D, $0A
          .ASCIIZ "FORMAT ANOTHER DISK? (Y/N): "
 ITISRAM3: .BYTE $0D, $0A
 			.BYTE "THIS IS A RAM3 DISK", $0D, $0A
          .ASCIIZ "CONTINUE WITH FORMAT? (Y/N): "
 ITSAII:   .BYTE $0D, $0A
-			.BYTE "THIS IS A DISK II", $0D, $0A
-         .ASCIIZ "CONTINUE WITH FORMAT? (Y/N): "
+			.ASCIIZ "THIS IS A DISK II"
 ITISSMART: .BYTE $0D, $0A
 			.BYTE "THIS IS A SMARTPORT DEVICE", $0D, $0A
          .BYTE "CONTINUE WITH FORMAT? (Y/N): ", $00
@@ -1324,7 +1071,7 @@ COUNT:    .BYTE $00, $00, $00                        ;GENERAL PURPOSE COUNTER/ST
 POINTER:  .BYTE $00, $00                        ;STORAGE FOR TRACK COUNT (8 BLOCKS/TRACK)
 TRACK:    .BYTE $00, $00                        ;TRACK NUMBER BEING FORMATTED
 SECTOR:   .BYTE $00, $00                        ;CURRENT SECTOR NUMBER (MAX=16)
-SLOTF:    .BYTE $00, $00                        ;_SLOT/DRIVE OF DEVICE TO FORMAT
+SLOTF:    .BYTE $00, $00                        ;SLOT/DRIVE OF DEVICE TO FORMAT
 TRKCUR:   .BYTE $00, $00                        ;CURRENT TRACK POSITION
 TRKDES:   .BYTE $00, $00                        ;DESTINATION TRACK POSITION
 TRKBEG:   .BYTE $00                   ;STARTING TRACK NUMBER
@@ -1352,57 +1099,4 @@ BOOTCODE:
          .byte $50,$38,$E5,$51,$F0,$14,$B0,$04,$E6,$53,$90,$02,$C6,$53,$38,$20,$6D,$09,$A5,$50,$18,$20,$6F,$09
          .byte $D0,$E3,$A0,$7F,$84,$52,$08,$28,$38,$C6,$52,$F0,$CE,$18,$08,$88,$F0,$F5,$BD,$8C,$C0,$10,$FB,$00
          .byte $00,$00,$00,$00,$00,$00,$00,$00
-
-;isIIgs: .asciiz "Machine is a IIgs."
-;notIIgs: .asciiz "Machine is not a IIgs."
-;slowmode: .byte $00
-
-PRBYTE_TEMP: .byte $00
-.proc PRBYTE
-    sta PRBYTE_TEMP
-    txa
-    pha
-    tya
-    pha
-
-    lda PRBYTE_TEMP
-    tay
-    jsr decsp3
-    ldx #$00
-    tya
-    jsr pushax
-
-    lda #$02
-    jsr leaa0sp
-    jsr pushax
-
-    ldx #$00
-    lda #$10
-
-    jsr _itoa
-
-    jsr incsp3
-
-    jsr _cputs
-
-    jsr _wherex
-
-    cmp #0
-
-    beq :+
-    bne :++
-
-:   lda #$0D
-    jsr _cputc
-
-    lda #$0A
-    jsr _cputc
-
-:   pla
-    tay
-    pla
-    tax
-    lda PRBYTE_TEMP
-    rts
-.endproc
 
