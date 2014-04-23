@@ -149,14 +149,9 @@ LOOP8:    LDA   LISTSLOT
          CMP   #$B3
          BEQ   LOOP9
          JMP   NOUNIT
-LOOP9:    LDA   #<ITISRAM3                ;TELL THE PERSON THAT YOU THINK IT IS A
-		 STA STRING
-         LDA   #>ITISRAM3               ; /RAM AND IF THEY WANT TO CONTINUE
-		 STA STRING + 1
-         JSR   STROUT
-         JSR   OLDNAME
-         JSR   RAM3FORM
-JUMP2:    JMP   AGAIN
+LOOP9:   JSR   RAM3FORM
+
+JUMP2:    JMP   MEXIT
 YESSMART: NOP
          TYA
          AND   #$0F
@@ -187,7 +182,7 @@ YESSMART1: NOP
          BEQ   DISKII
          CMP   #$FF                     ;WRONG DISKII
          BEQ   NOUNIT                   ; MUST BE A SMART DEVICE.
-         LDY   #$07                     ;TEST LAST SIGNITURE BYTE FOR THE
+         LDY   #$07                     ;TEST LAST SIGNATURE BYTE FOR THE
          LDA   (BUFFER),Y               ; PROTOCOL CONVERTER.
          CMP   #$3C
          BEQ   YESSMART2                ; Found a hard drive, CFFA, etc.
@@ -202,22 +197,16 @@ YESSMART2:
 		 STA   STRING + 1
          JSR   STROUT
          JSR   LNAME                    ;GET NEW NAME
-         JSR   OLDNAME                  ;SHOW OLD NAME AND ASK IF PROPER DISK
-         JSR   SMARTFORM                ;JUMP TOO ROUTINE TO FORMAT SMART DRIVE
+         JSR   SMARTFORM                ;JUMP TO ROUTINE TO FORMAT SMART DRIVE
          LDA   LISTSLOT
          AND   #$F0
          STA   SLOT
          JSR   CODEWR                   ;JUMP TO ROUTINE TO PRODUCE BIT MAP
          JMP   CATALOG                  ;WRITE DIRECTORY INFORMATION TO THE DISK
-JUMP3:    JMP   AGAIN
+JUMP3:    JMP   MEXIT
 
 
-NOUNIT:   LDA   #<UNITNONE                ;PROMPT TO CONTINUE OR NOT BECAUSE
-		 STA   STRING
-         LDA   #>UNITNONE               ;THERE IS NO UNIT NUMBER LIKE THAT
-		 STA   STRING + 1
-         JSR   STROUT
-         LDA   #$00
+NOUNIT:  LDA   #$4E                     ;THERE IS NO UNIT NUMBER LIKE THAT
          JMP   MEXIT
 
 DISKII:  NOP 
@@ -343,7 +332,7 @@ BLKCOUNT: LDA   VOLBLKS+1                ;WHERE # OF BLOCKS ARE STORED
 JUMP10:   PLA                            ;REMOVE THE ADDRESS THAT THE ROUTINE
          PLA                            ; WOULD HAVE RETURNED TO
          LDA   #$4D                     ;MAKE ERROR BLOCK SIZE TO LARGE
-         JMP   DIED
+         JMP   MEXIT
 BITMAPCODE: NOP
          LDA   #%00000001               ;CLEAR FIRST 7 BLOCKS
          STA   (BUFFER),Y
@@ -428,8 +417,6 @@ CLOOP:    LDA   BLOCK2,Y
          LDA   #$02                     ;WRITE BLOCK #2 TO THE DISK
          STA   MLIBLK
          JSR   CALL2MLI
-
-AGAIN:    NOP
         
 MEXIT:
          RTS
@@ -458,7 +445,7 @@ ERROR:   NOP                            ;(THIS WILL BE CHANGED TO RTS BY VERIFY)
          PLA
          PLA
 		 TXA
-         JMP   DIED
+         JMP   MEXIT
 
 ;***********************************
 ;*                                 *
@@ -516,52 +503,8 @@ DONE:     LDX   SLOTF                    ;TURN THE DRIVE OFF
 DIEDII:   PHA                            ;SAVE MLI ERROR CODE ON THE STACK
          JSR   DONE
          PLA                          ;RETRIEVE ERROR CODE FROM THE STACK
-         JMP   DIED                     ;PROMPT FOR ANOTHER FORMAT...
+         JMP   MEXIT                  ;RETURN ERROR CODE
 
-;**************************************
-;*                                    *
-;* DIED - SOMETHING AWFUL HAPPENED TO *
-;* THE DISK OR DRIVE. DIE A MISERABLE *
-;* DEATH...                           *
-;*                                    *
-;**************************************
-DIED:     NOP
-         CMP   #$4D                     ;SAVE MLI ERROR CODE ON THE STACK
-         BEQ   RANGEERROR
-         CMP   #$27
-         BEQ   DRIVEOPEN
-         CMP   #$2F
-         BEQ   DISKERROR
-         CMP   #$2B
-         BEQ   PROTECTED
-         JMP   NODIED
-RANGEERROR: LDA   #<TOOLARGE
-         LDY   #>TOOLARGE
-         JMP   DIEDOUT
-DISKERROR: LDA   #<NODISK
-         LDY   #>NODISK
-         JMP   DIEDOUT
-DRIVEOPEN: LDA   #<DEAD
-         LDY   #>DEAD
-         JMP   DIEDOUT
-PROTECTED: LDA   #<PROTECT
-         LDY   #>PROTECT
-         JMP   DIEDOUT
-NODIED:   PHA                            ;SAVE MLI ERROR CODE ON THE STACK
-         LDA   #<UNRECOG
-		 STA   STRING
-         LDA   #>UNRECOG
-		 STA   STRING + 1
-         JSR   STROUT
-         PLA                            ;RETRIEVE ERROR CODE FROM THE STACK
-         JSR   PRBYTE                   ;PRINT THE MLI ERROR CODE
-         JMP   AGAIN
-DIEDOUT:
-         STA   STRING
-		 STY   STRING+1
-		 JSR   STROUT
-		 brk
-         JMP   AGAIN                    ;PROMPT FOR ANOTHER FORMAT...
 ;************************************
 ;*                                  *
 ;* TRANS - TRANSFER TRACK IN MEMORY *
@@ -609,12 +552,12 @@ MSTORE:   STA   DISKWR,X                 ;WRITE BYTE TO THE DISK
          RTS
 LWRPROT:  CLC                            ;DISK IS WRITE PROTECTED! (NERD!)
          JSR   DONE                     ;TURN THE DRIVE OFF
+         PLA
+         PLA
+         PLA
+         PLA
          LDA   #$2B
-         PLA
-         PLA
-         PLA
-         PLA
-         JMP   DIED                     ;PROMPT FOR ANOTHER FORMAT...
+         JMP   MEXIT                     ;RETURN ERROR CODE
 ;************************************
 ;*                                  *
 ;* BUILD - BUILD GAP1 AND 16 SECTOR *
@@ -799,15 +742,13 @@ RAM3ERR:  NOP
          PLA
          PLA
          TXA
-         JMP   DIED
+         JMP   MEXIT
 ;**********************************
 ;*                                *
 ;* FORMAT A SMARTPORT DEVICE      *
 ;*                                *
 ;**********************************
-SMARTFORM: NOP
-         PHP
-
+SMARTFORM:
          PHA
          LDA #<FORMATTINGSP
          STA STRING
@@ -816,30 +757,16 @@ SMARTFORM: NOP
          JSR STROUT
          PLA
 
-         jsr   GETADDRESSBYSLOT
-
-         lda #$00
-         sta SMARTCMD
          lda #$03
          sta SMARTCNT
          lda DRV
-         sec
-         sbc #$30
          sta SMARTUNT
          LDA #$00
          sta SMARTPR1
-         sta SMARTPR2
          lda #(>__FORMAT_LOAD__ + BUFFEROFF2)
          sta SMARTPR1 + 1
-         lda #(>__FORMAT_LOAD__ + BUFFEROFF3)
-         sta SMARTPR2 + 1
-         JSR SMARTDRI
-         LDA __FORMAT_LOAD__ + (BUFFEROFF2 * $100) + 1
-         STA   VOLBLKS                  ; Save it
-         LDA __FORMAT_LOAD__ + (BUFFEROFF2 * $100) + 2
-         STa   VOLBLKS+1                ; Save it
-         LDA __FORMAT_LOAD__ + (BUFFEROFF2 * $100) + 3
-         STa   VOLBLKS+2
+
+		 JSR SMARTDRI
 
          LDA #$03
          STA   SMARTCMD
@@ -851,7 +778,7 @@ SMARTFORM: NOP
          sta SMARTUNT
          JSR   SMARTDRI
          BCS   SMARTERR
-         PLP
+		 CLC
 
          PHA
          LDA #<FORMATCOMPLETE
@@ -863,92 +790,20 @@ SMARTFORM: NOP
 
          RTS
 
-SMARTDRI: 
-        clc
-        lda #$FF
-SUBR:     .byte $20        
-ADDR:     .word $0000
+SMARTDRI:
+		JMP (ADDRESS)
 SMARTCMD: .byte $00
-          .word SMARTCNT                  
-        rts
-
 SMARTCNT: .byte $00
 SMARTUNT: .byte $00
 SMARTPR1: .word $0000
-SMARTPR2: .word $0000
 
-SMARTERR: NOP
+SMARTERR:
          TAX
-         PLP
          PLA
          PLA
          TXA
-         JMP   DIED
+         JMP   MEXIT
 
-GETADDRESSBYSLOT:
-        PHA
-         lda SLOT            ; get the slot
-         and #$70
-         ror                ; move it to the right
-         ror
-         ror
-         ror
-         clc
-         adc #$c0           ; add C0 to slot
-         sta ADDRS+1      ; store it in high byte of address
-         sta ADDR + 1
-         lda #$FF           ; offset is at $CxFF
-         sta ADDRS        ; store it in low byte of address
-         ldy #$00
-         lda (ADDRS),y    ; load the value referenced by the offset address
-         clc                
-         adc #$03           ; entry is offset by three bytes
-         sta ADDR
-        PLA
-        rts
-;**********************************
-;*                                *
-;* IS THERE AN OLD NAME?          *
-;*                                *
-;**********************************
-OLDNAME:  NOP
-         LDA   LISTSLOT         
-         STA   INFO+1
-         JSR   MLI
-         .BYTE $C5
-         .WORD INFO
-         LDA   VOLLEN
-         AND   #$0F
-         BNE   OLDNAME1
-         LDA   VOLLEN+1
-         CMP   #$28
-         BNE   OLDERROR
-         PLA
-         PLA
-         JMP   NOUNIT
-OLDNAME1: STA   VOLLEN
-         LDA   #<THEOLD1
-		 STA   STRING
-         LDA   #>THEOLD1
-		 STA   STRING + 1
-         JSR   STROUT
-         LDA   #<VOLNAM                  ;GET NAME LENGTH
-		 STA   STRING
-         LDA   #>VOLNAM
-		 STA   STRING + 1
-         JSR   STROUT                   ;PRINT OLD NAME
-         LDA   #<THEOLD2
-		 STA   STRING
-         LDA   #>THEOLD2
-		 STA   STRING + 1
-         JSR   STROUT
-         ;JSR   GETYN
-         ;BEQ   OLDERROR
-         PLA
-         PLA
-         JMP   AGAIN
-OLDERROR: NOP
-         RTS
 
 ;*************************
 ;*                       *
@@ -1012,33 +867,10 @@ BLANK:   .BYTE "BLANK"
 VERIF:    .BYTE $0D, $0A, $0D, $0A
 		 .BYTE "CERTIFY DISK AND MARK ANY BAD BLOCKS IN ", $0D, $0A
          .ASCIIZ "THE VOLUME BITMAP AS UNUSABLE? (Y/N): "
-THEOLD1:  .BYTE $0D, $0A
-	      .BYTE "DO YOU WANT TO WRITE OVER"
-		  .BYTE $0D, $0A, $20, $2F, $00
-THEOLD2:  .BYTE $20, $2F
-		  .ASCIIZ " (Y/N)"
-UNRECOG:  .BYTE $0D, $0A
-			.ASCIIZ "UNRECOGNISABLE ERROR = "
-DEAD:     .BYTE $0D, $0A
-			.ASCIIZ "-- CHECK DISK OR DRIVE DOOR --"
-PROTECT:  .BYTE $0D, $0A
-			.ASCIIZ "DISK IS WRITE PROTECTED."
 BAD:      .BYTE $0D, $0A, $0D, $0A
 			.ASCIIZ " BAD BLOCK(S) MARKED"
 GOOD:     .BYTE $0D, $0A, $0D, $0A
 			.ASCIIZ "DISK IS ERROR-FREE"
-NODISK:   .BYTE $0D, $0A
-			.ASCIIZ "NO DISK IN THE DRIVE"
-NUTHER:   .BYTE $0D, $0A, $0D, $0A
-			.ASCIIZ "FORMAT ANOTHER DISK? (Y/N): "
-TOOLARGE: .BYTE $0D, $0A
-			.ASCIIZ "UNIT SIZE IS TO LARGE FOR THIS PROGRAM"
-UNITNONE: .BYTE $0D, $0A
-			.BYTE "NO UNIT IN THAT SLOT AND DRIVE", $0D, $0A
-         .ASCIIZ "FORMAT ANOTHER DISK? (Y/N): "
-ITISRAM3: .BYTE $0D, $0A
-			.BYTE "THIS IS A RAM3 DISK", $0D, $0A
-         .ASCIIZ "CONTINUE WITH FORMAT? (Y/N): "
 ITSAII:   .BYTE $0D, $0A
 			.ASCIIZ "THIS IS A DISK II"
 ITISSMART: .BYTE $0D, $0A

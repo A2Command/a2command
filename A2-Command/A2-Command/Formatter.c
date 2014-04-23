@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #pragma code-name("FORMAT")
+#pragma rodata-name("FORMAT");
 
 void formatDisk(struct panel_drive *panel)
 {
@@ -23,7 +24,7 @@ void formatDisk(struct panel_drive *panel)
 		"Type a name for",
 		"the disk"
 	};
-	static unsigned char newName[16], r;
+	static unsigned char newName[16], r, errcode;
 	static bool yesNo;
 	
 	saveScreen();
@@ -39,7 +40,36 @@ void formatDisk(struct panel_drive *panel)
 			writeStatusBarf("Formatting Slot %u, Drive %u. Please wait",
 							(panel->drive) & 7,
 							(panel->drive >> 3) + 1);
-			FORMATTER(((panel->drive & 0x08) >> 3) + 1, newName,(panel->drive) << 4);
+			errcode = FORMATTER(((panel->drive & 0x08) >> 3) + 1, newName,(panel->drive) << 4);
+			switch (errcode) {
+				case 0x00: // success
+					writeStatusBarf("Format succesful");
+					break;
+					
+				case 0x4D: // range error
+					waitForEnterEscf("Unit size too large");
+					break;
+					
+				case 0x4E: // no unit
+					waitForEnterEscf("No unit in that slot and drive");
+					break;
+					
+				case 0x27: // drive open
+					waitForEnterEscf("Check drive door");
+					break;
+					
+				case 0x2F: // disk error
+					waitForEnterEscf("No disk in the drive");
+					break;
+					
+				case 0x2B: // disk protected
+					waitForEnterEscf("Disk is write protected");
+					break;
+
+				default: // unrecognized
+					waitForEnterEscf("Unrecognized error %Xh", errcode);
+					break;
+			}
 		}
 	}
 	

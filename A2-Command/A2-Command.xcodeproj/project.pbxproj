@@ -98,7 +98,7 @@
 			dependencies = (
 			);
 			name = JACE;
-			passBuildSettingsInEnvironment = 0;
+			passBuildSettingsInEnvironment = 1;
 			productName = JACE;
 		};
 		4F71583717D8F93000D3386C /* Apple ][+ */ = {
@@ -112,7 +112,7 @@
 			dependencies = (
 			);
 			name = "Apple ][+";
-			passBuildSettingsInEnvironment = 0;
+			passBuildSettingsInEnvironment = 1;
 			productName = "Apple ][+";
 		};
 		4F7160FC17A2EF1100BCEED5 /* Apple II Disk */ = {
@@ -126,7 +126,7 @@
 			dependencies = (
 			);
 			name = "Apple II Disk";
-			passBuildSettingsInEnvironment = 0;
+			passBuildSettingsInEnvironment = 1;
 			productName = "Apple IIe";
 		};
 /* End PBXLegacyTarget section */
@@ -286,12 +286,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ONLY_ACTIVE_ARCH = YES;
+				PATH = "$(PATH):/usr/local/bin";
 			};
 			name = Debug;
 		};
 		4F7160E417A19DBB00BCEED5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				PATH = "$(PATH):/usr/local/bin";
 			};
 			name = Release;
 		};
