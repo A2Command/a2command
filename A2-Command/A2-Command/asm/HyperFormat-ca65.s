@@ -33,21 +33,9 @@ HOME     =  $FC58                    ;MONITOR CLEAR SCREEN AND HOME CURSOR
 DEVCNT   =  $BF31                    ;PRODOS DEVICE COUNT
 DEVLIST  =  $BF32                    ;LIST OF DEVICES FOR PRODOS
 DEVADR   =  $BF10                    ;GIVEN SLOT THIS IS THE ADDRESS OF DRIVER
-BUFFER   =  $EB                       ;ADDRESS POINTER FOR FORMAT DATA
-STRING   =  $ED
-VOLNAME  =  $EF
-ADDRS     =  $06
-CH       =  $24                      ;STORAGE FOR HORIZONTAL CURSOR VALUE
-IN       =  $200                     ;KEYBOARD INPUT BUFFER
-;WARMDOS  =  $BE00                    ;BASIC WARM-START VECTOR
 MLI      =  $BF00                    ;PRODOS MACHINE LANGUAGE INTERFACE
 LAST     =  $BF30                    ;LAST DEVICE ACCESSED BY PRODOS
-;STROUT   =  $DB3A                    ;APPLESOFT'S STRING PRINTER
 WAIT     =  $FCA8                    ;DELAY ROUTINE
-CLRLN    =  $FC9C                    ;CLEAR LINE ROUTINE
-RDKEY    =  $FD0C                    ;CHARACTER INPUT ROUTINE  (READ KEYBOARD)
-PRBYTE   =  $FDDA                    ;PRINT BYTE ROUTINE (HEX VALUE)
-COUT     =  $FDED                    ;CHARACTER OUTPUT ROUTINE (PRINT TO SCREEN)
 STEP0     =  $C080                    ;DRIVE STEPPER MOTOR POSITIONS
 STEP1     =  $C081                    ;  |      |      |       |
 STEP2     =  $C082                    ;  |      |      |       |
@@ -68,32 +56,11 @@ BUFFEROFF3  = $10
 ;**********************************************************
 
 
-.proc STROUT
-	pha
-    txa
-    pha
-    tya
-    pha
-
-	lda STRING
-	ldx STRING+1
-
-	;jsr _cputs                        ;Stays here only for debugging purposes
-
-    pla
-    tay
-    pla
-    tax
-    pla
-	rts
-.endproc
-
-
 _FORMATTER:
          STA SLOT
 		 JSR popax
-		 STA VOLNAME
-		 STX VOLNAME+1
+		 STA ptr2
+		 STX ptr2+1
 		 JSR popa
 		 STA DRV
 
@@ -162,28 +129,28 @@ YESSMART: NOP
          STA   SLOT                     ;STORE RESULT IN FORMAT SLOT
 YESSMART1: NOP
          LDA   ADDRESS+1                   ;CHECK SIGNATURE BYTES IN THE CN PAGE
-         STA   BUFFER+1                 ; FOR A SMART DEVICE.
+         STA   ptr1+1                 ; FOR A SMART DEVICE.
          LDA   #$00
-         STA   BUFFER
+         STA   ptr1
          LDY   #$01
-         LDA   (BUFFER),Y
+         LDA   (ptr1),Y
          CMP   #$20
          BNE   NOUNIT
          LDY   #$03
-         LDA   (BUFFER),Y
+         LDA   (ptr1),Y
          BNE   NOUNIT
          LDY   #$05
-         LDA   (BUFFER),Y
+         LDA   (ptr1),Y
          CMP   #$03
          BNE   NOUNIT
          LDY   #$FF
-         LDA   (BUFFER),Y
+         LDA   (ptr1),Y
          CMP   #$00                     ;APPLES DISKII
          BEQ   DISKII
          CMP   #$FF                     ;WRONG DISKII
          BEQ   NOUNIT                   ; MUST BE A SMART DEVICE.
          LDY   #$07                     ;TEST LAST SIGNATURE BYTE FOR THE
-         LDA   (BUFFER),Y               ; PROTOCOL CONVERTER.
+         LDA   (ptr1),Y               ; PROTOCOL CONVERTER.
          CMP   #$3C
          BEQ   YESSMART2                ; Found a hard drive, CFFA, etc.
          CMP   #$55
@@ -191,11 +158,6 @@ YESSMART1: NOP
          CMP   #$00
          BNE   NOUNIT                   ;IT ISN'T SO ITS NO DEVICE I KNOW.
 YESSMART2:
-         LDA   #<ITISSMART               ;TELL THEM YOU THINK IT IS A SMARTPORT
-		 STA   STRING
-         LDA   #>ITISSMART              ; DEVICE. AND ASK IF THEY WANT TO FORMAT.
-		 STA   STRING + 1
-         JSR   STROUT
          JSR   LNAME                    ;GET NEW NAME
          JSR   SMARTFORM                ;JUMP TO ROUTINE TO FORMAT SMART DRIVE
          LDA   LISTSLOT
@@ -210,11 +172,6 @@ NOUNIT:  LDA   #$4E                     ;THERE IS NO UNIT NUMBER LIKE THAT
          JMP   MEXIT
 
 DISKII:  NOP 
-         LDA   #<ITSAII                  ;TELL THEM YOU THINK IT IS A DISKII
-		 STA   STRING
-         LDA   #>ITSAII
-		 STA   STRING + 1
-         JSR   STROUT
          LDA   #$18                     ;SET VOLBLKS TO 280 ($118)
          LDX   #$01                     ; JUST SETTING DEFAULT SETTINGS
          LDY   #$00
@@ -225,13 +182,13 @@ DISKII:  NOP
          JMP   BEGINFORMAT                  ;FORMAT DISKII
 
 LNAME:   LDY   #$00
-WLOOP:   LDA   (VOLNAME),Y                  ;TRANSFER 'BLANK' TO VOLNAM
+WLOOP:   LDA   (ptr2),Y                  ;TRANSFER 'BLANK' TO VOLNAM
          AND   #$7F                     ;CLEAR MSB
          STA   VOLNAM,Y
          INY
          TAX                     ;END OF TRANSFER?
          BNE   WLOOP
-LSETLEN:  JSR   CLRLN                    ;ERASE THE REST OF THE LINE
+LSETLEN:
          CLC
          TYA                            ;ADD $F0 TO VOLUME NAME LENGTH
          ADC   #$F0                     ;CREATE STORAGE_TYPE, NAME_LENGTH BYTE
@@ -239,22 +196,11 @@ LSETLEN:  JSR   CLRLN                    ;ERASE THE REST OF THE LINE
          RTS
 
 BEGINFORMAT:
-         LDA #<FORMATTING
-         STA STRING
-         LDA #>FORMATTING
-         STA STRING+1
-         JSR STROUT
-
 		 JSR   FORMAT                   ;FORMAT THE DISK
          JSR   CODEWR                   ;FORM BITMAP
          JMP   CATALOG                  ;WRITE DIRECTORY INFORMATION TO THE DISK
 
 CODEWR:  NOP 
-         LDA   #<WRITING
-		 STA   STRING
-         LDA   #>WRITING
-		 STA   STRING + 1
-         JSR   STROUT
          LDA   #$81                     ;SET OPCODE TO WRITE
          STA   OPCODE
 ;**********************************
@@ -272,7 +218,7 @@ ASKBLK0:
          STA   MLIBLK+1
          JSR   CALLMLI                  ;WRITE BLOCK #0 TO TARGET DISK
 ;**************************************
-;* FILL BUFFER $6800-$69FF WITH ZEROS *
+;* FILL ptr1 $6800-$69FF WITH ZEROS *
 ;* AND PREPARE BITMAP AND LINK BLOCKS *
 ;* FOR WRITING TO DISK                *
 ;*                                    *
@@ -280,26 +226,26 @@ ASKBLK0:
 FILL:    NOP 
          LDA   #$05                     ;BLOCK 5 ON DISK
          STA   MLIBLK
-         LDA   #$00                     ;SET BUFFER, MLIBUF TO $6800
+         LDA   #$00                     ;SET ptr1, MLIBUF TO $6800
          LDX   #(>__FORMAT_LOAD__+ BUFFEROFF2)
          STA   MLIBUF
-         STA   BUFFER
+         STA   ptr1
          STX   MLIBUF+1
-         STX   BUFFER+1
+         STX   ptr1+1
          TAY                            ;FILL $6800-$69FF WITH ZEROS
          LDX   #$01                     ;FILL 2 PAGES OF 256 BYTES
-LZERO:    STA   (BUFFER),Y
+LZERO:    STA   (ptr1),Y
          INY
          BNE   LZERO
-         INC   BUFFER+1
+         INC   ptr1+1
          DEX
          BPL   LZERO
-         LDA   #(>__FORMAT_LOAD__+ BUFFEROFF2)                     ;RESET BUFFER TO $6800
-         STA   BUFFER+1
+         LDA   #(>__FORMAT_LOAD__+ BUFFEROFF2)                     ;RESET ptr1 TO $6800
+         STA   ptr1+1
          LDA   #$05                     ;LENGTH OF DIRTBL
          STA   COUNT
 LLINK:    LDX   COUNT
-         LDA   DIRTBL,X                 ;MOVE DIRECTORY LINK VALUES INTO BUFFER
+         LDA   DIRTBL,X                 ;MOVE DIRECTORY LINK VALUES INTO ptr1
          STA   __FORMAT_LOAD__ + (BUFFEROFF2 * $100) + 2                   ;STORE NEXT DIRECTORY BLOCK #
          DEX
          LDA   DIRTBL,X                 ;FETCH ANOTHER # FROM DIRTBL
@@ -335,7 +281,7 @@ JUMP10:   PLA                            ;REMOVE THE ADDRESS THAT THE ROUTINE
          JMP   MEXIT
 BITMAPCODE: NOP
          LDA   #%00000001               ;CLEAR FIRST 7 BLOCKS
-         STA   (BUFFER),Y
+         STA   (ptr1),Y
          LDY   COUNT+1                  ;ORIGINAL LOW BLOCK COUNT VALUE
          BNE   JUMP11                   ;IF IT IS 0 THEN MAKE FF
          DEY                            ;MAKE FF
@@ -349,29 +295,24 @@ JUMP11:  NOP
 
 JUMP15:  NOP 
          LDA   #(>__FORMAT_LOAD__ + BUFFEROFF3)                      ;SET THE ADRESS OF THE UPPER PART OF
-         STA   BUFFER+1                 ; BLOCK IN BITMAP BEING CREATED
+         STA   ptr1+1                 ; BLOCK IN BITMAP BEING CREATED
          LDA   #%11111111
          LDY   COUNT+1                  ;USING THE LOW BYTE COUNT
 JUMP20:   DEY
-         STA   (BUFFER),Y               ;STORE THEM
+         STA   (ptr1),Y               ;STORE THEM
          BEQ   JUMP17
          JMP   JUMP20
 JUMP17:  NOP 
          DEY                            ;FILL IN FIRST PART OF BLOCK
          LDA   #(>__FORMAT_LOAD__+ BUFFEROFF2) 
-         STA   BUFFER+1
+         STA   ptr1+1
 JUMP19:   LDA   #%11111111
          DEY
-         STA   (BUFFER),Y
+         STA   (ptr1),Y
          CPY   #$01                     ;EXCEPT THE FIRST BYTE.
          BEQ   JUMP18
          JMP   JUMP19
 JUMP18: 
-         LDA   #<FORMATCOMPLETE                   ;ASK IF YOU WANT TO VERIFY THE DISK
-		 STA   STRING
-         LDA   #>FORMATCOMPLETE
-		 STA   STRING + 1
-         JSR   STROUT
          RTS
 
 ;*************************************
@@ -386,7 +327,7 @@ CATALOG:  NOP
          LDX   #(>__FORMAT_LOAD__+ BUFFEROFF2) 
          STA   MLIBUF
          STX   MLIBUF+1
-         LDX   #$06                     ;WRITE BUFFER (BITMAP) TO BLOCK #6 ON THE DISK
+         LDX   #$06                     ;WRITE ptr1 (BITMAP) TO BLOCK #6 ON THE DISK
          STX   MLIBLK
          STA   MLIBLK+1
          JSR   CALL2MLI                  ; CALL FOR TIME AND DATE
@@ -404,14 +345,14 @@ CATALOG:  NOP
 
          ldy #$2B                       ; Fill area with zero
          lda #$00
-:        sta (BUFFER), y
+:        sta (ptr1), y
          iny
          bne :-
 
 
          LDY   #$2A                     ;MOVE BLOCK2 INFORMATION TO $6800
 CLOOP:    LDA   BLOCK2,Y
-         STA   (BUFFER),Y
+         STA   (ptr1),Y
          DEY
          BPL   CLOOP
          LDA   #$02                     ;WRITE BLOCK #2 TO THE DISK
@@ -513,10 +454,10 @@ DIEDII:   PHA                            ;SAVE MLI ERROR CODE ON THE STACK
 ;************************************
 
 TRANS:    NOP
-         LDA   #$00                     ;SET BUFFER TO $6700
+         LDA   #$00                     ;SET ptr1 TO $6700
          LDX   #(>__FORMAT_LOAD__ + BUFFEROFF1)
-         STA   BUFFER
-         STX   BUFFER+1
+         STA   ptr1
+         STX   ptr1+1
          LDY   #$32                     ;SET Y OFFSET TO 1ST SYNC BYTE (MAX=50)
          LDX   SLOTF                    ;SET X OFFSET TO FORMAT SLOT/DRIVE
          SEC                            ;(ASSUM THE DISK IS WRITE PROTECTED)
@@ -534,7 +475,7 @@ LSYNC1:   EOR   #$80                     ;SET MSB, CONVERTING $7F TO $FF (SYNC B
          JMP   MSTORE
 LSYNC2:   PHA                            ;(KILL MORE TIME... [ SHEESH! ])
          PLA
-LSYNC3:  LDA   (BUFFER),Y               ;FETCH BYTE TO WRITE TO DISK
+LSYNC3:  LDA   (ptr1),Y               ;FETCH BYTE TO WRITE TO DISK
          CMP   #$80                     ;IS IT A SYNC BYTE? ($7F)
          BCC   LSYNC1                   ;YEP. TURN IT INTO AN $FF
          NOP
@@ -542,8 +483,8 @@ MSTORE:   STA   DISKWR,X                 ;WRITE BYTE TO THE DISK
          CMP   DISKRD,X                 ;SET READ SOFTSWITCH
          INY                            ;INCREMENT Y OFFSET
          BNE   LSYNC2
-         INC   BUFFER+1                 ;INCREMENT BUFFER BY 255
-         LDA   BUFFER + 1
+         INC   ptr1+1                 ;INCREMENT ptr1 BY 255
+         LDA   ptr1 + 1
          CMP    #(>__FORMAT_LOAD__ + BUFFEROFF1 + $1A)
          BNE   LSYNC3                   ;IF < $8000 GET MORE FORMAT DATA
          LDA   MODERD,X                 ;RESTORE MODE SOFTSWITCH TO READ
@@ -565,10 +506,10 @@ LWRPROT:  CLC                            ;DISK IS WRITE PROTECTED! (NERD!)
 ;*                                  *
 ;************************************
 BUILD:   NOP
-         LDA   #$10                     ;SET BUFFER TO $6710
+         LDA   #$10                     ;SET ptr1 TO $6710
          LDX   #(>__FORMAT_LOAD__ + BUFFEROFF1)
-         STA   BUFFER
-         STX   BUFFER+1
+         STA   ptr1
+         STX   ptr1+1
          LDY   #$00                     ;(Y OFFSET ALWAYS ZERO)
          LDX   #$F0                     ;BUILD GAP1 USING $7F (SYNC BYTE)
          LDA   #$7F
@@ -576,11 +517,11 @@ BUILD:   NOP
          JSR   LFILL                    ;STORE SYNC BYTES FROM $6710 TO $6800
          LDA   #$10                     ;SET COUNT FOR 16 LOOPS
          STA   COUNT
-LIMAGE:   LDX   #$00                     ;BUILD A SECTOR IMAGE IN THE BUFFER AREA
+LIMAGE:   LDX   #$00                     ;BUILD A SECTOR IMAGE IN THE ptr1 AREA
 ELOOP:    LDA   LADDR,X                  ;STORE ADDRESS HEADER, INFO & SYNC BYTES
          BEQ   LINFO
-         STA   (BUFFER),Y
-         JSR   LINC                     ;ADD 1 TO BUFFER OFFSET ADDRESS
+         STA   (ptr1),Y
+         JSR   LINC                     ;ADD 1 TO ptr1 OFFSET ADDRESS
          INX
          BNE   ELOOP
 LINFO:    LDX   #$AB                     ;MOVE 343 BYTES INTO DATA AREA
@@ -592,7 +533,7 @@ LINFO:    LDX   #$AB                     ;MOVE 343 BYTES INTO DATA AREA
          LDX   #$00
 YLOOP:    LDA   LDATA,X                  ;STORE DATA TRAILER AND GAP3 SYNC BYTES
          BEQ   LDECCNT
-         STA   (BUFFER),Y
+         STA   (ptr1),Y
          JSR   LINC
          INX
          BNE   YLOOP
@@ -601,15 +542,15 @@ LDECCNT:  CLC
          BNE   LIMAGE
          RTS                            ;RETURN TO WRITE TRACK TO DISK (WRITE)
 LFILL:    LDA   LBYTE
-         STA   (BUFFER),Y               ;MOVE A REGISTER TO BUFFER AREA
-         JSR   LINC                     ;ADD 1 TO BUFFER OFFSET ADDRESS
+         STA   (ptr1),Y               ;MOVE A REGISTER TO ptr1 AREA
+         JSR   LINC                     ;ADD 1 TO ptr1 OFFSET ADDRESS
          DEX
          BNE   LFILL
          RTS
 LINC:     CLC
-         INC   BUFFER                   ;ADD 1 TO BUFFER ADDRESS VECTOR
+         INC   ptr1                   ;ADD 1 TO ptr1 ADDRESS VECTOR
          BNE   LDONE
-         INC   BUFFER+1
+         INC   ptr1+1
 LDONE:    RTS
 ;***********************************
 ;*                                 *
@@ -619,10 +560,10 @@ LDONE:    RTS
 ;*                                 *
 ;***********************************
 CALC:    NOP 
-         LDA   #$03                     ;SET BUFFER TO $6803
+         LDA   #$03                     ;SET ptr1 TO $6803
          LDX   #(>__FORMAT_LOAD__+ BUFFEROFF2) 
-         STA   BUFFER
-         STX   BUFFER+1
+         STA   ptr1
+         STX   ptr1+1
          LDA   #$00                     ;SET SECTOR TO 0
          STA   SECTOR
 ZLOOP:    LDY   #$00                     ;RESET Y OFFSET TO 0
@@ -636,13 +577,13 @@ ZLOOP:    LDY   #$00                     ;RESET Y OFFSET TO 0
          EOR   TRACK
          EOR   SECTOR
          JSR   LENCODE
-         CLC                            ;ADD 385 ($181) TO BUFFER ADDRESS
-         LDA   BUFFER
+         CLC                            ;ADD 385 ($181) TO ptr1 ADDRESS
+         LDA   ptr1
          ADC   #$81
-         STA   BUFFER
-         LDA   BUFFER+1
+         STA   ptr1
+         LDA   ptr1+1
          ADC   #$01
-         STA   BUFFER+1
+         STA   ptr1+1
          INC   SECTOR                   ;ADD 1 TO SECTOR VALUE
          LDA   SECTOR                   ;IF SECTOR > 16 THEN QUIT
          CMP   #$10
@@ -651,11 +592,11 @@ ZLOOP:    LDY   #$00                     ;RESET Y OFFSET TO 0
 LENCODE:  PHA                            ;PUT VALUE ON THE STACK
          LSR   A                        ;SHIFT EVERYTHING RIGHT ONE BIT
          ORA   #$AA                     ;OR IT WITH $AA
-         STA   (BUFFER),Y               ;STORE 4&4 RESULT IN BUFFER AREA
+         STA   (ptr1),Y               ;STORE 4&4 RESULT IN ptr1 AREA
          INY
          PLA                            ;RETRIEVE VALUE FROM THE STACK
          ORA   #$AA                     ;OR IT WITH $AA
-         STA   (BUFFER),Y               ;STORE 4&4 RESULT IN BUFFER AREA
+         STA   (ptr1),Y               ;STORE 4&4 RESULT IN ptr1 AREA
          INY
          RTS
 ;*************************************
@@ -721,7 +662,7 @@ RAM3FORM: NOP
          STA   $42
          LDA   SLOT                     ;SLOT OF /RAM
          STA   $43
-         LDA   #$00                     ;BUFFER SPACE IF NEEDED LOW BYTE
+         LDA   #$00                     ;ptr1 SPACE IF NEEDED LOW BYTE
          STA   $44
          LDA   #(>__FORMAT_LOAD__ + BUFFEROFF1)                     ; AND HIGH BYTE
          STA   $45
@@ -749,14 +690,6 @@ RAM3ERR:  NOP
 ;*                                *
 ;**********************************
 SMARTFORM:
-         PHA
-         LDA #<FORMATTINGSP
-         STA STRING
-         LDA #>FORMATTINGSP
-         STA STRING + 1
-         JSR STROUT
-         PLA
-
          lda #$03
          sta SMARTCNT
          lda DRV
@@ -779,15 +712,6 @@ SMARTFORM:
          JSR   SMARTDRI
          BCS   SMARTERR
 		 CLC
-
-         PHA
-         LDA #<FORMATCOMPLETE
-         STA STRING
-         LDA #>FORMATCOMPLETE
-         STA STRING + 1
-         JSR STROUT
-         PLA
-
          RTS
 
 SMARTDRI:
@@ -822,7 +746,7 @@ INFO:
          .WORD VOLLEN
 PARMS:    .BYTE $03                  ;PARAMETER COUNT = 3
 SLOT:     .BYTE $60                  ;DEFAULT TO S6,D1
-MLIBUF:   .WORD BOOTCODE             ;DEFAULT BUFFER ADDRESS
+MLIBUF:   .WORD BOOTCODE             ;DEFAULT ptr1 ADDRESS
 MLIBLK:   .WORD $0000                ;DEFAULT BLOCK NUMBER OF 0
 QSLOT:    .BYTE $00                        ;QUIT SLOT NUMBER
 LISTSLOT: .BYTE $00                        ;SAVING THE SLOT TOTAL FROM THE LIST
@@ -831,15 +755,15 @@ NETPARMS: .BYTE $00
          .BYTE  $2F                     ;COMMAND FOR FILISTSESSIONS
          .WORD  $0000                   ;APPLETALK RESULT CODE RETURNED HERE
          .WORD  $100                    ;LENGTH OF STRING
-         .WORD  (__FORMAT_LOAD__ + (BUFFEROFF1 * $100))                   ;BUFFER LOW WORD
-         .WORD  $0000                   ;BUFFER HIGH WORD
+         .WORD  (__FORMAT_LOAD__ + (BUFFEROFF1 * $100))                   ;ptr1 LOW WORD
+         .WORD  $0000                   ;ptr1 HIGH WORD
 NETDEV:   .BYTE $00                  ;NUMBER OF ENTRIES RETURNED HERE
 LBYTE:    .BYTE $00                        ;STORAGE FOR BYTE VALUE USED IN FILL
 LADDR:    .BYTE $D5, $AA, $96              ;ADDRESS HEADER
          .BYTE $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA                ;VOLUME #, TRACK, SECTOR, CHECKSUM
          .BYTE $DE, $AA, $EB              ;ADDRESS TRAILER
          .BYTE $7F, $7F, $7F, $7F, $7F, $7F                 ;GAP2 SYNC BYTES
-         .BYTE $D5, $AA, $AD              ;BUFFER HEADER
+         .BYTE $D5, $AA, $AD              ;ptr1 HEADER
          .BYTE $00                    ;END OF ADDRESS INFORMATION
 LDATA:   .BYTE $DE, $AA, $EB              ;DATA TRAILER
          .BYTE $7F, $7F, $7F, $7F, $7F, $7F, $7F, $7F                ;GAP3 SYNC BYTES
